@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Python
+venv/
+**/venv/
+**/.venv/
+*.pyc
+__pycache__/
+*.pyo
+.pytest_cache/
+
+# Build artifacts
+.next/
+dist/
+.turbo/
+.superpowers/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.gstack/
+.worktrees/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Prisma
+packages/db/prisma/migrations/**/migration_lock.toml

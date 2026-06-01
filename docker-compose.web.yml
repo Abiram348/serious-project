@@ -1,0 +1,87 @@
+services:
+  web:
+    build:
+      context: ./apps/web
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./apps/web/.env
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      - NEXT_PUBLIC_API_SECRET=${NEXT_PUBLIC_API_SECRET}
+    depends_on:
+      - api
+      - orchestrator
+    networks:
+      - swarmdev-network
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./apps/api/.env
+    environment:
+      - PORT=3001
+      - DATABASE_URL=postgresql://swarmdev:swarmdevpw@postgres:5432/swarmdev
+      - REDIS_URL=redis://redis:6379
+      - ORCHESTRATOR_URL=http://orchestrator:8000
+      - NODE_ENV=development
+    depends_on:
+      - postgres
+      - redis
+      - orchestrator
+    networks:
+      - swarmdev-network
+
+  orchestrator:
+    build:
+      context: ./apps/orchestrator
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./apps/orchestrator/.env
+    environment:
+      - PORT=8000
+      - DATABASE_URL=postgresql://swarmdev:swarmdevpw@postgres:5432/swarmdev
+      - REDIS_URL=redis://redis:6379
+      - API_SECRET=${ORCHESTRATOR_SECRET:-devsecret}
+      - SOCKET_URL=http://api:3001
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - swarmdev-network
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: swarmdev
+      POSTGRES_PASSWORD: swarmdevpw
+      POSTGRES_DB: swarmdev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - swarmdev-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - swarmdev-network
+
+volumes:
+  pgdata:
+
+networks:
+  swarmdev-network:
+    driver: bridge

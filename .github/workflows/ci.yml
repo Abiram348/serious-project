@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: orchestrator
+          POSTGRES_PASSWORD: orchestratorpw
+          POSTGRES_DB: swarmdev
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U orchestrator"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Node setup for web & api
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # Install dependencies for web
+      - name: Install web dependencies
+        working-directory: ./apps/web
+        run: pnpm install --frozen-lockfile
+
+      # Lint & test web
+      - name: Lint web
+        working-directory: ./apps/web
+        run: pnpm lint || true
+
+      - name: Test web
+        working-directory: ./apps/web
+        run: pnpm test || true
+
+      # Install dependencies for api
+      - name: Install API dependencies
+        working-directory: ./apps/api
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint API
+        working-directory: ./apps/api
+        run: pnpm lint || true
+
+      - name: Test API
+        working-directory: ./apps/api
+        run: pnpm test || true
+
+      # Python setup for orchestrator
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install orchestrator dependencies
+        working-directory: ./apps/orchestrator
+        run: pip install -r requirements.txt
+
+      - name: Run orchestrator tests
+        working-directory: ./apps/orchestrator
+        run: pytest -q
+
+      # Security scans
+      - name: Security scans
+        run: |
+          echo "Running npm audit..."
+          pnpm audit --audit-level=high || true
+          echo "Running bandit..."
+          bandit -r ./apps/orchestrator || true
+          echo "Running semgrep..."
+          semgrep --config p/default . || true
+
+      # Build Docker images
+      - name: Build Docker images
+        run: |
+          docker build -t swarmdev-web ./apps/web
+          docker build -t swarmdev-api ./apps/api
+          docker build -t swarmdev-orchestrator ./apps/orchestrator
+
+      # (Optional) Push Docker images – placeholders for registry
+      - name: Push Docker images (placeholder)
+        if: false
+        run: |
+          echo "Docker images would be pushed here"

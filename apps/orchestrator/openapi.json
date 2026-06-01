@@ -1,0 +1,42 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SwarmDev Orchestrator",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root endpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {"application/json": {"schema": {"type": "object"}}}
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {"description": "OK"}
+        }
+      }
+    },
+    "/projects/{project_id}/agents/start": {
+      "post": {
+        "summary": "Start the agent workflow",
+        "parameters": [{"name": "project_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"200": {"description": "Workflow started"}}
+      }
+    },
+    "/agents/{agent_id}/status": {
+      "get": {
+        "summary": "Get agent status",
+        "parameters": [{"name": "agent_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"200": {"description": "Agent status"}}
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+# Core web framework
+fastapi>=0.100.0
+uvicorn>=0.25.0
+
+# AI/LLM — Ollama Cloud (OpenAI-compatible)
+openai>=1.0.0
+
+# LangGraph - use latest compatible
+langgraph>=0.0.20
+
+# E2B Code Interpreter
+e2b-code-interpreter>=1.0.0
+
+# Vector database client - pinned for grpcio compatibility
+qdrant-client==1.7.0
+
+# Redis for caching
+redis>=5.0.0
+
+# Embeddings - pinned to avoid conflicts
+sentence-transformers>=2.2.0
+
+# Pydantic
+pydantic>=2.0.0
+
+# Database
+asyncpg>=0.29.0
+sqlalchemy>=2.0.0
+
+# Environment
+python-dotenv>=1.0.0
+
+# Security scanning
+bandit>=1.7.0
+
+# SocketIO for real-time events
+python-socketio[asyncio_client]>=5.11.0
+
+# HTTP client for API calls
+httpx>=0.25.0
+
+# grpcio - pinned for qdrant-client compatibility
+grpcio>=1.41.0

@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: swarmdev-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: swarmdev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: swarmdev-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  # Qdrant for vector database
+  qdrant:
+    image: qdrant/qdrant:v1.7.0
+    container_name: swarmdev-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+
+  # Meilisearch for full-text search
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    container_name: swarmdev-meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey}
+    volumes:
+      - meilisearch_data:/meili_data
+    ports:
+      - "7700:7700"
+
+volumes:
+  postgres_data:
+  meilisearch_data:

@@ -1,0 +1,19 @@
+uid=1_0 RootWebArea "SwarmDev — Multi-Agent Cloud Development" url="http://localhost:3000/dashboard/new"
+  uid=1_1 alert atomic live="assertive" relevant="additions text"
+  uid=1_2 banner
+    uid=1_3 link "SwarmDev" url="http://localhost:3000/dashboard"
+      uid=1_4 StaticText "Swarm"
+      uid=1_5 StaticText "Dev"
+    uid=1_6 button "Open user menu" expandable haspopup="dialog"
+  uid=5_0 heading "Create New Project" level="3"
+  uid=5_1 StaticText "Step "
+  uid=5_2 StaticText "1"
+  uid=5_3 StaticText " of 2 — "
+  uid=5_4 StaticText "Describe your idea"
+  uid=5_5 StaticText "Project Name"
+  uid=5_6 textbox "Project Name" autocomplete="list" focusable focused haspopup="menu" value="DemoProject"
+  uid=5_7 StaticText "What do you want to build?"
+  uid=5_8 textbox "What do you want to build?" multiline
+  uid=5_9 StaticText "Be specific about features, user roles, and integrations. The more detail, the better the result."
+  uid=5_10 button "Cancel"
+  uid=5_11 button "Next" disableable disabled

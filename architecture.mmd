@@ -1,0 +1,18 @@
+graph TD
+    subgraph SwarmDev
+        Web[Web (Next.js)] -->|API Calls| API[API (Express)]
+        API -->|Agent Start| Orchestrator[Orchestrator (FastAPI)]
+        Orchestrator -->|LangGraph DAG| Supervisor[SupervisorAgent]
+        Supervisor --> Backend[BackendAgent]
+        Supervisor --> Database[DatabaseAgent]
+        Supervisor --> DevOps[DevOpsAgent]
+        Backend --> Frontend[FrontendAgent]
+        Database --> Frontend
+        DevOps --> Frontend
+        Frontend --> QA[QAAgent]
+        QA --> Security[SecurityAgent]
+        Security --> Documentation[DocumentationAgent]
+        Documentation --> End[END]
+        Orchestrator -->|Socket.io Events| Socket[Socket.io (API)]
+        Web -->|Socket.io Client| Socket
+    end
