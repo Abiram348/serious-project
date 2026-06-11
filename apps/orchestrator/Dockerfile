@@ -24,7 +24,7 @@ WORKDIR /build
 
 # Upgrade pip and install deps as wheels
 RUN pip install --upgrade pip wheel
-COPY apps/orchestrator/requirements.txt .
+COPY requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements.txt
 
 # ═══════════════════════════════════════════════
@@ -49,7 +49,7 @@ COPY --from=builder /build/wheels /wheels
 RUN pip install --no-cache /wheels/* && rm -rf /wheels
 
 # Copy application code
-COPY --chown=orchestrator:orchestrator apps/orchestrator/ ./
+COPY --chown=orchestrator:orchestrator . .
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
