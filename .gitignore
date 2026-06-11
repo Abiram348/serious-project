@@ -52,3 +52,7 @@ coverage/
 
 # Prisma
 packages/db/prisma/migrations/**/migration_lock.toml
+
+# Terraform secrets
+*.tfvars
+!*.tfvars.example
