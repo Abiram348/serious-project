@@ -60,6 +60,11 @@ jobs:
       - name: Install monorepo dependencies
         run: pnpm install --frozen-lockfile
 
+      # Generate Prisma client (required for API tests)
+      - name: Generate Prisma client
+        working-directory: ./packages/db
+        run: npx prisma generate
+
       # Lint & test web
       - name: Lint web
         working-directory: ./apps/web
@@ -105,7 +110,7 @@ jobs:
           pip install semgrep || true
           semgrep --config p/default . || true
 
-      # Build Docker images (load to local daemon for Trivy)
+      # Build Docker images (validate Dockerfiles compile)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -115,7 +120,6 @@ jobs:
           context: .
           file: ./apps/web/Dockerfile
           push: false
-          load: true
           tags: swarmdev-web:ci
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
@@ -126,7 +130,6 @@ jobs:
           context: .
           file: ./apps/api/Dockerfile
           push: false
-          load: true
           tags: swarmdev-api:ci
           cache-from: type=gha,scope=api
           cache-to: type=gha,mode=max,scope=api
@@ -137,31 +140,9 @@ jobs:
           context: ./apps/orchestrator
           file: ./apps/orchestrator/Dockerfile
           push: false
-          load: true
           tags: swarmdev-orchestrator:ci
           cache-from: type=gha,scope=orchestrator
           cache-to: type=gha,mode=max,scope=orchestrator
-
-      # Install Trivy directly for reliable local image scanning
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.56.2
-
-      - name: Scan web image with Trivy
-        run: trivy image --format sarif --output trivy-web.sarif --exit-code 0 swarmdev-web:ci
-
-      - name: Scan api image with Trivy
-        run: trivy image --format sarif --output trivy-api.sarif --exit-code 0 swarmdev-api:ci
-
-      - name: Scan orchestrator image with Trivy
-        run: trivy image --format sarif --output trivy-orchestrator.sarif --exit-code 0 swarmdev-orchestrator:ci
-
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        continue-on-error: true
-        with:
-          sarif_file: trivy-web.sarif
 
   push-to-ecr:
     runs-on: ubuntu-latest
@@ -170,6 +151,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      security-events: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -216,3 +198,24 @@ jobs:
           tags: ${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ github.sha }},${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:latest
           cache-from: type=gha,scope=orchestrator
           cache-to: type=gha,mode=max,scope=orchestrator
+
+      # Trivy scan on pushed images
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.56.2
+
+      - name: Scan web image with Trivy
+        run: trivy image --format sarif --output trivy-web.sarif --exit-code 0 ${{ env.ECR_REGISTRY }}/swarmdev/web:${{ github.sha }}
+
+      - name: Scan api image with Trivy
+        run: trivy image --format sarif --output trivy-api.sarif --exit-code 0 ${{ env.ECR_REGISTRY }}/swarmdev/api:${{ github.sha }}
+
+      - name: Scan orchestrator image with Trivy
+        run: trivy image --format sarif --output trivy-orchestrator.sarif --exit-code 0 ${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ github.sha }}
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        continue-on-error: true
+        with:
+          sarif_file: trivy-web.sarif
