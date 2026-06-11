@@ -5,8 +5,8 @@
 # Multi-stage: deps → builder → runner
 # ──────────────────────────────────────────────
 
-ARG NODE_VERSION=20
-ARG PNPM_VERSION=9.15.0
+ARG NODE_VERSION=22
+ARG PNPM_VERSION=11.1.3
 
 # ═══════════════════════════════════════════════
 # Stage 1 — Dependencies
@@ -16,7 +16,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+RUN npm install -g pnpm@${PNPM_VERSION}
 
 # Copy workspace root files
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
@@ -30,7 +30,7 @@ RUN pnpm install --frozen-lockfile --filter web
 # ═══════════════════════════════════════════════
 FROM node:${NODE_VERSION}-alpine AS builder
 WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+RUN npm install -g pnpm@${PNPM_VERSION}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
