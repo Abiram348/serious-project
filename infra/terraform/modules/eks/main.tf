@@ -8,6 +8,9 @@ resource "aws_eks_cluster" "main" {
   role_arn = aws_iam_role.cluster.arn
   version  = var.kubernetes_version
 
+  # Prevent forced replacement on provider upgrade
+  bootstrap_self_managed_addons = false
+
   vpc_config {
     subnet_ids              = var.private_subnet_ids
     endpoint_private_access = true
