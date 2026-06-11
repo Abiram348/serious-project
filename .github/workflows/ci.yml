@@ -47,8 +47,7 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
+        # version is auto-detected from packageManager field in package.json
 
       # Node setup for web & api
       - name: Set up Node
@@ -142,30 +141,19 @@ jobs:
           cache-from: type=gha,scope=orchestrator
           cache-to: type=gha,mode=max,scope=orchestrator
 
-      # Trivy container scan
+      # Install Trivy directly for reliable local image scanning
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.56.2
+
       - name: Scan web image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: swarmdev-web:ci
-          format: sarif
-          output: trivy-web.sarif
-        continue-on-error: true
+        run: trivy image --format sarif --output trivy-web.sarif --exit-code 0 swarmdev-web:ci
 
       - name: Scan api image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: swarmdev-api:ci
-          format: sarif
-          output: trivy-api.sarif
-        continue-on-error: true
+        run: trivy image --format sarif --output trivy-api.sarif --exit-code 0 swarmdev-api:ci
 
       - name: Scan orchestrator image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: swarmdev-orchestrator:ci
-          format: sarif
-          output: trivy-orchestrator.sarif
-        continue-on-error: true
+        run: trivy image --format sarif --output trivy-orchestrator.sarif --exit-code 0 swarmdev-orchestrator:ci
 
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
