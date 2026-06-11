@@ -2,10 +2,14 @@
 TypedDict for shared project state used by agents.
 """
 
-from typing import TypedDict, Any, List, Dict, Optional, Annotated, Callable
+from typing import TypedDict, Any, List, Dict, Optional, Annotated
 
 def _keep_first(current: Any, incoming: Any) -> Any:
-    return current if current is not None else incoming
+    # Treat None and empty string as "not set" so initial values aren't
+    # clobbered by LangGraph's default empty-string initialization.
+    if current is None or (isinstance(current, str) and current == ""):
+        return incoming
+    return current
 
 def _keep_last(current: Any, incoming: Any) -> Any:
     return incoming if incoming is not None else current
@@ -14,6 +18,19 @@ def _merge_dicts(current: Optional[Dict[str, Any]], incoming: Optional[Dict[str,
     merged: Dict[str, Any] = {}
     if current:
         merged.update(current)
+    if incoming:
+        merged.update(incoming)
+    return merged
+
+def _append_list(current: Optional[List[Any]], incoming: Optional[List[Any]]) -> List[Any]:
+    out: List[Any] = list(current or [])
+    if incoming:
+        out.extend(incoming)
+    return out
+
+def _merge_dicts_overwrite(current: Optional[Dict[str, Any]], incoming: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """Last-writer-wins per key (for context request/response maps)."""
+    merged: Dict[str, Any] = dict(current or {})
     if incoming:
         merged.update(incoming)
     return merged
@@ -37,39 +54,40 @@ class ProjectState(TypedDict, total=False):
     # Task planning
     task_plan: Annotated[List[Dict[str, Any]], _keep_first]
 
-    # Agent completion flags
-    supervisor_completed: bool
-    backend_completed: bool
-    database_completed: bool
-    devops_completed: bool
-    frontend_done: bool
-    qa_completed: bool
-    review_completed: bool
-    security_completed: bool
-    documentation_completed: bool
+    # Agent completion flags — every parallel branch can write in the same step.
+    # Use _keep_last so the latest value wins (no LastValue/InvalidUpdateError).
+    supervisor_completed: Annotated[bool, _keep_last]
+    backend_completed: Annotated[bool, _keep_last]
+    database_completed: Annotated[bool, _keep_last]
+    devops_completed: Annotated[bool, _keep_last]
+    frontend_done: Annotated[bool, _keep_last]
+    qa_completed: Annotated[bool, _keep_last]
+    review_completed: Annotated[bool, _keep_last]
+    security_completed: Annotated[bool, _keep_last]
+    documentation_completed: Annotated[bool, _keep_last]
 
-    # Agent outputs (generated code/content)
-    supervisor_output: str
-    backend_output: str
-    database_output: str
-    devops_output: str
-    frontend_output: str
-    qa_output: str
-    review_output: str
-    security_output: str
-    documentation_output: str
+    # Agent outputs (generated code/content) — last-writer-wins.
+    supervisor_output: Annotated[str, _keep_last]
+    backend_output: Annotated[str, _keep_last]
+    database_output: Annotated[str, _keep_last]
+    devops_output: Annotated[str, _keep_last]
+    frontend_output: Annotated[str, _keep_last]
+    qa_output: Annotated[str, _keep_last]
+    review_output: Annotated[str, _keep_last]
+    security_output: Annotated[str, _keep_last]
+    documentation_output: Annotated[str, _keep_last]
 
-    # Generated files (path -> FileMetadata mapping)
+    # Generated files (path -> FileMetadata mapping) — merge across parallel agents.
     files: Annotated[Dict[str, FileMetadata], _merge_dicts]
 
     # Review feedback
-    review_feedback: List[Dict[str, Any]]
-    security_results: Dict[str, Any]
+    review_feedback: Annotated[List[Dict[str, Any]], _append_list]
+    security_results: Annotated[Dict[str, Any], _merge_dicts_overwrite]
 
     # Inter-agent communication
     # Agents can store context requests for other agents
-    agent_context_requests: Dict[str, str]  # agent_name -> requested context
-    agent_context_responses: Dict[str, str]  # agent_name -> provided context
+    agent_context_requests: Annotated[Dict[str, str], _merge_dicts_overwrite]  # agent_name -> requested context
+    agent_context_responses: Annotated[Dict[str, str], _merge_dicts_overwrite]  # agent_name -> provided context
 
     # Conversation log for agent-to-agent messages
-    conversation_log: List[Dict[str, Any]]
+    conversation_log: Annotated[List[Dict[str, Any]], _append_list]

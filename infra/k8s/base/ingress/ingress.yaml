@@ -1,0 +1,75 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: swarmdev
+  namespace: swarmdev
+  labels:
+    app.kubernetes.io/name: swarmdev
+    app.kubernetes.io/component: ingress
+  annotations:
+    # AWS ALB Ingress Controller annotations
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT_ID:certificate/CERT_ID
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/healthcheck-path: /api/health
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    # Session stickiness for Socket.io
+    alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400
+    # WAF
+    alb.ingress.kubernetes.io/wafv2-acl-arn: ""
+spec:
+  ingressClassName: alb
+  rules:
+    - host: swarmdev.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000
+    - host: api.swarmdev.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3001
+  tls:
+    - hosts:
+        - swarmdev.io
+        - api.swarmdev.io
+---
+# Internal ingress for orchestrator (no public access)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: swarmdev-internal
+  namespace: swarmdev
+  labels:
+    app.kubernetes.io/name: swarmdev-internal
+    app.kubernetes.io/component: ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+spec:
+  ingressClassName: alb
+  rules:
+    - host: orchestrator.swarmdev.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: orchestrator
+                port:
+                  number: 8000

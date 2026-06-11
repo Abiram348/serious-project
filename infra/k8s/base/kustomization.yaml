@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: swarmdev
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - web/deployment.yaml
+  - web/service.yaml
+  - web/hpa.yaml
+  - web/pdb.yaml
+  - api/deployment.yaml
+  - api/service.yaml
+  - api/hpa.yaml
+  - api/pdb.yaml
+  - orchestrator/deployment.yaml
+  - orchestrator/service.yaml
+  - orchestrator/hpa.yaml
+  - orchestrator/pdb.yaml
+  - ingress/ingress.yaml
+  - serviceaccount.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: swarmdev
+  app.kubernetes.io/managed-by: kustomize

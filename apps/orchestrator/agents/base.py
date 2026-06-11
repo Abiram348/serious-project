@@ -10,6 +10,7 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 from openai import AsyncOpenAI
+from tools.search_tools import SearchTools
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "ollama")
@@ -30,6 +31,7 @@ class BaseAgent(ABC):
             base_url=f"{OLLAMA_BASE_URL}/v1",
             api_key=OLLAMA_API_KEY,
         )
+        self._search_tools: Optional[SearchTools] = None
 
     @abstractmethod
     async def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
@@ -65,7 +67,12 @@ class BaseAgent(ABC):
             max_tokens=max_tokens,
             messages=messages,
         )
-        return response.choices[0].message.content
+        message = response.choices[0].message
+        content = message.content or ""
+        # Ollama reasoning models (deepseek-v4-pro, qwen3.5) return output in
+        # message.reasoning when content is empty. Fall back to reasoning field.
+        reasoning = getattr(message, "reasoning", None) or ""
+        return content if content.strip() else reasoning
 
     async def emit_event(self, event_type: str, payload: Dict[str, Any]):
         """Emit a socket event via the socket emitter utility.
@@ -319,6 +326,79 @@ class BaseAgent(ABC):
             Dictionary with security findings
         """
         return state.get("security_results", {})
+
+    def _get_search_tools(self) -> SearchTools:
+        """Get or initialize search tools (Qdrant client).
+
+        Returns:
+            SearchTools instance
+        """
+        if not self._search_tools:
+            self._search_tools = SearchTools()
+        return self._search_tools
+
+    async def index_project_files(self, state: Dict[str, Any]) -> bool:
+        """Index all project files into Qdrant vector database.
+
+        Args:
+            state: Current project state
+
+        Returns:
+            True if indexing succeeded
+        """
+        try:
+            files = self.get_files(state)
+            if not files:
+                return False
+
+            search = self._get_search_tools()
+            project_id = state.get("project_id", "unknown")
+            collection_name = f"project_{project_id}"
+
+            # Create simple hash-based embeddings (placeholder until real embeddings)
+            # In production, use sentence-transformers or OpenAI embeddings
+            embeddings = []
+            for path, content in files.items():
+                # Simple character-frequency based embedding for demo
+                embedding = [float(ord(c)) / 255.0 for c in content[:768]]
+                if len(embedding) < 768:
+                    embedding.extend([0.0] * (768 - len(embedding)))
+                embeddings.append(embedding)
+
+            await search.index_code(collection_name, files, embeddings)
+            await self.log(state, "INFO", f"Indexed {len(files)} files into Qdrant")
+            return True
+        except Exception as e:
+            await self.log(state, "WARNING", f"Qdrant indexing failed: {str(e)}")
+            return False
+
+    async def search_project_code(self, state: Dict[str, Any], query: str, limit: int = 5) -> List[Dict[str, Any]]:
+        """Search for similar code in the project's Qdrant collection.
+
+        Args:
+            state: Current project state
+            query: Search query
+            limit: Maximum results
+
+        Returns:
+            List of search results
+        """
+        try:
+            search = self._get_search_tools()
+            project_id = state.get("project_id", "unknown")
+            collection_name = f"project_{project_id}"
+
+            # Simple query embedding (placeholder)
+            query_embedding = [float(ord(c)) / 255.0 for c in query[:768]]
+            if len(query_embedding) < 768:
+                query_embedding.extend([0.0] * (768 - len(query_embedding)))
+
+            results = await search.search_code(collection_name, query_embedding, limit=limit)
+            await self.log(state, "INFO", f"Qdrant search found {len(results)} results for '{query}'")
+            return results
+        except Exception as e:
+            await self.log(state, "WARNING", f"Qdrant search failed: {str(e)}")
+            return []
 
     async def send_message_to_agent(self, state: Dict[str, Any], target_agent: str, message: str):
         """Send a message to another agent via the conversation log.

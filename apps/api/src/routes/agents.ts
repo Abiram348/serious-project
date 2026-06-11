@@ -1,9 +1,14 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 import { emitAgentStatus, emitAgentLog } from '../socket';
 
 const router = Router();
+
+// Helper to fetch a project owned by a user
+async function getUserProject(userId: string, projectId: string) {
+  return db.project.findFirst({ where: { id: projectId, userId } });
+}
 
 // Get all agent runs for a project
 router.get('/projects/:projectId/agents', authMiddleware, async (req: Request, res: Response) => {
@@ -12,27 +17,17 @@ router.get('/projects/:projectId/agents', authMiddleware, async (req: Request, r
     const user = (req as any).user;
     const userId = user.id;
 
-    // Verify project ownership
-    const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
-    });
-
+    const project = await getUserProject(userId, projectId);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    const agentRuns = await prisma.agentRun.findMany({
+    const runs = await db.agentRun.findMany({
       where: { projectId },
-      include: {
-        logs: {
-          orderBy: { timestamp: 'desc' },
-          take: 50,
-        },
-      },
       orderBy: { createdAt: 'desc' },
     });
 
-    res.json(agentRuns);
+    res.json(runs);
   } catch (error) {
     console.error('Error fetching agent runs:', error);
     res.status(500).json({ error: 'Failed to fetch agent runs' });
@@ -46,28 +41,23 @@ router.get('/projects/:projectId/agents/:agentId', authMiddleware, async (req: R
     const user = (req as any).user;
     const userId = user.id;
 
-    const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
-    });
-
+    const project = await getUserProject(userId, projectId);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    const agentRun = await prisma.agentRun.findUnique({
-      where: { id: agentId },
-      include: {
-        logs: {
-          orderBy: { timestamp: 'desc' },
-        },
-      },
-    });
-
+    const agentRun = await db.agentRun.findFirst({ where: { id: agentId } });
     if (!agentRun || agentRun.projectId !== projectId) {
       return res.status(404).json({ error: 'Agent run not found' });
     }
 
-    res.json(agentRun);
+    const logs = await db.agentLog.findMany({
+      where: { agentRunId: agentId },
+      orderBy: { timestamp: 'desc' },
+      take: 50,
+    });
+
+    res.json({ ...agentRun, logs });
   } catch (error) {
     console.error('Error fetching agent run:', error);
     res.status(500).json({ error: 'Failed to fetch agent run' });
@@ -82,24 +72,15 @@ router.post('/projects/:projectId/agents/message', authMiddleware, async (req: R
     const user = (req as any).user;
     const userId = user.id;
 
-    const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
-    });
-
+    const project = await getUserProject(userId, projectId);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    // Save the message to chat
-    const message = await prisma.chatMessage.create({
-      data: {
-        projectId,
-        role: 'USER',
-        content,
-      },
+    const message = await db.chatMessage.create({
+      data: { projectId, role: 'USER', content },
     });
 
-    // Emit to socket for real-time update
     emitAgentStatus(projectId, 'SUPERVISOR', 'MESSAGE_RECEIVED', 'User sent a message');
 
     res.json({ success: true, message });
@@ -116,10 +97,7 @@ router.get('/projects/:projectId/agents/logs', authMiddleware, async (req: Reque
     const user = (req as any).user;
     const userId = user.id;
 
-    const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
-    });
-
+    const project = await getUserProject(userId, projectId);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
@@ -129,31 +107,26 @@ router.get('/projects/:projectId/agents/logs', authMiddleware, async (req: Reque
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    // Fetch recent logs
-    const logs = await prisma.agentLog.findMany({
-      where: {
-        agentRun: {
-          projectId,
-        },
-      },
-      include: {
-        agentRun: {
-          select: {
-            agentType: true,
-          },
-        },
-      },
-      orderBy: { timestamp: 'desc' },
-      take: 100,
+    // Fetch recent logs for all runs of this project
+    const runs = await db.agentRun.findMany({
+      where: { projectId },
+      select: { id: true },
     });
+    const runIds = runs.map((r) => r.id);
+    const logs = runIds.length
+      ? await db.agentLog.findMany({
+          where: { agentRunId: { in: runIds } },
+          orderBy: { timestamp: 'desc' },
+          take: 100,
+        })
+      : [];
 
     // Send existing logs
     for (const log of logs.reverse()) {
       res.write(`data: ${JSON.stringify(log)}\n\n`);
     }
 
-    // TODO: Set up real-time subscription to new logs
-    // For now, just keep connection open
+    // Heartbeat interval to keep connection alive
     const interval = setInterval(() => {
       res.write(`data: ${JSON.stringify({ type: 'heartbeat' })}\n\n`);
     }, 30000);

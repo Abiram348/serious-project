@@ -1,0 +1,19 @@
+# Copy to terraform.tfvars and fill in values
+
+aws_region = "us-east-1"
+
+db_password = "dev-password"
+
+clerk_secret_key       = "sk_test_..."
+clerk_publishable_key  = "pk_test_..."
+stripe_secret_key      = "sk_test_..."
+orchestrator_secret    = "dev-secret"
+
+ollama_base_url = "http://ollama-host:11434"
+ollama_model    = "codellama"
+
+e2b_api_key = "e2b_..."
+
+r2_endpoint          = "https://..."
+r2_access_key_id     = "..."
+r2_secret_access_key = "..."

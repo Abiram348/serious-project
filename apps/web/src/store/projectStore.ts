@@ -124,6 +124,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
         if (isFile) {
           current[part] = {
             type: 'file',
+            name: part,
             path,
             language: fileData.language,
             createdBy: fileData.createdBy || fileData.agentType,

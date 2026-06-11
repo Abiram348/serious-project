@@ -9,6 +9,7 @@ type MonacoEditorProps = {
   onChange: (value: string) => void;
   language?: string;
   readOnly?: boolean;
+  onCursorPosition?: (pos: { line: number; column: number }) => void;
 };
 
 const MonacoEditorInner = dynamic<ComponentProps<typeof import('@monaco-editor/react')['default']>>(
@@ -16,7 +17,7 @@ const MonacoEditorInner = dynamic<ComponentProps<typeof import('@monaco-editor/r
   { ssr: false }
 );
 
-export function MonacoEditor({ path, value, onChange, language = 'typescript', readOnly = false }: MonacoEditorProps) {
+export function MonacoEditor({ path, value, onChange, language = 'typescript', readOnly = false, onCursorPosition }: MonacoEditorProps) {
   return (
     <div className="h-full w-full">
       <MonacoEditorInner
@@ -24,6 +25,18 @@ export function MonacoEditor({ path, value, onChange, language = 'typescript', r
         language={language}
         value={value}
         onChange={(newValue?: string) => onChange(newValue || '')}
+        onMount={(editor, monaco) => {
+          if (onCursorPosition) {
+            const emit = () => {
+              const pos = editor.getPosition();
+              if (pos) onCursorPosition({ line: pos.lineNumber, column: pos.column });
+            };
+            emit();
+            editor.onDidChangeCursorPosition(emit);
+            // monaco ref kept to avoid unused-var lint if we add disposers later
+            void monaco;
+          }
+        }}
         theme="vs-dark"
         options={{
           readOnly,

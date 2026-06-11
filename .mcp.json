@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=nexikloimrputhytvwzn"
+    },
+    "chrome-devtools": {
+      "type": "http",
+      "url": "http://localhost:3100/sse"
+    }
+  }
+}

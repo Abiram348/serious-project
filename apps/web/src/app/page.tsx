@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useUser, UserButton } from '@clerk/nextjs';
 import {
   ArrowRight,
   Zap,
@@ -14,7 +15,13 @@ import {
   Sparkles,
   ExternalLink,
   Check,
+  Cpu,
+  Wrench,
+  Database,
+  Lock,
 } from 'lucide-react';
+import RadialOrbitalTimeline from '@/components/ui/radial-orbital-timeline';
+import type { TimelineItem } from '@/components/ui/radial-orbital-timeline';
 
 /* ------------------------------------------------------------------ */
 /*  Animated background — grid + subtle radial gradient pulse         */
@@ -47,6 +54,8 @@ function HeroBackground() {
 /* ------------------------------------------------------------------ */
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const { isSignedIn } = useUser();
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -92,18 +101,32 @@ function Nav() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/auth/login"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/auth/signup"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            Get Started
-          </Link>
+          {isSignedIn ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Dashboard
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
@@ -183,61 +206,71 @@ function Hero() {
 /* ------------------------------------------------------------------ */
 /*  Floating agent swarm preview — decorative animated mini-cards      */
 /* ------------------------------------------------------------------ */
-const agents = [
-  { type: 'Supervisor', icon: 'S', color: 'border-primary/40 bg-primary/5' },
-  { type: 'Frontend', icon: 'F', color: 'border-accent/40 bg-accent/5' },
-  { type: 'Backend', icon: 'B', color: 'border-secondary/40 bg-secondary/5' },
-  { type: 'Database', icon: 'D', color: 'border-warning/40 bg-warning/5' },
-  { type: 'Security', icon: '🔒', color: 'border-red-500/40 bg-red-500/5' },
+const agents: TimelineItem[] = [
+  {
+    id: 1,
+    title: 'Supervisor',
+    date: '00:00',
+    content: 'Breaks the prompt into tasks, sequences dependencies, and dispatches work to the right agents in parallel.',
+    category: 'Orchestrator',
+    icon: Cpu,
+    relatedIds: [2, 3, 4, 5],
+    status: 'completed',
+    energy: 100,
+  },
+  {
+    id: 2,
+    title: 'Frontend',
+    date: '00:03',
+    content: 'Scaffolds the Next.js app shell, theme tokens, sidebar, and shared components from the design spec.',
+    category: 'UI · Next.js',
+    icon: Code2,
+    relatedIds: [1, 3],
+    status: 'completed',
+    energy: 92,
+  },
+  {
+    id: 3,
+    title: 'Backend',
+    date: '00:06',
+    content: 'Builds API routes, request validation, Clerk auth middleware, and Stripe webhooks. Currently running.',
+    category: 'API · Express',
+    icon: Wrench,
+    relatedIds: [1, 4, 5],
+    status: 'in-progress',
+    energy: 64,
+  },
+  {
+    id: 4,
+    title: 'Database',
+    date: '00:09',
+    content: 'Models the Postgres schema, writes Prisma migrations, and seeds fixtures for users, projects, and runs.',
+    category: 'Postgres · Prisma',
+    icon: Database,
+    relatedIds: [3, 5],
+    status: 'pending',
+    energy: 30,
+  },
+  {
+    id: 5,
+    title: 'Security',
+    date: '00:12',
+    content: 'Scans dependencies, audits route-level auth, and runs secret-leak detection on generated code.',
+    category: 'Hardening',
+    icon: Lock,
+    relatedIds: [3, 4],
+    status: 'pending',
+    energy: 12,
+  },
 ];
 
 function AgentSwarmPreview() {
   return (
-    <div className="relative mt-16 hidden w-full max-w-3xl lg:block">
-      {agents.map((agent, i) => {
-        const positions = [
-          'left-[10%] -top-4',
-          'left-[30%] -top-2',
-          'left-[50%] -top-6',
-          'left-[68%] -top-2',
-          'left-[85%] -top-4',
-        ];
-        return (
-          <div
-            key={agent.type}
-            className={`absolute ${positions[i]} animate-fade-in rounded-lg border ${agent.color} px-3 py-2 text-xs backdrop-blur-sm`}
-            style={{ animationDelay: `${i * 0.15}s` }}
-          >
-            <div className="flex items-center gap-2">
-              <span className="status-dot status-dot-active" />
-              <span className="font-medium text-foreground">{agent.type}</span>
-              <span className="text-muted-foreground">{i === 0 ? 'Planning...' : 'Ready'}</span>
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Central "project" card */}
-      <div
-        className="mx-auto w-80 rounded-xl border border-border/50 bg-card/60 p-4 backdrop-blur-md animate-slide-up"
-        style={{ animationDelay: '0.6s' }}
-      >
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <Layers className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <div className="text-sm font-medium">my-saas-app</div>
-            <div className="text-xs text-muted-foreground">5 agents active</div>
-          </div>
-        </div>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-primary to-accent shimmer"
-            style={{ width: '60%' }}
-          />
-        </div>
-      </div>
+    <div
+      className="relative mt-6 hidden w-full lg:block overflow-visible animate-slide-up"
+      style={{ animationDelay: '0.4s' }}
+    >
+      <RadialOrbitalTimeline timelineData={agents} className="h-[340px] bg-transparent opacity-80" radius={140} />
     </div>
   );
 }

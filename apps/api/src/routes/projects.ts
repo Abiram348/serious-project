@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 import { z } from 'zod';
 import { projectService } from '../services/projectService';
 import { emitProjectStatus } from '../socket';
@@ -38,14 +38,20 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
 router.post('/', authMiddleware, async (req: Request, res: Response) => {
   try {
     const validatedData = projectSchema.parse(req.body);
-    const { userId: clerkId } = await req.auth();
+    const { userId: clerkId } = (req as any).auth || {};
 
-    // Ensure user exists in our database
+    if (!clerkId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Ensure the user exists in our DB, create if missing
     let user = (req as any).user;
     if (!user) {
-      user = await prisma.user.findUnique({ where: { clerkId } });
+      user = await db.user.findFirst({ where: { clerkId } });
       if (!user) {
-        user = await prisma.user.create({ data: { clerkId, email: `${clerkId}@clerk.user` } });
+        user = await db.user.create({
+          data: { clerkId, email: `${clerkId}@clerk.user` },
+        });
       }
       (req as any).user = user;
     }
@@ -129,15 +135,13 @@ router.post('/:id/start', authMiddleware, async (req: Request, res: Response) =>
     const { id: projectId } = req.params;
 
     // Verify project ownership
-    const project = await prisma.project.findFirst({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
-    if (!project) {
+    if (!proj) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    // Start the agent pipeline
     await projectService.startAgentPipeline(projectId);
 
     res.json({
@@ -158,21 +162,18 @@ router.post('/:id/restart', authMiddleware, async (req: Request, res: Response) 
     const userId = user.id;
     const { id: projectId } = req.params;
 
-    // Verify project ownership
-    const project = await prisma.project.findFirst({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
-    if (!project) {
+    if (!proj) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    // Reset project status and start pipeline
-    await prisma.project.update({
+    await db.project.update({
       where: { id: projectId },
       data: { status: 'PLANNING' },
     });
-
+    emitProjectStatus(projectId, 'PLANNING');
     await projectService.startAgentPipeline(projectId);
 
     res.json({
@@ -186,19 +187,17 @@ router.post('/:id/restart', authMiddleware, async (req: Request, res: Response) 
   }
 });
 
-// Export project as ZIP
+// Export project as ZIP (placeholder)
 router.post('/:id/export', authMiddleware, async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
     const userId = user.id;
     const { id: projectId } = req.params;
 
-    // Verify project ownership
-    const project = await prisma.project.findFirst({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
-    if (!project) {
+    if (!proj) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
@@ -210,31 +209,6 @@ router.post('/:id/export', authMiddleware, async (req: Request, res: Response) =
   } catch (error) {
     console.error('Error exporting project:', error);
     res.status(500).json({ error: 'Failed to export project' });
-  }
-});
-
-// Get preview URL
-router.get('/:id/preview', authMiddleware, async (req: Request, res: Response) => {
-  try {
-    const user = (req as any).user;
-    const userId = user.id;
-    const { id: projectId } = req.params;
-
-    const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
-    });
-
-    if (!project) {
-      return res.status(404).json({ error: 'Project not found' });
-    }
-
-    res.json({
-      previewUrl: project.previewUrl || null,
-      status: project.status,
-    });
-  } catch (error) {
-    console.error('Error getting preview:', error);
-    res.status(500).json({ error: 'Failed to get preview URL' });
   }
 });
 

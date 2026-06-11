@@ -1,0 +1,91 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: swarmdev-staging
+
+namePrefix: staging-
+
+resources:
+  - ../../base
+  # Staging uses AWS RDS (created by Terraform) — no in-cluster postgres
+  - ../../base/redis/deployment.yaml
+  - ../../base/redis/service.yaml
+  - ../../base/redis/pvc.yaml
+  - ../../base/qdrant/statefulset.yaml
+  - ../../base/qdrant/service.yaml
+  - ../../base/qdrant/pdb.yaml
+
+commonLabels:
+  app.kubernetes.io/env: staging
+
+replicas:
+  - name: web
+    count: 2
+  - name: api
+    count: 2
+  - name: orchestrator
+    count: 1
+
+images:
+  - name: swarmdev-web
+    newName: ghcr.io/swarmdev/web
+    newTag: staging-latest
+  - name: swarmdev-api
+    newName: ghcr.io/swarmdev/api
+    newTag: staging-latest
+  - name: swarmdev-orchestrator
+    newName: ghcr.io/swarmdev/orchestrator
+    newTag: staging-latest
+
+patches:
+  - target:
+      kind: Ingress
+      name: swarmdev
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: staging.swarmdev.io
+      - op: replace
+        path: /spec/rules/1/host
+        value: staging-api.swarmdev.io
+      - op: replace
+        path: /metadata/annotations/alb.ingress.kubernetes.io~1certificate-arn
+        value: arn:aws:acm:us-east-1:ACCOUNT_ID:certificate/STAGING_CERT_ID
+  - target:
+      kind: Ingress
+      name: swarmdev-internal
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: staging-orchestrator.swarmdev.internal
+  # Reduce resource limits for staging cost control
+  - target:
+      kind: Deployment
+      name: web
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: 250m
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 256Mi
+  - target:
+      kind: Deployment
+      name: api
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: 500m
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 512Mi
+  - target:
+      kind: Deployment
+      name: orchestrator
+    patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/cpu
+        value: 1000m
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 2Gi

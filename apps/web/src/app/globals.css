@@ -141,6 +141,22 @@
   .code-block {
     @apply bg-surface font-mono text-sm rounded-md border border-border/50;
   }
+
+  /* 8-bit / Retro styles */
+  .retro {
+    font-family: 'Courier New', 'Courier', monospace;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  .retro * {
+    font-family: 'Courier New', 'Courier', monospace;
+  }
+
+  .pixelated {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
 }
 
 @layer utilities {
@@ -179,6 +195,32 @@
 /* Monaco editor overrides */
 .monaco-editor .margin {
   background: hsl(240 10% 6%) !important;
+}
+
+/* react-resizable-panels separator overrides */
+[data-separator] {
+  position: relative;
+  z-index: 10;
+}
+
+/* Widen the horizontal separator hit area */
+[data-separator][aria-orientation="horizontal"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  right: -4px;
+}
+
+/* Widen the vertical separator hit area */
+[data-separator][aria-orientation="vertical"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  bottom: -4px;
 }
 
 /* Selection color */

@@ -1,46 +1,181 @@
-version: '3.8'
+# ──────────────────────────────────────────────
+# SwarmDev — Docker Compose (Local Development)
+# Includes: Next.js, Express API, Python Orchestrator
+# PostgreSQL, Redis, Qdrant
+# ──────────────────────────────────────────────
+
+version: "3.9"
 
 services:
+  # ═══════════════════════════════════════════════
+  # PostgreSQL Database
+  # ═══════════════════════════════════════════════
   postgres:
-    image: postgres:16
+    image: postgres:15-alpine
     container_name: swarmdev-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: swarmdev
+      POSTGRES_USER: ${POSTGRES_USER:-orchestrator}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-orchestratorpw}
+      POSTGRES_DB: ${POSTGRES_DB:-swarmdev}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-orchestrator} -d ${POSTGRES_DB:-swarmdev}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - swarmdev-network
 
+  # ═══════════════════════════════════════════════
+  # Redis Cache / Pub-Sub
+  # ═══════════════════════════════════════════════
   redis:
     image: redis:7-alpine
     container_name: swarmdev-redis
     restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - swarmdev-network
 
-  # Qdrant for vector database
+  # ═══════════════════════════════════════════════
+  # Qdrant Vector Database
+  # ═══════════════════════════════════════════════
   qdrant:
-    image: qdrant/qdrant:v1.7.0
+    image: qdrant/qdrant:latest
     container_name: swarmdev-qdrant
     restart: unless-stopped
+    volumes:
+      - qdrant-data:/qdrant/storage
     ports:
       - "6333:6333"
+      - "6334:6334"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:6333/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - swarmdev-network
 
-  # Meilisearch for full-text search
-  meilisearch:
-    image: getmeili/meilisearch:v1.6
-    container_name: swarmdev-meilisearch
+  # ═══════════════════════════════════════════════
+  # Express API
+  # ═══════════════════════════════════════════════
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+      target: runner
+    container_name: swarmdev-api
     restart: unless-stopped
     environment:
-      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey}
-    volumes:
-      - meilisearch_data:/meili_data
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgres://${POSTGRES_USER:-orchestrator}:${POSTGRES_PASSWORD:-orchestratorpw}@postgres:5432/${POSTGRES_DB:-swarmdev}
+      REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:3000
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      ORCHESTRATOR_URL: http://orchestrator:8000
+      ORCHESTRATOR_SECRET: ${ORCHESTRATOR_SECRET:-dev-secret}
+      R2_ENDPOINT: ${R2_ENDPOINT:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
     ports:
-      - "7700:7700"
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    networks:
+      - swarmdev-network
+    # Override CMD to skip migrations in dev (use ts-node-dev instead if mounted)
+    # For production-like local testing, keep the default CMD
+
+  # ═══════════════════════════════════════════════
+  # Python Orchestrator
+  # ═══════════════════════════════════════════════
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: apps/orchestrator/Dockerfile
+      target: runner
+    container_name: swarmdev-orchestrator
+    restart: unless-stopped
+    environment:
+      PYTHONUNBUFFERED: 1
+      DATABASE_URL: postgres://${POSTGRES_USER:-orchestrator}:${POSTGRES_PASSWORD:-orchestratorpw}@postgres:5432/${POSTGRES_DB:-swarmdev}
+      REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
+      API_SECRET: ${ORCHESTRATOR_SECRET:-dev-secret}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-codellama}
+      E2B_API_KEY: ${E2B_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    networks:
+      - swarmdev-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ═══════════════════════════════════════════════
+  # Next.js Frontend
+  # ═══════════════════════════════════════════════
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+      target: runner
+    container_name: swarmdev-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: http://api:3001
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:3000
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+      - orchestrator
+    networks:
+      - swarmdev-network
 
 volumes:
-  postgres_data:
-  meilisearch_data:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  qdrant-data:
+    driver: local
+
+networks:
+  swarmdev-network:
+    driver: bridge
+    name: swarmdev-network

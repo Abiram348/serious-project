@@ -4,117 +4,56 @@
  * This service handles subscription billing, usage tracking, and plan enforcement.
  */
 
-import prisma from '../prisma/client';
-import Stripe from 'stripe';
-
-export interface PlanLimits {
-  maxProjects: number;
-  maxTokensPerMonth: number;
-  maxParallelAgents: number;
-}
-
-export interface BillingService {
-  getPlanLimits(plan: string): PlanLimits;
-  checkProjectLimit(userId: string): Promise<{ canCreate: boolean; current: number; limit: number }>;
-  checkTokenLimit(userId: string): Promise<{ canUse: boolean; used: number; limit: number }>;
-  logTokenUsage(userId: string, projectId: string, agentType: string, tokensIn: number, tokensOut: number): Promise<void>;
-  upgradePlan(userId: string, newPlan: string): Promise<void>;
-}
-
-const PLAN_LIMITS: Record<string, PlanLimits> = {
-  FREE: {
-    maxProjects: 3,
-    maxTokensPerMonth: 100000,
-    maxParallelAgents: 2,
-  },
-  PRO: {
-    maxProjects: -1, // unlimited
-    maxTokensPerMonth: 2000000,
-    maxParallelAgents: 5,
-  },
-  TEAM: {
-    maxProjects: -1,
-    maxTokensPerMonth: 10000000,
-    maxParallelAgents: 9,
-  },
-  ENTERPRISE: {
-    maxProjects: -1,
-    maxTokensPerMonth: -1,
-    maxParallelAgents: -1,
-  },
-};
+import db from '../prisma/client';
 
 export const billingService = {
-  getPlanLimits(plan: string): PlanLimits {
-    return PLAN_LIMITS[plan] || PLAN_LIMITS.FREE;
+  async getUserPlan(userId: string) {
+    return db.user.findFirst({ where: { id: userId } });
   },
 
-  async checkProjectLimit(userId: string) {
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
-      select: { plan: true },
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const limits = this.getPlanLimits(user.plan);
-    const projectCount = await prisma.project.count({
-      where: { userId },
-    });
-
-    return {
-      canCreate: limits.maxProjects === -1 || projectCount < limits.maxProjects,
-      current: projectCount,
-      limit: limits.maxProjects,
-    };
-  },
-
-  async checkTokenLimit(userId: string) {
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
-      select: { plan: true, id: true },
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const limits = this.getPlanLimits(user.plan);
-
-    // Get current month usage
+  async getUsageThisMonth(userId: string) {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const usageLogs = await prisma.usageLog.findMany({
+    const usageRows = await db.usageLog.findMany({
       where: {
-        userId: user.id,
+        userId,
         createdAt: { gte: startOfMonth },
       },
     });
 
-    const totalTokens = usageLogs.reduce((sum: number, log) => sum + log.tokensIn + log.tokensOut, 0);
+    const totalTokens = usageRows.reduce(
+      (sum, log) => sum + (log.tokensIn ?? 0) + (log.tokensOut ?? 0),
+      0
+    );
+
+    const limits: Record<string, { maxProjects: number; maxTokensPerMonth: number }> = {
+      FREE: { maxProjects: 1, maxTokensPerMonth: 10000 },
+      PRO: { maxProjects: 5, maxTokensPerMonth: 100000 },
+      TEAM: { maxProjects: 20, maxTokensPerMonth: 500000 },
+      ENTERPRISE: { maxProjects: -1, maxTokensPerMonth: -1 },
+    };
+
+    const user = await db.user.findFirst({ where: { id: userId } });
+    const plan = user?.plan ?? 'FREE';
+    const planLimits = limits[plan] ?? limits.FREE;
 
     return {
-      canUse: limits.maxTokensPerMonth === -1 || totalTokens < limits.maxTokensPerMonth,
+      canUse: planLimits.maxTokensPerMonth === -1 || totalTokens < planLimits.maxTokensPerMonth,
       used: totalTokens,
-      limit: limits.maxTokensPerMonth,
+      limit: planLimits.maxTokensPerMonth,
+      plan,
     };
   },
 
-  async logTokenUsage(
+  async logUsage(
     userId: string,
     projectId: string,
     agentType: string,
     tokensIn: number,
     tokensOut: number
   ) {
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
-      select: { id: true },
-    });
-
+    const user = await db.user.findFirst({ where: { id: userId } });
     if (!user) {
       throw new Error('User not found');
     }
@@ -122,11 +61,11 @@ export const billingService = {
     // Ollama models are self-hosted / flat-rate; no per-token cost
     const cost = 0;
 
-    await prisma.usageLog.create({
+    await db.usageLog.create({
       data: {
         userId: user.id,
         projectId,
-        agentType: agentType as any,
+        agentType,
         tokensIn,
         tokensOut,
         cost,
@@ -136,15 +75,27 @@ export const billingService = {
 
   async upgradePlan(userId: string, newPlan: string) {
     const validPlans = ['FREE', 'PRO', 'TEAM', 'ENTERPRISE'];
-
     if (!validPlans.includes(newPlan)) {
       throw new Error('Invalid plan');
     }
-
-    await prisma.user.update({
-      where: { clerkId: userId },
-      data: { plan: newPlan as any },
+    return db.user.update({
+      where: { id: userId },
+      data: { plan: newPlan },
     });
+  },
+
+  /**
+   * Plan limits lookup. Exposed separately for middleware that needs them
+   * without doing a DB roundtrip (e.g. checkPlan middleware).
+   */
+  getPlanLimits(plan: string) {
+    const planLimits: Record<string, { maxProjects: number; maxTokensPerMonth: number; maxParallelAgents: number }> = {
+      FREE: { maxProjects: 1, maxTokensPerMonth: 10000, maxParallelAgents: 2 },
+      PRO: { maxProjects: 5, maxTokensPerMonth: 100000, maxParallelAgents: 5 },
+      TEAM: { maxProjects: 20, maxTokensPerMonth: 500000, maxParallelAgents: 9 },
+      ENTERPRISE: { maxProjects: -1, maxTokensPerMonth: -1, maxParallelAgents: 9 },
+    };
+    return planLimits[plan] ?? planLimits.FREE;
   },
 };
 

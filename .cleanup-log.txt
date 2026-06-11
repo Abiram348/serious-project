@@ -1,0 +1,4 @@
+Terraform cache cleaned
+Build caches cleaned
+Package caches cleaned
+System temp cleaned

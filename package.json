@@ -5,15 +5,20 @@
   "description": "SwarmDev - Multi-Agent Cloud Development Platform",
   "scripts": {
     "dev": "turbo run dev --parallel",
+    "dev:check": "bash scripts/health-check.sh",
+    "dev:check:strict": "bash scripts/health-check.sh --strict",
+    "clean": "turbo run clean --parallel",
+    "clean:safe": "bash scripts/safe-clean.sh",
+    "clean:safe:deep": "bash scripts/safe-clean.sh --deep",
     "build": "turbo run build --parallel",
     "test": "turbo run test --parallel",
     "lint": "turbo run lint --parallel",
-    "clean": "turbo run clean --parallel",
-    "format": "prettier --write \"**/*.{js,ts,tsx,json,md}\""
+    "format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
+    "security": "bash scripts/security_scan.sh"
   },
   "devDependencies": {
+    "drizzle-kit": "^0.31.10",
     "prettier": "^3.0.0",
-    "prisma": "^6.19.3",
     "turbo": "^2.0.0",
     "typescript": "^5.0.0"
   },
@@ -27,6 +32,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@prisma/client": "^6.19.3"
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.21.0"
   }
 }

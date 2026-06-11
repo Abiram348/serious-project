@@ -1,40 +1,83 @@
-# Dockerfile for the SwarmDev API (Express + TypeScript)
-FROM node:22-alpine AS builder
+# syntax=docker/dockerfile:1
 
+# ──────────────────────────────────────────────
+# SwarmDev API — Express.js + Prisma Dockerfile
+# Multi-stage: deps → builder → runner
+# ──────────────────────────────────────────────
+
+ARG NODE_VERSION=20
+ARG PNPM_VERSION=9.15.0
+
+# ═══════════════════════════════════════════════
+# Stage 1 — Dependencies
+# ═══════════════════════════════════════════════
+FROM node:${NODE_VERSION}-alpine AS deps
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
-RUN npm install -g pnpm@9.15.0
-# Copy workspace configuration files
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json .npmrc ./
-# Copy only the API source and any workspace packages it depends on
+
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+
+# Copy root + workspace files
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
+COPY packages/db/package.json ./packages/db/
+COPY apps/api/package.json ./apps/api/
+
+# Install dependencies (api + db workspace packages)
+RUN pnpm install --frozen-lockfile --filter api
+
+# ═══════════════════════════════════════════════
+# Stage 2 — Builder
+# ═══════════════════════════════════════════════
+FROM node:${NODE_VERSION}-alpine AS builder
+RUN apk add --no-cache openssl
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/db/node_modules ./packages/db/node_modules
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
+COPY package.json pnpm-workspace.yaml ./
+COPY packages/db ./packages/db
 COPY apps/api ./apps/api
-COPY packages ./packages
-# Install only the API's dependencies with frozen lockfile
-RUN pnpm install --frozen-lockfile --filter ./apps/api... --config.enable-pre-post-scripts=true --config.ignore-scripts=false
-# Change to the API directory and build if a build script exists
+
+# Generate Prisma client and build TypeScript
 WORKDIR /app/apps/api
-RUN pnpm run build || true
-
-# Production image
-FROM node:22-alpine
-
-# Install curl for healthcheck
-RUN apk add --no-cache curl
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-WORKDIR /app
-# Copy the built API artifacts from the builder stage
-COPY --from=builder /app/apps/api/package.json ./package.json
-COPY --from=builder /app/apps/api/node_modules ./node_modules
-COPY --from=builder /app/apps/api/dist ./dist
-COPY --from=builder /app/apps/api/src ./src
-
-# Change ownership to non-root user
-RUN chown -R nodejs:nodejs /app
-USER nodejs
-
-EXPOSE 3001
 ENV NODE_ENV=production
+RUN npx prisma generate --schema=../../packages/db/prisma/schema.prisma
+RUN pnpm exec tsc
+
+# ═══════════════════════════════════════════════
+# Stage 3 — Runner
+# ═══════════════════════════════════════════════
+FROM node:${NODE_VERSION}-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3001
+
+RUN apk add --no-cache dumb-init
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 apijs
+
+# Copy built artifacts
+COPY --from=builder --chown=apijs:nodejs /app/apps/api/dist ./dist
+COPY --from=builder --chown=apijs:nodejs /app/apps/api/node_modules ./node_modules
+COPY --from=builder --chown=apijs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=apijs:nodejs /app/packages/db ./packages/db
+
+# Prisma schema + client
+COPY --from=builder --chown=apijs:nodejs /app/packages/db/prisma ./packages/db/prisma
+
+# Migration entrypoint script
+COPY --chown=apijs:nodejs infra/docker/api-migrate.sh /usr/local/bin/api-migrate.sh
+RUN chmod +x /usr/local/bin/api-migrate.sh
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:3001/health || exit 1
+
+USER apijs
+EXPOSE 3001
+
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/index.js"]

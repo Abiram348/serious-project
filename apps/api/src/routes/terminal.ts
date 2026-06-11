@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 import { emitTerminalOutput } from '../socket';
 
 const router = Router();
@@ -13,16 +13,14 @@ router.post('/:projectId/terminal/exec', authMiddleware, async (req: Request, re
     const userId = user.id;
     const { command } = req.body;
 
-    const project = await prisma.project.findFirst({
+    const project = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
     // TODO: Execute command in E2B sandbox
-    // For now, return a placeholder response
     res.json({
       success: true,
       output: `Command executed: ${command}`,
@@ -41,10 +39,9 @@ router.get('/:projectId/terminal/stream', authMiddleware, async (req: Request, r
     const user = (req as any).user;
     const userId = user.id;
 
-    const project = await prisma.project.findFirst({
+    const project = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
@@ -55,9 +52,10 @@ router.get('/:projectId/terminal/stream', authMiddleware, async (req: Request, r
     res.setHeader('Connection', 'keep-alive');
 
     // Fetch recent build logs
-    const logs = await prisma.buildLog.findMany({
+    const logs = await db.buildLog.findMany({
       where: { projectId },
-      orderBy: { createdAt: 'desc' },
+      select: { stream: true },
+      orderBy: { createdAt: 'asc' },
       take: 50,
     });
 

@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: "920373016840"
+  ECR_REGISTRY: 920373016840.dkr.ecr.us-east-1.amazonaws.com
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -34,11 +43,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Node setup for web & api
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
@@ -75,7 +84,7 @@ jobs:
 
       # Python setup for orchestrator
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -99,14 +108,117 @@ jobs:
           semgrep --config p/default . || true
 
       # Build Docker images
-      - name: Build Docker images
-        run: |
-          docker build -t swarmdev-web ./apps/web
-          docker build -t swarmdev-api ./apps/api
-          docker build -t swarmdev-orchestrator ./apps/orchestrator
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # (Optional) Push Docker images – placeholders for registry
-      - name: Push Docker images (placeholder)
-        if: false
-        run: |
-          echo "Docker images would be pushed here"
+      - name: Build web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: false
+          tags: swarmdev-web:ci
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Build api image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/api/Dockerfile
+          push: false
+          tags: swarmdev-api:ci
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+      - name: Build orchestrator image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/orchestrator
+          file: ./apps/orchestrator/Dockerfile
+          push: false
+          tags: swarmdev-orchestrator:ci
+          cache-from: type=gha,scope=orchestrator
+          cache-to: type=gha,mode=max,scope=orchestrator
+
+      # Trivy container scan
+      - name: Scan web image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: swarmdev-web:ci
+          format: sarif
+          output: trivy-web.sarif
+
+      - name: Scan api image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: swarmdev-api:ci
+          format: sarif
+          output: trivy-api.sarif
+
+      - name: Scan orchestrator image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: swarmdev-orchestrator:ci
+          format: sarif
+          output: trivy-orchestrator.sarif
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-web.sarif
+
+  push-to-ecr:
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::920373016840:role/swarmdev-github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: true
+          tags: ${{ env.ECR_REGISTRY }}/swarmdev/web:${{ github.sha }},${{ env.ECR_REGISTRY }}/swarmdev/web:latest
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+      - name: Build and push api image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/api/Dockerfile
+          push: true
+          tags: ${{ env.ECR_REGISTRY }}/swarmdev/api:${{ github.sha }},${{ env.ECR_REGISTRY }}/swarmdev/api:latest
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+      - name: Build and push orchestrator image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/orchestrator
+          file: ./apps/orchestrator/Dockerfile
+          push: true
+          tags: ${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ github.sha }},${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:latest
+          cache-from: type=gha,scope=orchestrator
+          cache-to: type=gha,mode=max,scope=orchestrator

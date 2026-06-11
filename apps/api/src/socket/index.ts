@@ -1,10 +1,11 @@
 import { Server as SocketIOServer } from 'socket.io';
 import { Server } from 'http';
-import prisma from '../prisma/client';
-import { redis } from '../lib/redis';
+import Redis from 'ioredis';
+import db from '../prisma/client';
 
-let io: SocketIOServer | null = null;
-
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+let redis: any = null;
+let io: SocketIOServer;
 export function initializeSocket(httpServer: Server): SocketIOServer {
   io = new SocketIOServer(httpServer, {
     cors: {
@@ -14,8 +15,19 @@ export function initializeSocket(httpServer: Server): SocketIOServer {
     },
   });
 
-  // Initialize Redis pub/sub bridge (Issue #7)
-  initializeRedisSubscriber();
+  // Initialize Redis pub/sub bridge
+  try {
+    redis = new Redis(REDIS_URL);
+    redis.on('connect', () => {
+      console.log('🔌 Redis connected for pub/sub bridge');
+    });
+    redis.on('error', (err: any) => {
+      console.warn('⚠️ Redis connection error:', err.message);
+    });
+    initializeRedisSubscriber();
+  } catch {
+    console.warn('⚠️ Redis not available, skipping pub/sub bridge');
+  }
 
   io.on('connection', (socket) => {
     console.log('🔌 Client connected:', socket.id);
@@ -36,12 +48,8 @@ export function initializeSocket(httpServer: Server): SocketIOServer {
     socket.on('send_message', async ({ projectId, content }: { projectId: string; content: string }) => {
       try {
         // Save message to database
-        const message = await prisma.chatMessage.create({
-          data: {
-            projectId,
-            role: 'USER',
-            content,
-          },
+        const message = await db.chatMessage.create({
+          data: { projectId, role: 'USER', content },
         });
 
         // Broadcast to room
@@ -65,16 +73,16 @@ export function initializeSocket(httpServer: Server): SocketIOServer {
     // Request file content (Issue #10)
     socket.on('request_file', async ({ projectId, path }: { projectId: string; path: string }) => {
       try {
-        const file = await prisma.projectFile.findUnique({
-          where: { projectId_path: { projectId, path } },
+        const fileRecord = await db.projectFile.findFirst({
+          where: { projectId, path },
         });
 
-        if (file) {
+        if (fileRecord) {
           socket.emit('file_content', {
             path,
-            content: file.content,
-            language: file.language,
-            version: file.version,
+            content: fileRecord.content,
+            language: fileRecord.language,
+            version: fileRecord.version,
           });
         } else {
           socket.emit('file_error', { path, error: 'File not found' });
@@ -122,7 +130,7 @@ async function initializeRedisSubscriber() {
     await redis.subscribe('swarmdev:events');
     console.log('📡 Subscribed to swarmdev:events Redis channel');
 
-    redis.on('message', (channel, message) => {
+    redis.on('message', (channel: string, message: string) => {
       if (channel === 'swarmdev:events' && io) {
         try {
           const event = JSON.parse(message);

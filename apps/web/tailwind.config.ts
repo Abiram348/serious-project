@@ -87,6 +87,44 @@ export default {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
         },
+        'float-y': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
+        'card-breath': {
+          '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 hsl(190 100% 50% / 0)' },
+          '50%': { transform: 'scale(1.012)', boxShadow: '0 0 24px 0 hsl(190 100% 50% / 0.18)' },
+        },
+        'ring-spin': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        'progress-loop': {
+          '0%': { width: '12%' },
+          '45%': { width: '78%' },
+          '60%': { width: '82%' },
+          '80%': { width: '64%' },
+          '100%': { width: '12%' },
+        },
+        'dot-travel': {
+          '0%': { offsetDistance: '0%', opacity: '0' },
+          '10%': { opacity: '1' },
+          '90%': { opacity: '1' },
+          '100%': { offsetDistance: '100%', opacity: '0' },
+        },
+        'typing-dots': {
+          '0%, 20%': { content: '"."' },
+          '40%': { content: '".."' },
+          '60%, 100%': { content: '"..."' },
+        },
+        'typing-fade': {
+          '0%, 100%': { opacity: '0.55' },
+          '50%': { opacity: '1' },
+        },
+        'node-blink': {
+          '0%, 100%': { opacity: '0.35' },
+          '50%': { opacity: '1' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.4s ease-out',
@@ -97,6 +135,12 @@ export default {
         'scan-line': 'scan-line 3s linear infinite',
         'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
         shimmer: 'shimmer 2s linear infinite',
+        'float-y': 'float-y 4s ease-in-out infinite',
+        'card-breath': 'card-breath 3.6s ease-in-out infinite',
+        'ring-spin': 'ring-spin 14s linear infinite',
+        'progress-loop': 'progress-loop 9s ease-in-out infinite',
+        'node-blink': 'node-blink 1.6s ease-in-out infinite',
+        'typing-fade': 'typing-fade 1.4s ease-in-out infinite',
       },
       backgroundImage: {
         'grid-pattern':

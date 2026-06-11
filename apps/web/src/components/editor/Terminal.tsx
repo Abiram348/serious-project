@@ -1,13 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { Terminal as XTerm } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import 'xterm/css/xterm.css';
+import { useEffect, useRef, useCallback } from 'react';
 
 interface TerminalProps {
   projectId: string;
   onCommandExec?: (command: string) => void;
+  clearSignal?: number;
 }
 
 const TERM_THEME = {
@@ -34,91 +32,132 @@ const TERM_THEME = {
   brightWhite: '#f0f6fc',
 };
 
-export function Terminal({ projectId, onCommandExec }: TerminalProps) {
+export function Terminal({ projectId, onCommandExec, clearSignal }: TerminalProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
-  const xtermRef = useRef<XTerm | null>(null);
-  const fitAddonRef = useRef<FitAddon | null>(null);
+  const stateRef = useRef<{
+    term: any;
+    fitAddon: any;
+    disposed: boolean;
+    observer: ResizeObserver | null;
+    inputBuffer: string;
+  }>({ term: null, fitAddon: null, disposed: false, observer: null, inputBuffer: '' });
 
   useEffect(() => {
-    if (!terminalRef.current) return;
     const container = terminalRef.current;
-
-    // Don't initialize if container has zero dimensions (hidden panel)
+    if (!container) return;
     if (container.offsetWidth === 0 || container.offsetHeight === 0) return;
 
-    const term = new XTerm({
-      cursorBlink: true,
-      cursorStyle: 'bar',
-      fontSize: 13,
-      fontFamily: '"JetBrains Mono", "Geist Mono", Menlo, Monaco, monospace',
-      theme: TERM_THEME,
-      allowProposedApi: true,
-      letterSpacing: 0.5,
-      lineHeight: 1.6,
-    });
+    const state = stateRef.current;
+    state.disposed = false;
 
-    const fitAddon = new FitAddon();
-    fitAddonRef.current = fitAddon;
-    term.loadAddon(fitAddon);
-    term.open(container);
-    fitAddon.fit();
+    (async () => {
+      const [{ Terminal: XTerm }, { FitAddon }] = await Promise.all([
+        import('xterm'),
+        import('xterm-addon-fit'),
+      ]);
+      await import('xterm/css/xterm.css');
 
-    xtermRef.current = term;
+      if (state.disposed || !terminalRef.current) return;
 
-    let inputBuffer = '';
+      const term = new XTerm({
+        cursorBlink: true,
+        cursorStyle: 'bar',
+        fontSize: 13,
+        fontFamily: '"JetBrains Mono", "Geist Mono", Menlo, Monaco, monospace',
+        theme: TERM_THEME,
+        allowProposedApi: true,
+        letterSpacing: 0.5,
+        lineHeight: 1.6,
+      });
 
-    term.onData((data) => {
-      if (data === '\r') {
-        term.writeln('');
-        if (inputBuffer.trim() && onCommandExec) {
-          onCommandExec(inputBuffer.trim());
-        }
-        inputBuffer = '';
-        term.write('\x1b[36m❯ \x1b[0m');
-      } else if (data === '\x7f') {
-        if (inputBuffer.length > 0) {
-          inputBuffer = inputBuffer.slice(0, -1);
-          term.write('\b \b');
-        }
-      } else if (data === '\x03') {
-        term.writeln('^C');
-        inputBuffer = '';
-        term.write('\r\n\x1b[36m❯ \x1b[0m');
-      } else {
-        inputBuffer += data;
-        term.write(data);
+      const fitAddon = new FitAddon();
+      term.loadAddon(fitAddon);
+      state.term = term;
+      state.fitAddon = fitAddon;
+
+      if (state.disposed || !terminalRef.current) {
+        try { term.dispose(); } catch { /* ignore */ }
+        return;
       }
-    });
 
-    term.writeln('\x1b[1;36m  ⚡ SwarmDev Terminal\x1b[0m');
-    term.writeln('\x1b[90m  project: ' + projectId + '\x1b[0m');
-    term.writeln('');
-    term.write('\x1b[36m❯ \x1b[0m');
+      term.open(terminalRef.current);
+      try { fitAddon.fit(); } catch { /* ignore */ }
+
+      term.onData((data: string) => {
+        if (state.disposed) return;
+        if (data === '\r') {
+          term.writeln('');
+          if (state.inputBuffer.trim() && onCommandExec) {
+            onCommandExec(state.inputBuffer.trim());
+          }
+          state.inputBuffer = '';
+          term.write('\x1b[36m❯ \x1b[0m');
+        } else if (data === '\x7f') {
+          if (state.inputBuffer.length > 0) {
+            state.inputBuffer = state.inputBuffer.slice(0, -1);
+            term.write('\b \b');
+          }
+        } else if (data === '\x03') {
+          term.writeln('^C');
+          state.inputBuffer = '';
+          term.write('\r\n\x1b[36m❯ \x1b[0m');
+        } else {
+          state.inputBuffer += data;
+          term.write(data);
+        }
+      });
+
+      term.writeln('\x1b[1;36m  ⚡ SwarmDev Terminal\x1b[0m');
+      term.writeln('\x1b[90m  project: ' + projectId + '\x1b[0m');
+      term.writeln('');
+      term.write('\x1b[36m❯ \x1b[0m');
+    })();
 
     const safeFit = () => {
-      if (container.offsetWidth > 0 && container.offsetHeight > 0) {
-        try { fitAddon.fit(); } catch { /* ignore fit errors on zero-size */ }
+      if (state.disposed) return;
+      if (state.term && state.fitAddon && container.offsetWidth > 0 && container.offsetHeight > 0) {
+        try { state.fitAddon.fit(); } catch { /* ignore */ }
       }
     };
+
     const handleResize = () => safeFit();
     window.addEventListener('resize', handleResize);
 
     const observer = new ResizeObserver(() => safeFit());
     observer.observe(container);
+    state.observer = observer;
 
     return () => {
+      state.disposed = true;
+      state.inputBuffer = '';
       window.removeEventListener('resize', handleResize);
       observer.disconnect();
-      term.dispose();
+      if (state.term) {
+        try { state.term.dispose(); } catch { /* ignore */ }
+        state.term = null;
+      }
+      state.fitAddon = null;
+      state.observer = null;
     };
-  }, [projectId]);
+  }, [projectId, onCommandExec]);
 
-  const clear = () => {
-    if (xtermRef.current) {
-      xtermRef.current.clear();
-      xtermRef.current.write('\x1b[36m❯ \x1b[0m');
+  // External clear signal
+  useEffect(() => {
+    const state = stateRef.current;
+    if (clearSignal === undefined || !state.term || state.disposed) return;
+    state.term.clear();
+    state.term.write('\x1b[36m❯ \x1b[0m');
+    state.inputBuffer = '';
+  }, [clearSignal]);
+
+  const clear = useCallback(() => {
+    const state = stateRef.current;
+    if (state.term && !state.disposed) {
+      state.term.clear();
+      state.term.write('\x1b[36m❯ \x1b[0m');
+      state.inputBuffer = '';
     }
-  };
+  }, []);
 
   return (
     <div className="flex h-full flex-col bg-[#0a0a14]">

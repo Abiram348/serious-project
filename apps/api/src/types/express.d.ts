@@ -1,5 +1,6 @@
-import { Request } from 'express';
-import { User } from '@prisma/client';
+import { User as PrismaUser } from '@prisma/client';
+
+export type User = PrismaUser;
 
 declare module 'express' {
   interface Request {

@@ -1,40 +1,71 @@
-# Dockerfile for the SwarmDev web (Next.js) application
-FROM node:22-alpine AS builder
+# syntax=docker/dockerfile:1
 
+# ──────────────────────────────────────────────
+# SwarmDev Web — Next.js 14 Dockerfile
+# Multi-stage: deps → builder → runner
+# ──────────────────────────────────────────────
+
+ARG NODE_VERSION=20
+ARG PNPM_VERSION=9.15.0
+
+# ═══════════════════════════════════════════════
+# Stage 1 — Dependencies
+# ═══════════════════════════════════════════════
+FROM node:${NODE_VERSION}-alpine AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
-RUN npm install -g pnpm@9.15.0
-# Copy workspace configuration files
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json .npmrc ./
-# Copy only the web source and any workspace packages it depends on
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+
+# Copy workspace root files
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
+COPY apps/web/package.json ./apps/web/
+
+# Install dependencies (web only, filtered by workspace)
+RUN pnpm install --frozen-lockfile --filter web
+
+# ═══════════════════════════════════════════════
+# Stage 2 — Builder
+# ═══════════════════════════════════════════════
+FROM node:${NODE_VERSION}-alpine AS builder
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+COPY package.json pnpm-workspace.yaml ./
 COPY apps/web ./apps/web
-COPY packages ./packages
-# Install only web dependencies with frozen lockfile
-RUN pnpm install --frozen-lockfile --filter ./apps/web... --config.enable-pre-post-scripts=true --config.ignore-scripts=false
-# Change to the web directory and build the Next.js app
-WORKDIR /app/apps/web
-RUN pnpm build
 
-# Production image
-FROM node:22-alpine
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-WORKDIR /app
-# Copy built assets from the builder stage
-COPY --from=builder /app/apps/web/.next ./.next
-COPY --from=builder /app/apps/web/package.json ./package.json
-COPY --from=builder /app/apps/web/next.config.js ./next.config.js
-COPY --from=builder /app/apps/web/public ./public
-# Copy node_modules from builder (production only)
-COPY --from=builder /app/apps/web/node_modules ./node_modules
-COPY --from=builder /app/packages/shared-types/node_modules ./packages/shared-types/node_modules
-
-# Change ownership to non-root user
-RUN chown -R nodejs:nodejs /app
-USER nodejs
-
-EXPOSE 3000
+# Build Next.js with standalone output
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-CMD ["pnpm", "start"]
+WORKDIR /app/apps/web
+RUN pnpm exec next build
+
+# ═══════════════════════════════════════════════
+# Stage 3 — Runner
+# ═══════════════════════════════════════════════
+FROM node:${NODE_VERSION}-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy only the standalone output + static assets
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:3000/api/health || exit 1
+
+USER nextjs
+EXPOSE 3000
+
+CMD ["node", "apps/web/server.js"]

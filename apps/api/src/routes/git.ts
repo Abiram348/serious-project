@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 import { z } from 'zod';
 
 const router = Router();
@@ -17,10 +17,9 @@ router.post('/:projectId/git/init', authMiddleware, async (req: Request, res: Re
     const user = (req as any).user;
     const userId = user.id;
 
-    const project = await prisma.project.findFirst({
+    const project = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
@@ -44,10 +43,9 @@ router.post('/:projectId/git/push', authMiddleware, async (req: Request, res: Re
     const userId = user.id;
     const { githubRepo, githubToken } = req.body;
 
-    const project = await prisma.project.findFirst({
+    const project = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
@@ -74,10 +72,9 @@ router.get('/:projectId/git/status', authMiddleware, async (req: Request, res: R
     const user = (req as any).user;
     const userId = user.id;
 
-    const project = await prisma.project.findFirst({
+    const project = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
@@ -104,10 +101,9 @@ router.post('/:projectId/git/commit', authMiddleware, async (req: Request, res: 
     const userId = user.id;
     const { message, files } = req.body;
 
-    const project = await prisma.project.findFirst({
+    const project = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }

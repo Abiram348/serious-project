@@ -1,13 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { Webhook } from 'svix';
 import { authMiddleware } from '../middleware/auth';
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 
 const router = Router();
 
 // Get current authenticated user
 router.get('/me', authMiddleware, async (req: Request, res: Response) => {
-  const { userId, sessionId } = await req.auth();
+  const { userId, sessionId } = (req as any).auth;
   res.json({ userId, sessionId });
 });
 
@@ -47,7 +47,7 @@ router.post('/webhook', async (req: Request, res: Response) => {
     switch (eventType) {
       case 'user.created': {
         const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-        await prisma.user.create({
+        await db.user.create({
           data: {
             clerkId: id,
             email: email_addresses[0].email_address,
@@ -61,7 +61,7 @@ router.post('/webhook', async (req: Request, res: Response) => {
 
       case 'user.updated': {
         const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-        await prisma.user.update({
+        await db.user.update({
           where: { clerkId: id },
           data: {
             email: email_addresses[0]?.email_address,
@@ -75,9 +75,7 @@ router.post('/webhook', async (req: Request, res: Response) => {
 
       case 'user.deleted': {
         const { id } = evt.data;
-        await prisma.user.delete({
-          where: { clerkId: id },
-        });
+        await db.user.delete({ where: { clerkId: id } });
         console.log(`✅ Deleted user: ${id}`);
         break;
       }

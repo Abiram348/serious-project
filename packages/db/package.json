@@ -1,19 +1,17 @@
 {
   "name": "db",
   "version": "1.0.0",
-  "description": "Prisma database schema and client",
+  "description": "Database package (Prisma schema)",
   "main": "index.js",
   "types": "index.d.ts",
-  "scripts": {
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev",
-    "studio": "prisma studio"
-  },
+  "scripts": {},
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "prisma": "^6.19.3"
+    "@types/node": "^20.0.0"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3"
+    "@prisma/client": "^5.0.0"
+  },
+  "peerDependencies": {
+    "prisma": "^5.0.0"
   }
 }

@@ -1,5 +1,5 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 
 const r2Client = new S3Client({
   region: 'auto',
@@ -17,9 +17,7 @@ export const syncService = {
    * Sync all project files to R2 (Issue #12)
    */
   async syncProjectToR2(projectId: string): Promise<void> {
-    const files = await prisma.projectFile.findMany({
-      where: { projectId },
-    });
+    const files = await db.projectFile.findMany({ where: { projectId } });
 
     const uploadPromises = files.map(async (file) => {
       const key = `projects/${projectId}/${file.path}`;
@@ -28,7 +26,7 @@ export const syncService = {
         new PutObjectCommand({
           Bucket: BUCKET,
           Key: key,
-          Body: file.content,
+          Body: file.content ?? '',
           ContentType: 'text/plain',
         })
       );
@@ -63,14 +61,9 @@ export const syncService = {
 export const startBackgroundSync = () => {
   setInterval(async () => {
     try {
-      const projects = await prisma.project.findMany({
-        where: {
-          status: { in: ['IN_PROGRESS', 'REVIEWING', 'COMPLETED'] },
-        },
-        select: { id: true },
-      });
-
-      for (const project of projects) {
+      const allProjects = await db.project.findMany();
+      const projectsToSync = allProjects.filter(p => ['IN_PROGRESS', 'REVIEWING', 'COMPLETED'].includes(p.status as any));
+      for (const project of projectsToSync) {
         await syncService.syncProjectToR2(project.id);
       }
     } catch (error) {

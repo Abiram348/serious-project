@@ -1,4 +1,4 @@
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 import { emitProjectStatus, emitAgentStatus } from '../socket';
 
 export interface CreateProjectInput {
@@ -21,33 +21,30 @@ export interface ProjectService {
   startAgentPipeline(projectId: string): Promise<void>;
 }
 
-export const projectService = {
+export const projectService: ProjectService = {
   async getAllProjects(userId: string, page = 1, limit = 10) {
     const skip = (page - 1) * limit;
-
-    const [projects, total] = await Promise.all([
-      prisma.project.findMany({
+    const [projectsList, total] = await Promise.all([
+      db.project.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
-        skip,
         take: limit,
-        include: {
-          agents: {
-            select: {
-              agentType: true,
-              status: true,
-              completedAt: true,
-            },
-          },
-        },
+        skip,
       }),
-      prisma.project.count({
-        where: { userId },
-      }),
+      db.project.count({ where: { userId } }),
     ]);
-
+    // For each project, fetch a summary of agents (latest status)
+    const projectsWithAgents = await Promise.all(
+      projectsList.map(async (proj) => {
+        const agents = await db.agentRun.findMany({
+          where: { projectId: proj.id },
+          orderBy: { createdAt: 'desc' },
+        });
+        return { ...proj, agents };
+      })
+    );
     return {
-      projects,
+      projects: projectsWithAgents,
       total,
       page,
       totalPages: Math.ceil(total / limit),
@@ -55,37 +52,49 @@ export const projectService = {
   },
 
   async getProjectById(projectId: string, userId: string) {
-    return prisma.project.findUnique({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
-      include: {
-        agents: {
-          orderBy: { createdAt: 'desc' },
-          include: {
-            logs: {
-              orderBy: { timestamp: 'desc' },
-              take: 50,
-            },
-          },
-        },
-        files: {
-          select: {
-            id: true,
-            path: true,
-            language: true,
-            version: true,
-            createdAt: true,
-          },
-        },
-        messages: {
-          orderBy: { createdAt: 'desc' },
-          take: 50,
-        },
-      },
     });
+    if (!proj) return null;
+    // Fetch agents with latest logs (limit 50 per agent)
+    const agentsRaw = await db.agentRun.findMany({
+      where: { projectId },
+      orderBy: { createdAt: 'desc' },
+    });
+    // Fetch all logs in one query to avoid connection-pool exhaustion
+    const runIds = agentsRaw.map((r) => r.id);
+    const allLogs = runIds.length
+      ? await db.agentLog.findMany({
+          where: { agentRunId: { in: runIds } },
+          orderBy: { timestamp: 'desc' },
+        })
+      : [];
+    const logsByRunId = new Map<string, typeof allLogs>();
+    for (const log of allLogs) {
+      const arr = logsByRunId.get(log.agentRunId) || [];
+      arr.push(log);
+      logsByRunId.set(log.agentRunId, arr);
+    }
+    const agents = agentsRaw.map((run) => ({
+      ...run,
+      logs: (logsByRunId.get(run.id) || []).slice(0, 50),
+    }));
+    // Files
+    const files = await db.projectFile.findMany({
+      where: { projectId },
+      select: { id: true, path: true, language: true, version: true, createdAt: true },
+    });
+    // Messages
+    const messages = await db.chatMessage.findMany({
+      where: { projectId },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+    return { ...proj, agents, files, messages };
   },
 
   async createProject(input: CreateProjectInput) {
-    const project = await prisma.project.create({
+    const created = await db.project.create({
       data: {
         userId: input.userId,
         name: input.name,
@@ -94,63 +103,51 @@ export const projectService = {
         status: 'PENDING',
       },
     });
-
     // Emit socket event
-    emitProjectStatus(project.id, 'PENDING');
-
-    return project;
+    emitProjectStatus(created.id, 'PENDING');
+    return created;
   },
 
   async updateProject(projectId: string, userId: string, data: Partial<CreateProjectInput>) {
-    const project = await prisma.project.update({
+    return db.project.update({
       where: { id: projectId, userId },
-      data,
+      data: {
+        ...(data.name && { name: data.name }),
+        ...(data.description && { description: data.description }),
+        ...(data.techStack && { techStack: data.techStack }),
+      },
     });
-
-    return project;
   },
 
   async deleteProject(projectId: string, userId: string) {
-    // First delete related records
-    await prisma.buildLog.deleteMany({ where: { projectId } });
-    await prisma.chatMessage.deleteMany({ where: { projectId } });
-    await prisma.projectFile.deleteMany({ where: { projectId } });
-    await prisma.agentLog.deleteMany({
-      where: {
-        agentRun: {
-          projectId,
-        },
-      },
+    // Cascade: delete children first (defensive — Prisma cascade handles most)
+    const runs = await db.agentRun.findMany({
+      where: { projectId },
+      select: { id: true },
     });
-    await prisma.agentRun.deleteMany({ where: { projectId } });
-
-    // Then delete the project
-    await prisma.project.delete({
-      where: { id: projectId, userId },
-    });
+    const runIds = runs.map((r) => r.id);
+    if (runIds.length) {
+      await db.agentLog.deleteMany({ where: { agentRunId: { in: runIds } } });
+      await db.agentRun.deleteMany({ where: { id: { in: runIds } } });
+    }
+    await db.buildLog.deleteMany({ where: { projectId } });
+    await db.chatMessage.deleteMany({ where: { projectId } });
+    await db.projectFile.deleteMany({ where: { projectId } });
+    await db.project.deleteMany({ where: { id: projectId, userId } });
   },
 
   async startAgentPipeline(projectId: string) {
-    // Get project with user info
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      include: { user: true },
-    });
-
+    const project = await db.project.findFirst({ where: { id: projectId } });
     if (!project) {
       throw new Error(`Project ${projectId} not found`);
     }
-
-    // Update project status
-    await prisma.project.update({
+    // Update status to PLANNING
+    await db.project.update({
       where: { id: projectId },
       data: { status: 'PLANNING' },
     });
-
     emitProjectStatus(projectId, 'PLANNING');
     emitAgentStatus(projectId, 'SUPERVISOR', 'RUNNING', 'Starting project planning');
-
-    // Create agent run records for tracking
     const agentTypes = [
       'SUPERVISOR',
       'FRONTEND',
@@ -162,9 +159,8 @@ export const projectService = {
       'SECURITY',
       'DOCUMENTATION',
     ] as const;
-
     for (const agentType of agentTypes) {
-      await prisma.agentRun.create({
+      await db.agentRun.create({
         data: {
           projectId,
           agentType,
@@ -174,10 +170,8 @@ export const projectService = {
         },
       });
     }
-
-    // Call orchestrator HTTP API with full project context (fixes Issue #3)
+    // Call orchestrator API
     const orchestratorUrl = process.env.ORCHESTRATOR_URL || 'http://localhost:8000';
-
     try {
       const response = await fetch(`${orchestratorUrl}/projects/${projectId}/agents/start`, {
         method: 'POST',
@@ -189,19 +183,16 @@ export const projectService = {
           'X-TECH-STACK': JSON.stringify(project.techStack || {}),
         },
       });
-
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Orchestrator call failed: ${response.status} ${errorText}`);
       }
-
       const result = await response.json();
       console.log(`🚀 Agent pipeline started for project ${projectId}:`, result);
-
       emitProjectStatus(projectId, 'IN_PROGRESS');
     } catch (error) {
       console.error('Failed to call orchestrator:', error);
-      await prisma.project.update({
+      await db.project.update({
         where: { id: projectId },
         data: { status: 'FAILED' },
       });

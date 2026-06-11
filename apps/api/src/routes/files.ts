@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 import { z } from 'zod';
 import { emitFileCreated, emitFileUpdated } from '../socket';
 
@@ -13,7 +13,6 @@ const fileSchema = z.object({
 });
 
 // ── Internal auth for orchestrator → API calls ──
-
 function internalAuth(req: Request, res: Response, next: Function) {
   const secret = req.headers['x-api-secret'] as string;
   const expected = process.env.ORCHESTRATOR_SECRET || 'dev-secret';
@@ -32,15 +31,14 @@ router.get('/projects/:projectId/files', authMiddleware, async (req: Request, re
     const user = (req as any).user;
     const userId = user.id;
 
-    const project = await prisma.project.findFirst({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
-    if (!project) {
+    if (!proj) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    const files = await prisma.projectFile.findMany({
+    const files = await db.projectFile.findMany({
       where: { projectId },
       select: {
         id: true,
@@ -70,28 +68,26 @@ router.get('/projects/:projectId/files/*', authMiddleware, async (req: Request, 
     const userId = user.id;
     const filePath = req.params[0];
 
-    const project = await prisma.project.findFirst({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
-    if (!project) {
+    if (!proj) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    const file = await prisma.projectFile.findFirst({
+    const f = await db.projectFile.findFirst({
       where: { projectId, path: filePath },
     });
-
-    if (!file) {
+    if (!f) {
       return res.status(404).json({ error: 'File not found' });
     }
 
     res.json({
-      path: file.path,
-      content: file.content,
-      language: file.language,
-      version: file.version,
-      createdBy: file.createdBy,
+      path: f.path,
+      content: f.content,
+      language: f.language,
+      version: f.version,
+      createdBy: f.createdBy,
     });
   } catch (error) {
     console.error('Error fetching file:', error);
@@ -107,17 +103,16 @@ router.post('/projects/:projectId/files/*', authMiddleware, async (req: Request,
     const userId = user.id;
     const filePath = req.params[0];
 
-    const project = await prisma.project.findFirst({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
-    if (!project) {
+    if (!proj) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
     const { content, language } = req.body;
 
-    const file = await prisma.projectFile.create({
+    const file = await db.projectFile.create({
       data: {
         projectId,
         path: filePath,
@@ -143,21 +138,28 @@ router.patch('/projects/:projectId/files/*', authMiddleware, async (req: Request
     const userId = user.id;
     const filePath = req.params[0];
 
-    const project = await prisma.project.findFirst({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
-    if (!project) {
+    if (!proj) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
     const { content } = req.body;
 
-    const file = await prisma.projectFile.update({
-      where: { projectId_path: { projectId, path: filePath } },
+    // Look up current version, then increment (Prisma can't do `version + 1` directly without raw)
+    const existing = await db.projectFile.findFirst({
+      where: { projectId, path: filePath },
+    });
+    if (!existing) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    const file = await db.projectFile.update({
+      where: { id: existing.id },
       data: {
         content,
-        version: { increment: 1 },
+        version: existing.version + 1,
       },
     });
 
@@ -177,16 +179,15 @@ router.delete('/projects/:projectId/files/*', authMiddleware, async (req: Reques
     const userId = user.id;
     const filePath = req.params[0];
 
-    const project = await prisma.project.findFirst({
+    const proj = await db.project.findFirst({
       where: { id: projectId, userId },
     });
-
-    if (!project) {
+    if (!proj) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    await prisma.projectFile.delete({
-      where: { projectId_path: { projectId, path: filePath } },
+    await db.projectFile.deleteMany({
+      where: { projectId, path: filePath },
     });
 
     res.status(204).send();
@@ -197,33 +198,31 @@ router.delete('/projects/:projectId/files/*', authMiddleware, async (req: Reques
 });
 
 // ── Internal routes (orchestrator → API, X-API-SECRET auth) ──
-
-// Save file from orchestrator (upsert)
 router.post('/internal/projects/:projectId/files/:path(*)', internalAuth, async (req: Request, res: Response) => {
   try {
     const { projectId } = req.params;
     const filePath = (req.params as any).path;
-
     const { content, language, createdBy } = req.body;
 
-    const existing = await prisma.projectFile.findUnique({
-      where: { projectId_path: { projectId, path: filePath } },
+    // Upsert logic
+    const exists = await db.projectFile.findFirst({
+      where: { projectId, path: filePath },
     });
 
     let file;
-    if (existing) {
-      file = await prisma.projectFile.update({
-        where: { projectId_path: { projectId, path: filePath } },
+    if (exists) {
+      file = await db.projectFile.update({
+        where: { id: exists.id },
         data: {
           content,
-          language: language || existing.language,
-          createdBy: createdBy || existing.createdBy,
-          version: { increment: 1 },
+          language: language || exists.language,
+          createdBy: createdBy || exists.createdBy,
+          version: exists.version + 1,
         },
       });
       emitFileUpdated(projectId, filePath, content, createdBy);
     } else {
-      file = await prisma.projectFile.create({
+      file = await db.projectFile.create({
         data: {
           projectId,
           path: filePath,
@@ -243,36 +242,24 @@ router.post('/internal/projects/:projectId/files/:path(*)', internalAuth, async 
 });
 
 // ── Helpers ──
-
 function buildFileTree(files: Array<{ path: string; [key: string]: unknown }>) {
   const root: Record<string, unknown> = {};
-
   for (const file of files) {
     const parts = file.path.split('/');
     let current = root;
-
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
       const isFile = i === parts.length - 1;
-
       if (isFile) {
-        current[part] = {
-          type: 'file',
-          ...file,
-        };
+        current[part] = { type: 'file', name: part, ...file };
       } else {
         if (!current[part]) {
-          current[part] = {
-            type: 'folder',
-            name: part,
-            children: {} as Record<string, unknown>,
-          };
+          current[part] = { type: 'folder', name: part, children: {} as Record<string, unknown> };
         }
         current = (current[part] as { children: Record<string, unknown> }).children;
       }
     }
   }
-
   return root;
 }
 

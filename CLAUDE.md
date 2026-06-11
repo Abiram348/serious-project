@@ -89,6 +89,26 @@ cd packages/db && pnpm prisma studio
 ./scripts/security_scan.sh
 ```
 
+### Dev Server Health & Safe Cleaning
+
+**If the UI appears blank / unstyled (invisible text, no colors, no layout), the Next.js dev server's build manifest is probably broken.** Symptoms: HTML loads fine, classes like `bg-background` are in the DOM, but `curl -I http://localhost:3000/_next/static/css/app/layout.css` returns `200 OK` with `text/html` (a 404 page) instead of `text/css`.
+
+**Cause:** running `rm -rf apps/web/.next` while the dev server is still up. The server's in-memory manifest then points to files that no longer exist, so every static asset silently 404s.
+
+**Fix — never `rm -rf .next` while a dev server is running.** Use:
+
+```bash
+# Safely clean build caches (kills dev servers first, then clears .next/dist/etc.)
+pnpm clean:safe               # or: pnpm clean:safe:deep for a deeper wipe
+pnpm dev                       # then restart fresh
+
+# Verify dev servers are serving real assets (catches the "200 OK but text/html" bug)
+pnpm dev:check                 # warnings allowed
+pnpm dev:check:strict          # any warning fails the check
+```
+
+Underlying scripts: `scripts/safe-clean.sh` and `scripts/health-check.sh`. The health check extracts the CSS path from the rendered HTML, fetches it, and verifies `Content-Type: text/css` and a real CSS body — not the 404 HTML page that the broken dev server returns with a 200 status.
+
 ### Docker
 
 ```bash

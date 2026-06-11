@@ -34,8 +34,8 @@ interface FileTreeProps {
 /* ------------------------------------------------------------------ */
 /*  File icon by extension                                              */
 /* ------------------------------------------------------------------ */
-function getFileIcon(name: string) {
-  const ext = name.split('.').pop()?.toLowerCase();
+function getFileIcon(name?: string) {
+  const ext = name?.split('.').pop()?.toLowerCase();
   switch (ext) {
     case 'ts':
     case 'tsx':
@@ -91,21 +91,21 @@ export function FileTree({ files, selectedFile, onFileSelect }: FileTreeProps) {
         <div key={path}>
           <button
             onClick={() => toggleFolder(path)}
-            className="flex w-full items-center gap-1 py-1 pr-2 text-sm text-muted-foreground hover:bg-surface-elevated hover:text-foreground transition-colors"
-            style={{ paddingLeft: `${8 + depth * 16}px` }}
+            className="flex w-full items-center gap-1 py-0.5 pr-2 text-sm text-foreground/80 hover:bg-primary/10 transition-colors"
+            style={{ paddingLeft: `${6 + depth * 12}px` }}
           >
             <ChevronRight
               className={cn(
-                'h-3.5 w-3.5 shrink-0 transition-transform',
+                'h-3 w-3 shrink-0 transition-transform',
                 isExpanded && 'rotate-90'
               )}
             />
             {isExpanded ? (
-              <FolderOpen className="h-4 w-4 text-primary/70 shrink-0" />
+              <FolderOpen className="h-3.5 w-3.5 text-primary shrink-0" />
             ) : (
-              <Folder className="h-4 w-4 text-primary/50 shrink-0" />
+              <Folder className="h-3.5 w-3.5 text-primary/70 shrink-0" />
             )}
-            <span className="truncate text-[13px]">{node.name}</span>
+            <span className="truncate text-[12px]">{node.name}</span>
           </button>
           {isExpanded && node.children && (
             <div>
@@ -123,16 +123,18 @@ export function FileTree({ files, selectedFile, onFileSelect }: FileTreeProps) {
         key={path}
         onClick={() => onFileSelect(node.path || path)}
         className={cn(
-          'flex w-full items-center gap-1 py-1 pr-2 text-sm transition-colors',
+          'flex w-full items-center gap-1 py-0.5 pr-2 text-sm transition-colors',
           isSelected
-            ? 'bg-primary/10 text-primary'
-            : 'text-muted-foreground hover:bg-surface-elevated hover:text-foreground'
+            ? 'bg-primary/15 text-primary'
+            : 'text-foreground/70 hover:bg-primary/10 hover:text-foreground'
         )}
-        style={{ paddingLeft: `${8 + depth * 16}px` }}
+        style={{ paddingLeft: `${6 + depth * 12}px` }}
       >
-        <span className="w-3.5 shrink-0" />
-        {getFileIcon(node.name)}
-        <span className="truncate text-[13px]">{node.name}</span>
+        <span className="w-3 shrink-0" />
+        <span className="[&_svg]:h-3.5 [&_svg]:w-3.5 shrink-0">
+          {getFileIcon(node.name)}
+        </span>
+        <span className="truncate text-[12px]">{node.name}</span>
       </button>
     );
   };

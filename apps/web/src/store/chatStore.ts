@@ -5,6 +5,8 @@ interface ChatMessage {
   projectId: string;
   role: 'USER' | 'SUPERVISOR' | 'AGENT' | 'SYSTEM';
   agentType?: string;
+  targetAgent?: string;
+  model?: string;
   content: string;
   metadata?: Record<string, any>;
   createdAt: string;
@@ -14,17 +16,50 @@ interface ChatState {
   messages: ChatMessage[];
   loading: boolean;
   error: string | null;
+  selectedModel: string;
+  selectedAgent: string | null;
+  isTyping: boolean;
 
   fetchMessages: (projectId: string) => Promise<void>;
-  sendMessage: (projectId: string, content: string) => Promise<void>;
+  sendMessage: (projectId: string, content: string, targetAgent?: string | null, model?: string | null) => Promise<void>;
   clearMessages: () => void;
   addMessage: (message: ChatMessage) => void;
+  addMessages: (messages: ChatMessage[]) => void;
+  setSelectedModel: (model: string) => void;
+  setSelectedAgent: (agent: string | null) => void;
+  setTyping: (typing: boolean) => void;
 }
 
-export const useChatStore = create<ChatState>((set) => ({
+const AVAILABLE_MODELS = [
+  'llama4',
+  'codellama',
+  'kimi',
+  'mistral-small',
+  'gpt-oss',
+];
+
+const AVAILABLE_AGENTS = [
+  { id: null, label: 'Auto (Supervisor decides)' },
+  { id: 'SUPERVISOR', label: 'Supervisor' },
+  { id: 'FRONTEND', label: 'Frontend' },
+  { id: 'BACKEND', label: 'Backend' },
+  { id: 'DATABASE', label: 'Database' },
+  { id: 'DEVOPS', label: 'DevOps' },
+  { id: 'QA', label: 'QA' },
+  { id: 'REVIEWER', label: 'Reviewer' },
+  { id: 'SECURITY', label: 'Security' },
+  { id: 'DOCUMENTATION', label: 'Documentation' },
+];
+
+export { AVAILABLE_MODELS, AVAILABLE_AGENTS };
+
+export const useChatStore = create<ChatState>((set, get) => ({
   messages: [],
   loading: false,
   error: null,
+  selectedModel: 'llama4',
+  selectedAgent: null,
+  isTyping: false,
 
   fetchMessages: async (projectId: string) => {
     set({ loading: true, error: null });
@@ -41,28 +76,37 @@ export const useChatStore = create<ChatState>((set) => ({
     }
   },
 
-  sendMessage: async (projectId: string, content: string) => {
+  sendMessage: async (projectId: string, content: string, targetAgent?: string | null, model?: string | null) => {
+    const state = get();
+    const agent = targetAgent !== undefined ? targetAgent : state.selectedAgent;
+    const selectedModel = model !== undefined ? model : state.selectedModel;
+
+    set({ isTyping: true, error: null });
     try {
       const res = await fetch(`/api/projects/${projectId}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({
+          content,
+          targetAgent: agent || undefined,
+          model: selectedModel || undefined,
+        }),
       });
 
       if (res.ok) {
-        const message = await res.json();
+        const data = await res.json();
+        const userMsg = data.userMessage;
+        const agentMsg = data.agentMessage;
         set((state) => ({
-          messages: [...state.messages, message],
+          messages: [...state.messages, userMsg, agentMsg],
+          isTyping: false,
         }));
-
-        // Agent response will come via Socket.io real-time event
-        // See apps/api/src/socket/index.ts - send_message handler
       } else {
         throw new Error('Failed to send message');
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      throw error;
+      set({ error: String(error), isTyping: false });
     }
   },
 
@@ -71,8 +115,30 @@ export const useChatStore = create<ChatState>((set) => ({
   },
 
   addMessage: (message: ChatMessage) => {
-    set((state) => ({
-      messages: [...state.messages, message],
-    }));
+    set((state) => {
+      if (state.messages.some((m) => m.id === message.id)) return state;
+      return { messages: [...state.messages, message] };
+    });
+  },
+
+  addMessages: (messages: ChatMessage[]) => {
+    set((state) => {
+      const existingIds = new Set(state.messages.map((m) => m.id));
+      const newMessages = messages.filter((m) => !existingIds.has(m.id));
+      if (newMessages.length === 0) return state;
+      return { messages: [...state.messages, ...newMessages] };
+    });
+  },
+
+  setSelectedModel: (model: string) => {
+    set({ selectedModel: model });
+  },
+
+  setSelectedAgent: (agent: string | null) => {
+    set({ selectedAgent: agent });
+  },
+
+  setTyping: (typing: boolean) => {
+    set({ isTyping: typing });
   },
 }));

@@ -15,7 +15,14 @@ __pycache__/
 .next/
 dist/
 .turbo/
+*.tsbuildinfo
 .superpowers/
+
+# Generated docs
+openapi.json
+
+# Ad-hoc scripts
+scripts/adhoc/
 
 # Environment
 .env

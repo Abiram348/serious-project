@@ -112,6 +112,23 @@ export function useSocket() {
       }
     });
 
+    socket.on('chat_message', (data: { messages: any[] }) => {
+      if (data.messages?.length) {
+        for (const msg of data.messages) {
+          addMessage({
+            id: msg.id || `${Date.now()}-${Math.random()}`,
+            projectId,
+            role: msg.role || 'AGENT',
+            agentType: msg.agentType,
+            targetAgent: msg.targetAgent,
+            model: msg.model,
+            content: msg.content,
+            createdAt: msg.createdAt || new Date().toISOString(),
+          });
+        }
+      }
+    });
+
     socket.on('preview_ready', (data: { url: string }) => {
       setPreviewUrl(data.url);
     });
@@ -127,6 +144,7 @@ export function useSocket() {
     socket.off('agent_status');
     socket.off('agent_log');
     socket.off('agent_message');
+    socket.off('chat_message');
     socket.off('terminal_output');
     socket.off('build_result');
     socket.off('preview_ready');

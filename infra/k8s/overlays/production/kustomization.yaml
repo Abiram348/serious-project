@@ -1,0 +1,63 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: swarmdev-prod
+
+namePrefix: prod-
+
+resources:
+  - ../../base
+  - network-policies.yaml
+  # Production uses AWS managed services (RDS, ElastiCache, Qdrant Cloud)
+  # No postgres/redis/qdrant StatefulSets here
+
+commonLabels:
+  app.kubernetes.io/env: production
+
+replicas:
+  - name: web
+    count: 3
+  - name: api
+    count: 3
+  - name: orchestrator
+    count: 2
+
+images:
+  - name: swarmdev-web
+    newName: ECR_REGISTRY/web
+    newTag: production-latest
+  - name: swarmdev-api
+    newName: ECR_REGISTRY/api
+    newTag: production-latest
+  - name: swarmdev-orchestrator
+    newName: ECR_REGISTRY/orchestrator
+    newTag: production-latest
+
+patches:
+  - target:
+      kind: Ingress
+      name: swarmdev
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: swarmdev.io
+      - op: replace
+        path: /spec/rules/1/host
+        value: api.swarmdev.io
+      - op: replace
+        path: /metadata/annotations/alb.ingress.kubernetes.io~1certificate-arn
+        value: arn:aws:acm:us-east-1:ACCOUNT_ID:certificate/PROD_CERT_ID
+  - target:
+      kind: Ingress
+      name: swarmdev-internal
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: orchestrator.swarmdev.internal
+  # Remove init container migrations in prod — use ArgoCD or CI/CD job instead
+  - target:
+      kind: Deployment
+      name: api
+    patch: |
+      - op: remove
+        path: /spec/template/spec/initContainers

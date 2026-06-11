@@ -1,7 +1,10 @@
+import dotenv from 'dotenv';
+
+dotenv.config(); // Load env variables before any other imports
+
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { initializeSocket, getIO } from './socket';
 import { startBackgroundSync } from './services/syncService';
@@ -12,9 +15,11 @@ import projectsRoutes from './routes/projects';
 import agentsRoutes from './routes/agents';
 import filesRoutes from './routes/files';
 import chatRoutes from './routes/chat';
+import modelRoutes from './routes/models';
 import terminalRoutes from './routes/terminal';
 import gitRoutes from './routes/git';
 import billingRoutes from './routes/billing';
+import previewRoutes from './routes/preview';
 
 // Middleware imports
 import { apiLimiter } from './middleware/rateLimit';
@@ -23,8 +28,6 @@ import { planCheckMiddleware } from './middleware/planCheck';
 import { attachUser } from './middleware/attachUser';
 import { checkPlan } from './middleware/checkPlan';
 
-// Load environment variables
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -79,10 +82,12 @@ app.use(checkPlan);
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', previewRoutes); // preview routes handle /projects/:id/preview/*
 app.use('/api/projects', projectsRoutes);
 app.use('/api', agentsRoutes); // agents routes handle /projects/:id/agents
 app.use('/api', filesRoutes); // files routes handle /projects/:id/files/*
 app.use('/api/projects', chatRoutes);
+app.use('/api/projects', modelRoutes);
 app.use('/api/projects', terminalRoutes);
 app.use('/api/projects', gitRoutes);
 app.use('/api/billing', billingRoutes);
@@ -108,22 +113,26 @@ const httpServer = createServer(app);
 initializeSocket(httpServer);
 
 // Start background file sync to R2 (Issue #12)
-startBackgroundSync();
+if (process.env.NODE_ENV !== 'test') {
+  startBackgroundSync();
+}
 
-// Start server
-const server = httpServer.listen(port, () => {
-  console.log(`🚀 SwarmDev API running on http://localhost:${port}`);
-  console.log(`📡 Socket.io server initialized`);
-  console.log(`🔗 Health check: http://localhost:${port}/health`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
+// Only start the HTTP server when this file is executed directly (not when imported in tests)
+if (require.main === module) {
+  const server = httpServer.listen(port, () => {
+    console.log(`🚀 SwarmDev API running on http://localhost:${port}`);
+    console.log(`📡 Socket.io server initialized`);
+    console.log(`🔗 Health check: http://localhost:${port}/health`);
   });
-});
+
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully...');
+    server.close(() => {
+      console.log('Server closed');
+      process.exit(0);
+    });
+  });
+}
 
 export default app;

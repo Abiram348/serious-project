@@ -1,0 +1,33 @@
+# ──────────────────────────────────────────────
+# SwarmDev — Docker Compose Override (Local Dev)
+# Mounts source code for hot-reload during development.
+# Automatically loaded by docker compose when present.
+# ──────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+  api:
+    volumes:
+      - ../apps/api/src:/app/src:ro
+      - ../packages/db/prisma:/app/packages/db/prisma:ro
+    command: ["npx", "ts-node-dev", "--respawn", "--transpile-only", "src/index.ts"]
+    environment:
+      NODE_ENV: development
+
+  orchestrator:
+    volumes:
+      - ../apps/orchestrator:/app:ro
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  web:
+    volumes:
+      - ../apps/web/src:/app/apps/web/src:ro
+      - ../apps/web/public:/app/apps/web/public:ro
+      - ../apps/web/package.json:/app/apps/web/package.json:ro
+    command: ["pnpm", "exec", "next", "dev", "--port", "3000"]
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: 1

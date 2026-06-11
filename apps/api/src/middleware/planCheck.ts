@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '../prisma/client';
+import db from '../prisma/client';
 
 export const planCheckMiddleware = async (
   req: Request,
@@ -7,45 +7,42 @@ export const planCheckMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    // req.auth is a function only after requireAuth() runs (applied per-route).
-    // For public routes, skip — route-specific auth middleware handles its own auth.
-    if (typeof req.auth !== 'function') {
+    // req.auth is set by requireAuth middleware on protected routes
+    if (!req.auth) {
       return next();
     }
 
-    const auth = await req.auth();
-    if (!auth.userId) {
+    const auth = (req as any).auth;
+    if (!auth?.userId) {
       return next();
     }
 
     const userId = auth.userId;
 
-    // Use req.user if available (set by attachUser middleware)
+    // Use req.user if already set by attachUser middleware
     let user = (req as any).user;
     if (!user) {
-      user = await prisma.user.findUnique({
-        where: { clerkId: userId },
-      });
+      user = await db.user.findFirst({ where: { clerkId: userId } });
       if (!user) {
-        user = await prisma.user.create({
+        user = await db.user.create({
           data: { clerkId: userId, email: `${userId}@clerk.user` },
         });
       }
       (req as any).user = user;
     }
 
-    // Reload with includes for plan checks
-    const userWithRelations = await prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        projects: { select: { id: true, status: true } },
-        usageLogs: {
-          where: { createdAt: { gte: new Date(new Date().setDate(1)) } },
-        },
+    // Load related data: projects owned by user and recent usage logs
+    const userProjects = await db.project.findMany({ where: { userId: user.id } });
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    const recentUsage = await db.usageLog.findMany({
+      where: {
+        userId: user.id,
+        createdAt: { gte: monthStart },
       },
     });
 
-    const plan = userWithRelations.plan;
+    const plan = user.plan as keyof typeof planLimits;
     const planLimits: Record<string, { maxProjects: number; maxTokens: number; maxParallelAgents: number }> = {
       FREE: { maxProjects: 3, maxTokens: 100000, maxParallelAgents: 2 },
       PRO: { maxProjects: -1, maxTokens: 2000000, maxParallelAgents: 5 },
@@ -53,10 +50,10 @@ export const planCheckMiddleware = async (
       ENTERPRISE: { maxProjects: -1, maxTokens: -1, maxParallelAgents: 9 },
     };
 
-    const limits = planLimits[plan as keyof typeof planLimits];
+    const limits = planLimits[plan];
 
-    // Check project count
-    if (limits.maxProjects > 0 && userWithRelations.projects.length >= limits.maxProjects) {
+    // Project limit check — only enforce on project creation (POST /api/projects)
+    if (limits.maxProjects > 0 && userProjects.length >= limits.maxProjects && req.method === 'POST' && req.path === '/') {
       return res.status(403).json({
         error: 'Project limit reached',
         limit: limits.maxProjects,
@@ -64,9 +61,9 @@ export const planCheckMiddleware = async (
       });
     }
 
-    // Check token usage
-    const tokensUsed = userWithRelations.usageLogs.reduce(
-      (sum: number, log: any) => sum + log.tokensIn + log.tokensOut,
+    // Token usage check (sum tokensIn and tokensOut)
+    const tokensUsed = recentUsage.reduce(
+      (sum, log) => sum + (log.tokensIn ?? 0) + (log.tokensOut ?? 0),
       0
     );
     if (limits.maxTokens > 0 && tokensUsed >= limits.maxTokens) {
@@ -78,9 +75,8 @@ export const planCheckMiddleware = async (
       });
     }
 
-    // Attach limits to request for downstream use
+    // Attach limits for downstream handlers
     (req as any).planLimits = limits;
-
     next();
   } catch (error) {
     console.error('Plan check error:', error);

@@ -1,6 +1,5 @@
 import request from 'supertest';
 import app from '../index';
-import prisma from '../prisma/client';
 
 /**
  * End-to-End Project Creation Tests

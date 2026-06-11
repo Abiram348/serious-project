@@ -28,10 +28,12 @@ serious-project/
 │   ├── api/           # Express.js backend API
 │   └── orchestrator/  # Python + LangGraph agent orchestration
 ├── docs/
-│   ├── API.md         # API documentation
-│   ├── DEPLOYMENT.md  # Deployment guide
-│   ├── AGENT_PROMPTS.md # Agent prompt reference
-│   └── ARCHITECTURE.md # System architecture
+│   ├── API.md              # API documentation
+│   ├── DEPLOYMENT.md       # Deployment guide
+│   ├── AGENT_PROMPTS.md    # Agent prompt reference
+│   ├── ARCHITECTURE.md     # System architecture
+│   ├── PROJECT_BLUEPRINT.md # Complete feature specification
+│   └── diagrams/           # Architecture diagrams
 ├── packages/
 │   ├── shared-types/  # Shared TypeScript types
 │   └── db/            # Prisma database schema
@@ -98,11 +100,12 @@ In individual packages:
 
 ## Documentation
 
-- [Architecture](ARCHITECTURE.md) - System design and data flow
+- [Present State](docs/present.md) — **Current workflow, architecture, and data flow (strictly factual)**
+- [Architecture](docs/ARCHITECTURE.md) - System design and data flow
 - [API Reference](docs/API.md) - REST API documentation
 - [Deployment Guide](docs/DEPLOYMENT.md) - Production deployment instructions
 - [Agent Prompts](docs/AGENT_PROMPTS.md) - All agent prompts and responsibilities
-- [Project Blueprint](PROJECT_BLUEPRINT.md) - Complete feature specification
+- [Project Blueprint](docs/PROJECT_BLUEPRINT.md) - Complete feature specification
 
 ## Orchestrator Details
 

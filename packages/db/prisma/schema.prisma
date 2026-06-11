@@ -1,23 +1,26 @@
+// Prisma schema for SwarmDev
+// 9 models, matching the previous Drizzle schema shape
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// ─────────────── USERS ───────────────
 model User {
-  id            String    @id @default(cuid())
-  clerkId       String    @unique
-  email         String    @unique
-  name          String?
-  avatarUrl     String?
-  plan          Plan      @default(FREE)
-  credits       Int       @default(100)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  plan      String   @default("FREE")
+  credits   Int      @default(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
   projects      Project[]
   subscriptions Subscription[]
@@ -26,191 +29,147 @@ model User {
   @@map("users")
 }
 
-// ─────────────── PROJECTS ───────────────
 model Project {
-  id            String        @id @default(cuid())
-  userId        String
-  user          User          @relation(fields: [userId], references: [id])
-  name          String
-  description   String        @db.Text
-  status        ProjectStatus @default(PENDING)
-  techStack     Json          // { frontend: "next", backend: "express", db: "postgres" }
-  sandboxId     String?       // E2B sandbox ID
-  previewUrl    String?       // Cloudflare tunnel URL
-  githubRepo    String?
-  deployUrl     String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  status      String   @default("PENDING")
+  techStack   Json?
+  sandboxId   String?
+  previewUrl   String?
+  previewStatus String? @default("STOPPED")
+  githubRepo   String?
+  deployUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
 
-  agents        AgentRun[]
-  files         ProjectFile[]
-  messages      ChatMessage[]
-  buildLogs     BuildLog[]
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentRuns   AgentRun[]
+  projectFiles ProjectFile[]
+  chatMessages ChatMessage[]
+  buildLogs   BuildLog[]
+  usageLogs   UsageLog[]
+  modelPreference ModelPreference?
 
   @@map("projects")
 }
 
-// ─────────────── AGENT RUNS ───────────────
 model AgentRun {
-  id          String      @id @default(cuid())
+  id          String    @id @default(cuid())
   projectId   String
-  project     Project     @relation(fields: [projectId], references: [id])
-  agentType   AgentType
-  status      AgentStatus @default(IDLE)
-  input       Json?       // task assigned by supervisor
-  output      Json?       // result produced
+  agentType   String?
+  status      String    @default("IDLE")
+  input       Json?
+  output      Json?
   startedAt   DateTime?
   completedAt DateTime?
   errorMsg    String?
-  tokenUsed   Int         @default(0)
-  createdAt   DateTime    @default(now())
+  tokenUsed   Int       @default(0)
+  createdAt   DateTime  @default(now())
 
-  logs        AgentLog[]
+  project Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  logs    AgentLog[]
 
   @@map("agent_runs")
 }
 
-// ─────────────── AGENT LOGS ───────────────
 model AgentLog {
-  id          String    @id @default(cuid())
-  agentRunId  String
-  agentRun    AgentRun  @relation(fields: [agentRunId], references: [id])
-  level       LogLevel  @default(INFO)
-  message     String    @db.Text
-  metadata    Json?
-  timestamp   DateTime  @default(now())
+  id         String   @id @default(cuid())
+  agentRunId String
+  level      String   @default("INFO")
+  message    String?
+  metadata   Json?
+  timestamp  DateTime @default(now())
+
+  agentRun AgentRun @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
 
   @@map("agent_logs")
 }
 
-// ─────────────── PROJECT FILES ───────────────
 model ProjectFile {
-  id          String    @id @default(cuid())
-  projectId   String
-  project     Project   @relation(fields: [projectId], references: [id])
-  path        String    // e.g. "src/app/page.tsx"
-  content     String    @db.Text
-  language    String?   // "typescript", "python", etc.
-  createdBy   AgentType?
-  version     Int       @default(1)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String    @id @default(cuid())
+  projectId String
+  path      String
+  content   String?
+  language  String?
+  createdBy String?
+  version   Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 
-  @@unique([projectId, path])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
   @@map("project_files")
 }
 
-// ─────────────── CHAT MESSAGES ───────────────
 model ChatMessage {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   projectId   String
-  project     Project     @relation(fields: [projectId], references: [id])
-  role        MessageRole // USER | SUPERVISOR | AGENT
-  agentType   AgentType?
-  content     String      @db.Text
+  role        String?
+  agentType   String?
+  targetAgent String?  // Which agent this message was routed to (@frontend, etc.)
+  model       String?  // Which LLM model generated this response
+  content     String?
   metadata    Json?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("chat_messages")
 }
 
-// ─────────────── BUILD LOGS ───────────────
 model BuildLog {
-  id          String    @id @default(cuid())
-  projectId   String
-  project     Project   @relation(fields: [projectId], references: [id])
-  stream      String    @db.Text  // raw terminal output
-  exitCode    Int?
-  createdAt   DateTime  @default(now())
+  id        String   @id @default(cuid())
+  projectId String
+  stream    String?
+  exitCode  Int?
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("build_logs")
 }
 
-// ─────────────── SUBSCRIPTIONS ───────────────
 model Subscription {
-  id                 String    @id @default(cuid())
-  userId             String
-  user               User      @relation(fields: [userId], references: [id])
-  stripeCustomerId   String    @unique
-  stripePriceId      String
-  stripeSubId        String    @unique
-  status             SubStatus
-  currentPeriodEnd   DateTime
-  createdAt          DateTime  @default(now())
+  id               String    @id @default(cuid())
+  userId           String
+  stripeCustomerId String?
+  stripePriceId    String?
+  stripeSubId      String?
+  status           String?
+  currentPeriodEnd DateTime?
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("subscriptions")
 }
 
-// ─────────────── USAGE LOGS ───────────────
 model UsageLog {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
-  projectId   String?
-  agentType   AgentType?
-  tokensIn    Int       @default(0)
-  tokensOut   Int       @default(0)
-  cost        Float     @default(0)
-  createdAt   DateTime  @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String?
+  agentType String?
+  tokensIn  Int      @default(0)
+  tokensOut Int      @default(0)
+  cost      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@map("usage_logs")
 }
 
-// ─────────────── ENUMS ───────────────
-enum Plan {
-  FREE
-  PRO
-  TEAM
-  ENTERPRISE
-}
+model ModelPreference {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  preferences Json     // { "SUPERVISOR": "llama4", "FRONTEND": "kimi", ... }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-enum ProjectStatus {
-  PENDING
-  PLANNING
-  IN_PROGRESS
-  REVIEWING
-  COMPLETED
-  FAILED
-  ARCHIVED
-}
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-enum AgentType {
-  SUPERVISOR
-  FRONTEND
-  BACKEND
-  DATABASE
-  DEVOPS
-  QA
-  REVIEWER
-  SECURITY
-  DOCUMENTATION
-}
-
-enum AgentStatus {
-  IDLE
-  RUNNING
-  WAITING
-  COMPLETED
-  FAILED
-}
-
-enum LogLevel {
-  DEBUG
-  INFO
-  WARNING
-  ERROR
-}
-
-enum MessageRole {
-  USER
-  SUPERVISOR
-  AGENT
-  SYSTEM
-}
-
-enum SubStatus {
-  ACTIVE
-  CANCELLED
-  PAST_DUE
-  TRIALING
+  @@map("model_preferences")
 }

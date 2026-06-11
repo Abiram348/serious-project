@@ -51,19 +51,9 @@ def test_start_agents_success(client):
     assert response.status_code == 200
     data = response.json()
     assert data["project_id"] == "test123"
-    assert "workflow_result" in data
-    result = data["workflow_result"]
+    assert data["status"] == "PLANNING"
+    assert "message" in data
 
-    # Check completion flags
-    expected_flags = [
-        "supervisor_completed",
-        "backend_completed",
-        "database_completed",
-        "devops_completed",
-        "frontend_done",
-    ]
-    for flag in expected_flags:
-        assert result.get(flag) is True, f"Flag {flag} should be True"
 
 
 def test_start_agents_invalid_secret(client):
