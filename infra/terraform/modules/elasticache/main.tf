@@ -30,6 +30,10 @@ resource "aws_security_group" "redis" {
     Name        = "${var.project_name}-${var.environment}-redis-sg"
     Environment = var.environment
   }
+
+  lifecycle {
+    ignore_changes = [ingress, egress]
+  }
 }
 
 resource "aws_elasticache_replication_group" "main" {

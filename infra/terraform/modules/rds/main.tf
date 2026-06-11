@@ -36,6 +36,10 @@ resource "aws_security_group" "rds" {
     Name        = "${var.project_name}-${var.environment}-rds-sg"
     Environment = var.environment
   }
+
+  lifecycle {
+    ignore_changes = [ingress, egress]
+  }
 }
 
 resource "aws_db_parameter_group" "main" {

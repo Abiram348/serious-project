@@ -117,6 +117,10 @@ resource "aws_security_group" "cluster" {
     Name        = "${var.cluster_name}-cluster-sg"
     Environment = var.environment
   }
+
+  lifecycle {
+    ignore_changes = [ingress, egress]
+  }
 }
 
 resource "aws_security_group_rule" "cluster_ingress" {
@@ -143,6 +147,10 @@ resource "aws_security_group" "node" {
   tags = {
     Name        = "${var.cluster_name}-node-sg"
     Environment = var.environment
+  }
+
+  lifecycle {
+    ignore_changes = [ingress, egress]
   }
 }
 
