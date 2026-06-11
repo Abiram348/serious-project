@@ -33,9 +33,10 @@ RUN apk add --no-cache openssl
 WORKDIR /app
 RUN npm install -g pnpm@${PNPM_VERSION}
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/db/node_modules ./packages/db/node_modules
-COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
+# Copy the entire dependency tree from deps (handles hoisted vs isolated node_modules)
+COPY --from=deps /app ./
+
+# Overwrite with full source code
 COPY package.json pnpm-workspace.yaml ./
 COPY packages/db ./packages/db
 COPY apps/api ./apps/api
@@ -59,13 +60,12 @@ RUN apk add --no-cache dumb-init
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 apijs
 
-# Copy built artifacts
+# Copy built artifacts + Prisma client
 COPY --from=builder --chown=apijs:nodejs /app/apps/api/dist ./dist
-COPY --from=builder --chown=apijs:nodejs /app/apps/api/node_modules ./node_modules
-COPY --from=builder --chown=apijs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=apijs:nodejs /app/packages/db ./packages/db
+COPY --from=builder --chown=apijs:nodejs /app/node_modules ./node_modules
 
-# Prisma schema + client
+# Prisma schema (needed for runtime migrations)
 COPY --from=builder --chown=apijs:nodejs /app/packages/db/prisma ./packages/db/prisma
 
 # Migration entrypoint script

@@ -32,8 +32,10 @@ FROM node:${NODE_VERSION}-alpine AS builder
 WORKDIR /app
 RUN npm install -g pnpm@${PNPM_VERSION}
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
+# Copy the entire dependency tree from deps
+COPY --from=deps /app ./
+
+# Overwrite with full source code
 COPY package.json pnpm-workspace.yaml ./
 COPY apps/web ./apps/web
 
