@@ -180,7 +180,6 @@ jobs:
           file: ./apps/web/Dockerfile
           push: true
           tags: ${{ env.ECR_REGISTRY }}/swarmdev/web:${{ github.sha }},${{ env.ECR_REGISTRY }}/swarmdev/web:latest
-          cache-from: type=gha,scope=web
 
       - name: Build and push api image
         uses: docker/build-push-action@v5
@@ -189,7 +188,6 @@ jobs:
           file: ./apps/api/Dockerfile
           push: true
           tags: ${{ env.ECR_REGISTRY }}/swarmdev/api:${{ github.sha }},${{ env.ECR_REGISTRY }}/swarmdev/api:latest
-          cache-from: type=gha,scope=api
 
       - name: Build and push orchestrator image
         uses: docker/build-push-action@v5
@@ -198,7 +196,6 @@ jobs:
           file: ./apps/orchestrator/Dockerfile
           push: true
           tags: ${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ github.sha }},${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:latest
-          cache-from: type=gha,scope=orchestrator
 
       # Trivy scan on pushed images
       - name: Install Trivy
