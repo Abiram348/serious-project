@@ -44,7 +44,9 @@ COPY apps/api ./apps/api
 # Generate Prisma client and build TypeScript
 WORKDIR /app/apps/api
 ENV NODE_ENV=production
-RUN npx prisma generate --schema=../../packages/db/prisma/schema.prisma
+# Ensure prisma CLI is available (peer dep may not be auto-installed by pnpm)
+RUN npm install -g prisma
+RUN prisma generate --schema=../../packages/db/prisma/schema.prisma
 RUN pnpm exec tsc
 
 # ═══════════════════════════════════════════════
