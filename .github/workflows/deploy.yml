@@ -77,11 +77,6 @@ jobs:
           kubectl rollout status deployment/staging-api -n swarmdev-staging --timeout=300s
           kubectl rollout status deployment/staging-orchestrator -n swarmdev-staging --timeout=300s
 
-      - name: Run DB migrations (Staging)
-        run: |
-          kubectl create job --from=cronjob/staging-api-migrate staging-api-migrate-${{ github.run_id }} -n swarmdev-staging || true
-          kubectl wait --for=condition=complete job/staging-api-migrate-${{ github.run_id }} -n swarmdev-staging --timeout=300s || true
-
       - name: Notify success
         if: success()
         run: |
@@ -137,11 +132,6 @@ jobs:
           kubectl rollout status deployment/prod-web -n swarmdev-prod --timeout=600s
           kubectl rollout status deployment/prod-api -n swarmdev-prod --timeout=600s
           kubectl rollout status deployment/prod-orchestrator -n swarmdev-prod --timeout=600s
-
-      - name: Run DB migrations (Production)
-        run: |
-          kubectl create job --from=cronjob/prod-api-migrate prod-api-migrate-${{ github.run_id }} -n swarmdev-prod || true
-          kubectl wait --for=condition=complete job/prod-api-migrate-${{ github.run_id }} -n swarmdev-prod --timeout=300s || true
 
       - name: Notify success
         if: success()
