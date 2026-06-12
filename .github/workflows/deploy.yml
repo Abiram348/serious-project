@@ -1,7 +1,9 @@
 name: Deploy SwarmDev
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
     inputs:
@@ -26,11 +28,15 @@ permissions:
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && (github.event.inputs.environment == 'staging' || github.event.inputs.environment == null)
+    if: >
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+      || (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'staging' || github.event.inputs.environment == null))
     environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -52,11 +58,13 @@ jobs:
           aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name swarmdev-staging
 
       - name: Deploy to EKS (Staging)
+        env:
+          IMAGE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           cd infra/k8s/overlays/staging
-          kustomize edit set image swarmdev-web=${{ env.ECR_REGISTRY }}/swarmdev/web:${{ github.sha }}
-          kustomize edit set image swarmdev-api=${{ env.ECR_REGISTRY }}/swarmdev/api:${{ github.sha }}
-          kustomize edit set image swarmdev-orchestrator=${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ github.sha }}
+          kustomize edit set image swarmdev-web=${{ env.ECR_REGISTRY }}/swarmdev/web:${{ env.IMAGE_SHA }}
+          kustomize edit set image swarmdev-api=${{ env.ECR_REGISTRY }}/swarmdev/api:${{ env.IMAGE_SHA }}
+          kustomize edit set image swarmdev-orchestrator=${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ env.IMAGE_SHA }}
           kubectl apply -k .
 
       - name: Wait for rollout (Staging)
@@ -73,21 +81,23 @@ jobs:
       - name: Notify success
         if: success()
         run: |
-          echo "Staging deployment succeeded for commit ${{ github.sha }}"
+          echo "Staging deployment succeeded for commit ${{ github.event.workflow_run.head_sha || github.sha }}"
 
       - name: Notify failure
         if: failure()
         run: |
-          echo "Staging deployment failed for commit ${{ github.sha }}"
+          echo "Staging deployment failed for commit ${{ github.event.workflow_run.head_sha || github.sha }}"
 
   deploy-production:
     runs-on: ubuntu-latest
     needs: deploy-staging
-    if: github.ref == 'refs/heads/main' && github.event.inputs.environment == 'production'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -109,11 +119,13 @@ jobs:
           aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name swarmdev-production
 
       - name: Deploy to EKS (Production)
+        env:
+          IMAGE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           cd infra/k8s/overlays/production
-          kustomize edit set image swarmdev-web=${{ env.ECR_REGISTRY }}/swarmdev/web:${{ github.sha }}
-          kustomize edit set image swarmdev-api=${{ env.ECR_REGISTRY }}/swarmdev/api:${{ github.sha }}
-          kustomize edit set image swarmdev-orchestrator=${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ github.sha }}
+          kustomize edit set image swarmdev-web=${{ env.ECR_REGISTRY }}/swarmdev/web:${{ env.IMAGE_SHA }}
+          kustomize edit set image swarmdev-api=${{ env.ECR_REGISTRY }}/swarmdev/api:${{ env.IMAGE_SHA }}
+          kustomize edit set image swarmdev-orchestrator=${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ env.IMAGE_SHA }}
           kubectl apply -k .
 
       - name: Wait for rollout (Production)
@@ -130,9 +142,9 @@ jobs:
       - name: Notify success
         if: success()
         run: |
-          echo "Production deployment succeeded for commit ${{ github.sha }}"
+          echo "Production deployment succeeded for commit ${{ github.event.workflow_run.head_sha || github.sha }}"
 
       - name: Notify failure
         if: failure()
         run: |
-          echo "Production deployment failed for commit ${{ github.sha }}"
+          echo "Production deployment failed for commit ${{ github.event.workflow_run.head_sha || github.sha }}"
