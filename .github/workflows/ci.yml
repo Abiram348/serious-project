@@ -211,6 +211,7 @@ jobs:
       - name: Scan orchestrator image with Trivy
         run: trivy image --format sarif --output trivy-orchestrator.sarif --exit-code 0 ${{ env.ECR_REGISTRY }}/swarmdev/orchestrator:${{ github.sha }}
 
+      # Note: ECR repos use MUTABLE tags (required for :latest overwrite on each push)
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
