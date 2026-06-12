@@ -83,7 +83,7 @@ jobs:
   deploy-production:
     runs-on: ubuntu-latest
     needs: deploy-staging
-    if: github.ref == 'refs/heads/main' && (github.event.inputs.environment == 'production' || github.event.inputs.environment == null)
+    if: github.ref == 'refs/heads/main' && github.event.inputs.environment == 'production'
     environment: production
     steps:
       - name: Checkout
