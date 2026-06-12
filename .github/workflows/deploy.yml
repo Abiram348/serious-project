@@ -16,6 +16,10 @@ on:
           - staging
           - production
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.environment || 'staging' }}
+  cancel-in-progress: false
+
 env:
   AWS_REGION: us-east-1
   AWS_ACCOUNT_ID: "920373016840"
