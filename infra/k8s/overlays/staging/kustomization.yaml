@@ -8,12 +8,8 @@ namePrefix: staging-
 resources:
   - ../../base
   # Staging uses AWS RDS (created by Terraform) — no in-cluster postgres
-  - ../../base/redis/deployment.yaml
-  - ../../base/redis/service.yaml
-  - ../../base/redis/pvc.yaml
-  - ../../base/qdrant/statefulset.yaml
-  - ../../base/qdrant/service.yaml
-  - ../../base/qdrant/pdb.yaml
+  - ../../base/redis
+  - ../../base/qdrant
 
 commonLabels:
   app.kubernetes.io/env: staging
@@ -28,16 +24,32 @@ replicas:
 
 images:
   - name: swarmdev-web
-    newName: ghcr.io/swarmdev/web
-    newTag: staging-latest
+    newName: 920373016840.dkr.ecr.us-east-1.amazonaws.com/swarmdev/web
+    newTag: latest
   - name: swarmdev-api
-    newName: ghcr.io/swarmdev/api
-    newTag: staging-latest
+    newName: 920373016840.dkr.ecr.us-east-1.amazonaws.com/swarmdev/api
+    newTag: latest
   - name: swarmdev-orchestrator
-    newName: ghcr.io/swarmdev/orchestrator
-    newTag: staging-latest
+    newName: 920373016840.dkr.ecr.us-east-1.amazonaws.com/swarmdev/orchestrator
+    newTag: latest
 
 patches:
+  - target:
+      kind: ConfigMap
+      name: swarmdev-config
+    patch: |
+      - op: replace
+        path: /data/NODE_ENV
+        value: "staging"
+      - op: replace
+        path: /data/NEXT_PUBLIC_SOCKET_URL
+        value: "http://staging-api.swarmdev.io"
+      - op: replace
+        path: /data/NEXT_PUBLIC_API_URL
+        value: "http://staging-api.swarmdev.io"
+      - op: replace
+        path: /data/ORCHESTRATOR_URL
+        value: "http://staging-orchestrator:8000"
   - target:
       kind: Ingress
       name: swarmdev
@@ -48,9 +60,14 @@ patches:
       - op: replace
         path: /spec/rules/1/host
         value: staging-api.swarmdev.io
-      - op: replace
+      # Staging uses HTTP-only ALB (no ACM cert)
+      - op: remove
         path: /metadata/annotations/alb.ingress.kubernetes.io~1certificate-arn
-        value: arn:aws:acm:us-east-1:ACCOUNT_ID:certificate/STAGING_CERT_ID
+      - op: remove
+        path: /metadata/annotations/alb.ingress.kubernetes.io~1ssl-redirect
+      - op: replace
+        path: /metadata/annotations/alb.ingress.kubernetes.io~1listen-ports
+        value: '[{"HTTP": 80}]'
   - target:
       kind: Ingress
       name: swarmdev-internal

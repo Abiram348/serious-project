@@ -56,3 +56,10 @@ packages/db/prisma/migrations/**/migration_lock.toml
 # Terraform secrets
 *.tfvars
 !*.tfvars.example
+
+# Terraform state and providers
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+plan.out

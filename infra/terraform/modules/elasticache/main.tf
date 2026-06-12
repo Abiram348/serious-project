@@ -61,4 +61,8 @@ resource "aws_elasticache_replication_group" "main" {
     Name        = "${var.project_name}-${var.environment}-redis"
     Environment = var.environment
   }
+
+  lifecycle {
+    ignore_changes = [auth_token]
+  }
 }
