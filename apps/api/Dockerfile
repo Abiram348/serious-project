@@ -3,6 +3,7 @@
 # ──────────────────────────────────────────────
 # SwarmDev API — Express.js + Prisma Dockerfile
 # Multi-stage: deps → builder → runner
+# Uses Debian slim for glibc compatibility with Prisma
 # ──────────────────────────────────────────────
 
 ARG NODE_VERSION=22
@@ -11,8 +12,11 @@ ARG PNPM_VERSION=11.1.3
 # ═══════════════════════════════════════════════
 # Stage 1 — Dependencies
 # ═══════════════════════════════════════════════
-FROM node:${NODE_VERSION}-alpine AS deps
-RUN apk add --no-cache libc6-compat openssl
+FROM node:${NODE_VERSION}-slim AS deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 RUN npm install -g pnpm@${PNPM_VERSION}
@@ -28,8 +32,11 @@ RUN pnpm install --frozen-lockfile --filter api
 # ═══════════════════════════════════════════════
 # Stage 2 — Builder
 # ═══════════════════════════════════════════════
-FROM node:${NODE_VERSION}-alpine AS builder
-RUN apk add --no-cache openssl
+FROM node:${NODE_VERSION}-slim AS builder
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 RUN npm install -g pnpm@${PNPM_VERSION}
 
@@ -44,23 +51,24 @@ COPY apps/api ./apps/api
 # Generate Prisma client and build TypeScript
 WORKDIR /app/apps/api
 ENV NODE_ENV=production
-# Ensure prisma CLI is available (peer dep may not be auto-installed by pnpm)
-RUN npm install -g prisma
-RUN prisma generate --schema=../../packages/db/prisma/schema.prisma
+RUN npx prisma generate --schema=../../packages/db/prisma/schema.prisma
 RUN pnpm exec tsc
 
 # ═══════════════════════════════════════════════
 # Stage 3 — Runner
 # ═══════════════════════════════════════════════
-FROM node:${NODE_VERSION}-alpine AS runner
+FROM node:${NODE_VERSION}-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3001
 
-RUN apk add --no-cache dumb-init
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 apijs
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    dumb-init \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 --gid nodejs apijs
 
 # Copy built artifacts + Prisma client
 COPY --from=builder --chown=apijs:nodejs /app/apps/api/dist ./dist

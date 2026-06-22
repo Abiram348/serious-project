@@ -1,0 +1,93 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: SwarmDev
+      - generic [ref=e6]: abiram/marketplace-mvp
+      - generic [ref=e7]:
+        - img [ref=e8]
+        - text: main
+    - generic [ref=e11]:
+      - button "Share" [ref=e12]:
+        - img [ref=e13]
+        - text: Share
+      - button "Deploy" [ref=e18]:
+        - text: Deploy
+        - img [ref=e19]
+  - generic [ref=e23]:
+    - generic [ref=e25]: 0%
+    - generic [ref=e26]: ETA starting…
+  - generic [ref=e27]:
+    - complementary [ref=e30]:
+      - generic [ref=e31]:
+        - text: Files
+        - generic [ref=e32]:
+          - button [ref=e33]:
+            - img [ref=e34]
+          - button [ref=e37]:
+            - img [ref=e38]
+          - button [ref=e40]:
+            - img [ref=e41]
+      - generic [ref=e45]:
+        - img [ref=e47]
+        - paragraph [ref=e49]: No files yet
+        - paragraph [ref=e50]: Agents will generate files as they build.
+    - separator
+    - generic [ref=e53]:
+      - generic [ref=e56]:
+        - generic [ref=e58]:
+          - button [ref=e59]:
+            - img [ref=e60]
+          - button "Preview" [ref=e62]:
+            - img [ref=e63]
+            - text: Preview
+        - generic [ref=e67]: Select a file to start editing
+      - separator
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - button "Terminal" [ref=e73]: Terminal
+          - button "Agent logs" [ref=e74]
+        - generic [ref=e75]:
+          - button [ref=e76]:
+            - img [ref=e77]
+          - button [ref=e80]:
+            - img [ref=e81]
+    - separator
+    - complementary [ref=e88]:
+      - generic [ref=e89]:
+        - generic [ref=e90]: Swarm chat
+        - button [ref=e91]:
+          - img [ref=e92]
+      - generic [ref=e96]:
+        - generic [ref=e98]: Build a marketplace MVP with listings, checkout and seller dashboard
+        - generic [ref=e99]:
+          - generic [ref=e100]: supervisor2m
+          - generic [ref=e101]:
+            - text: Plan ready — decomposed into 9 tasks. Database first, then parallel backend/frontend.
+            - generic [ref=e102]:
+              - generic [ref=e103]:
+                - img [ref=e105]
+                - text: Prisma schema + migrations
+              - generic [ref=e107]:
+                - img [ref=e109]
+                - text: Auth + session middleware
+              - generic [ref=e111]: Listings grid + checkout flow
+        - generic [ref=e112]:
+          - generic [ref=e113]: backend-agent40s
+          - generic [ref=e114]: Generated /api/listings, /api/checkout with Stripe stub. @reviewer please verify auth middleware.
+        - generic [ref=e115]:
+          - generic [ref=e116]: qa-agent12s
+          - generic [ref=e117]:
+            - text: "Unit suite finished on apps/api:"
+            - generic [ref=e118]:
+              - img [ref=e120]
+              - generic [ref=e122]:
+                - generic [ref=e123]: 48/48 unit tests passing
+                - generic [ref=e124]: vitest · 3.4s
+      - generic [ref=e125]:
+        - generic [ref=e126]: "@supervisor@backend@qa"
+        - generic [ref=e127]:
+          - button [ref=e128]:
+            - img [ref=e129]
+          - textbox "Message the swarm — use @ to mention an agent" [ref=e130]
+          - button [disabled] [ref=e131]:
+            - img [ref=e132]

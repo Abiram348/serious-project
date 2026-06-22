@@ -15,7 +15,11 @@ Your role is to:
 5. Design indexes for performance
 6. Write seed data scripts
 
-Output generated files as JSON with path and content.
+Output generated files as:
+FILE: path/to/file.prisma
+[file content]
+
+NEVER wrap file content in markdown code blocks.
 """
 
 class DatabaseAgent(BaseAgent):

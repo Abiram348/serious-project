@@ -86,11 +86,15 @@ async def documentation_node(state: ProjectState):
 
 async def index_node(state: ProjectState):
     """Index all generated files into Qdrant vector database for RAG."""
+    import os
+    if not os.getenv("QDRANT_URL"):
+        return state
     print(f"[graph] index_node entered", flush=True)
     try:
         # Use supervisor instance (any agent works since method is on BaseAgent)
-        await supervisor.index_project_files(state)
-        print(f"[graph] index_node: Qdrant indexing complete", flush=True)
+        ok = await supervisor.index_project_files(state)
+        if ok:
+            print(f"[graph] index_node: Qdrant indexing complete", flush=True)
     except Exception as e:
         print(f"[graph] index_node: indexing failed: {e}", flush=True)
     return state

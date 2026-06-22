@@ -11,6 +11,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 from openai import AsyncOpenAI
 from tools.search_tools import SearchTools
+import httpx
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "ollama")
@@ -103,12 +104,21 @@ class BaseAgent(ABC):
     def _parse_files(self, content: str) -> Dict[str, str]:
         """Parse generated files from LLM response.
 
-        Expected format in content:
-        FILE: path/to/file.tsx
-        [file content here]
+        Supports multiple output formats that LLMs commonly use:
+        1. Explicit FILE markers:
+           FILE: path/to/file.tsx
+           [file content here]
 
-        FILE: path/to/another/file.ts
-        [file content here]
+        2. Markdown code blocks with filepath comment:
+           ```tsx
+           // filepath: path/to/file.tsx
+           [content]
+           ```
+
+        3. Markdown code blocks with filename in fence info:
+           ```tsx path/to/file.tsx
+           [content]
+           ```
 
         Args:
             content: LLM response containing file markers
@@ -120,20 +130,78 @@ class BaseAgent(ABC):
         lines = content.split('\n')
         current_file: Optional[str] = None
         current_content: List[str] = []
+        in_fence = False
+        fence_file_hint: Optional[str] = None
 
-        for line in lines:
-            if line.startswith('FILE: '):
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+
+            # Handle markdown fences
+            if stripped.startswith('```'):
+                if not in_fence:
+                    # Opening fence — check for filename hint: ```tsx path/to/file.tsx
+                    fence_parts = stripped.split()
+                    if len(fence_parts) >= 2:
+                        hint = fence_parts[-1]
+                        # If last part looks like a path (contains / or .), use it
+                        if '/' in hint or ('.' in hint and hint not in ('tsx', 'ts', 'jsx', 'js', 'py', 'css', 'html', 'json', 'md', 'yaml', 'yml', 'sql', 'prisma', 'sh', 'bash')):
+                            fence_file_hint = hint
+                    in_fence = True
+                else:
+                    # Closing fence — save file if we have one
+                    in_fence = False
+                    if current_file and current_content:
+                        files[current_file] = '\n'.join(current_content).strip()
+                        current_file = None
+                        current_content = []
+                    fence_file_hint = None
+                continue
+
+            # FILE: marker (works inside or outside fences)
+            if stripped.startswith('FILE: '):
                 # Save previous file if exists
-                if current_file:
+                if current_file and current_content:
                     files[current_file] = '\n'.join(current_content).strip()
-                current_file = line.replace('FILE: ', '').strip()
+                current_file = stripped.replace('FILE: ', '').strip()
                 current_content = []
-            elif current_file is not None:
+                continue
+
+            # filepath comment inside code
+            if stripped.startswith('// filepath:') or stripped.startswith('# filepath:') or stripped.startswith('<!-- filepath:') or stripped.startswith('-- filepath:'):
+                # Save previous file if exists
+                if current_file and current_content:
+                    files[current_file] = '\n'.join(current_content).strip()
+                # Extract path after the colon
+                path_part = stripped.split(':', 1)[1].strip().rstrip(' -->').rstrip('-->')
+                current_file = path_part
+                current_content = []
+                continue
+
+            # If we have a fence hint and are inside a fence but no explicit file yet
+            if in_fence and fence_file_hint and not current_file:
+                current_file = fence_file_hint
+                fence_file_hint = None
+
+            # Accumulate content if we know which file it belongs to
+            if current_file is not None:
                 current_content.append(line)
 
         # Save last file
-        if current_file:
+        if current_file and current_content:
             files[current_file] = '\n'.join(current_content).strip()
+
+        # Fallback: try to parse JSON if no files were found via FILE markers
+        if not files:
+            try:
+                parsed = self._parse_json_from_response(content)
+                if isinstance(parsed, dict):
+                    for path, file_data in parsed.items():
+                        if isinstance(file_data, dict):
+                            files[path] = file_data.get("content", "")
+                        elif isinstance(file_data, str):
+                            files[path] = file_data
+            except Exception:
+                pass
 
         return files
 
@@ -176,8 +244,33 @@ class BaseAgent(ABC):
                         return None
         return None
 
+    async def _persist_file_to_api(self, project_id: str, path: str, content: str, language: str, created_by: str):
+        """Persist a single file to the API database immediately.
+
+        This ensures files are clickable in the IDE as soon as they appear.
+        """
+        api_url = os.getenv("API_URL", "http://localhost:3001")
+        api_secret = os.getenv("API_SECRET", "dev-secret")
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.post(
+                    f"{api_url}/api/internal/projects/{project_id}/files/{path.lstrip('/')}",
+                    json={"content": content, "language": language, "createdBy": created_by},
+                    headers={
+                        "X-API-SECRET": api_secret,
+                        "Content-Type": "application/json",
+                    },
+                    timeout=30.0,
+                )
+        except Exception as e:
+            # Non-blocking: log but don't fail the pipeline if API is temporarily unreachable
+            print(f"[BaseAgent] Failed to persist file {path} to API: {e}")
+
     async def write_files_to_state(self, state: Dict[str, Any], files: Dict[str, str], created_by: Optional[str] = None):
         """Write generated files to the project state with metadata.
+
+        Also emits file_created socket events and persists to API so the IDE
+        shows files in real-time and they are immediately clickable.
 
         Args:
             state: Current project state
@@ -188,12 +281,24 @@ class BaseAgent(ABC):
             state["files"] = {}
 
         agent_name = created_by or self.name
+        project_id = state.get("project_id", "unknown")
         for path, content in files.items():
+            language = self._get_language_from_path(path)
             state["files"][path] = {
                 "content": content,
                 "createdBy": agent_name,
-                "language": self._get_language_from_path(path)
+                "language": language
             }
+            # Emit real-time file creation event to IDE
+            await self.emit_event("file_created", {
+                "path": path,
+                "content": content,
+                "language": language,
+                "agentType": agent_name,
+                "projectId": project_id,
+            })
+            # Persist to API so files are immediately clickable
+            await self._persist_file_to_api(project_id, path, content, language, agent_name)
 
         await self.log(state, "INFO", f"Added {len(files)} files to project state")
 
@@ -346,6 +451,10 @@ class BaseAgent(ABC):
         Returns:
             True if indexing succeeded
         """
+        import os
+        if not os.getenv("QDRANT_URL"):
+            return False
+
         try:
             files = self.get_files(state)
             if not files:
@@ -383,6 +492,10 @@ class BaseAgent(ABC):
         Returns:
             List of search results
         """
+        import os
+        if not os.getenv("QDRANT_URL"):
+            return []
+
         try:
             search = self._get_search_tools()
             project_id = state.get("project_id", "unknown")

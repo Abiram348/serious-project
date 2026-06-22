@@ -89,7 +89,7 @@ async def _update_project_status(project_id: str, status: str, error: str = ""):
             if error:
                 payload["error"] = error
             await client.patch(
-                f"{api_url}/api/projects/{project_id}",
+                f"{api_url}/api/internal/projects/{project_id}/status",
                 json=payload,
                 headers={
                     "X-API-SECRET": api_secret,

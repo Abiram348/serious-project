@@ -1,0 +1,474 @@
+- generic [ref=e1]:
+  - alert [ref=e342]
+  - generic [ref=e420]:
+    - banner [ref=e421]:
+      - generic [ref=e422]:
+        - generic [ref=e428]: SwarmDev
+        - generic [ref=e430]:
+          - generic [ref=e431]: abiram
+          - generic [ref=e432]: /
+          - generic [ref=e433]: build-a-simple-todo
+        - generic [ref=e434]:
+          - img [ref=e435]
+          - text: main
+      - generic [ref=e438]:
+        - button "Share" [ref=e444] [cursor=pointer]:
+          - img [ref=e445]
+          - text: Share
+        - button "Deploy" [ref=e450] [cursor=pointer]:
+          - text: Deploy
+          - img [ref=e451]
+    - generic [ref=e454]:
+      - generic [ref=e455]:
+        - generic [ref=e456]:
+          - img [ref=e1344]
+          - generic [ref=e458]: documentation
+        - generic [ref=e459]:
+          - img [ref=e664]
+          - generic [ref=e461]: security
+        - generic [ref=e462]:
+          - img [ref=e666]
+          - generic [ref=e464]: reviewer
+        - generic [ref=e465]:
+          - img [ref=e668]
+          - generic [ref=e467]: qa
+        - generic [ref=e468]:
+          - img [ref=e670]
+          - generic [ref=e470]: devops
+        - generic [ref=e471]:
+          - img [ref=e672]
+          - generic [ref=e473]: database
+        - generic [ref=e474]:
+          - img [ref=e674]
+          - generic [ref=e476]: backend
+        - generic [ref=e477]:
+          - img [ref=e676]
+          - generic [ref=e479]: frontend
+        - generic [ref=e480]:
+          - img [ref=e656]
+          - generic [ref=e482]: supervisor
+      - generic [ref=e483]:
+        - generic [ref=e486]: 100%
+        - generic [ref=e487]: ETA done
+    - generic [ref=e488]:
+      - complementary [ref=e491]:
+        - generic [ref=e492]:
+          - generic [ref=e493]: Files
+          - generic [ref=e494]:
+            - button [ref=e495] [cursor=pointer]:
+              - img [ref=e496]
+            - button [ref=e499] [cursor=pointer]:
+              - img [ref=e500]
+            - button [ref=e502] [cursor=pointer]:
+              - img [ref=e503]
+        - generic [ref=e506]:
+          - button ".github" [ref=e678] [cursor=pointer]:
+            - img [ref=e679]
+            - img [ref=e681]
+            - generic [ref=e684]: .github
+          - button "workflows" [ref=e685] [cursor=pointer]:
+            - img [ref=e686]
+            - img [ref=e688]
+            - generic [ref=e691]: workflows
+          - button "ci-cd.yml" [ref=e692] [cursor=pointer]:
+            - img [ref=e693]
+            - generic [ref=e696]: ci-cd.yml
+          - button "app" [ref=e697] [cursor=pointer]:
+            - img [ref=e698]
+            - img [ref=e700]
+            - generic [ref=e703]: app
+          - button "globals.css" [ref=e704] [cursor=pointer]:
+            - img [ref=e705]
+            - generic [ref=e708]: globals.css
+          - button "layout.tsx" [ref=e709] [cursor=pointer]:
+            - img [ref=e710]
+            - generic [ref=e715]: layout.tsx
+          - button "page.tsx" [active] [ref=e716] [cursor=pointer]:
+            - img [ref=e717]
+            - generic [ref=e722]: page.tsx
+          - button "backend" [ref=e723] [cursor=pointer]:
+            - img [ref=e724]
+            - img [ref=e726]
+            - generic [ref=e729]: backend
+          - button "src" [ref=e730] [cursor=pointer]:
+            - img [ref=e731]
+            - img [ref=e733]
+            - generic [ref=e736]: src
+          - button "__tests__" [ref=e737] [cursor=pointer]:
+            - img [ref=e738]
+            - img [ref=e740]
+            - generic [ref=e743]: __tests__
+          - button "integration" [ref=e744] [cursor=pointer]:
+            - img [ref=e745]
+            - img [ref=e747]
+            - generic [ref=e750]: integration
+          - button "auth.integration.test.ts" [ref=e751] [cursor=pointer]:
+            - img [ref=e752]
+            - generic [ref=e757]: auth.integration.test.ts
+          - button "middleware" [ref=e758] [cursor=pointer]:
+            - img [ref=e759]
+            - img [ref=e761]
+            - generic [ref=e764]: middleware
+          - button "auth.middleware.test.ts" [ref=e765] [cursor=pointer]:
+            - img [ref=e766]
+            - generic [ref=e771]: auth.middleware.test.ts
+          - button "errorHandler.test.ts" [ref=e772] [cursor=pointer]:
+            - img [ref=e773]
+            - generic [ref=e778]: errorHandler.test.ts
+          - button "validation.middleware.test.ts" [ref=e779] [cursor=pointer]:
+            - img [ref=e780]
+            - generic [ref=e785]: validation.middleware.test.ts
+          - button "services" [ref=e786] [cursor=pointer]:
+            - img [ref=e787]
+            - img [ref=e789]
+            - generic [ref=e792]: services
+          - button "auth.service.test.ts" [ref=e793] [cursor=pointer]:
+            - img [ref=e794]
+            - generic [ref=e799]: auth.service.test.ts
+          - button "todo.service.test.ts" [ref=e800] [cursor=pointer]:
+            - img [ref=e801]
+            - generic [ref=e806]: todo.service.test.ts
+          - button "validators" [ref=e807] [cursor=pointer]:
+            - img [ref=e808]
+            - img [ref=e810]
+            - generic [ref=e813]: validators
+          - button "auth.validator.test.ts" [ref=e814] [cursor=pointer]:
+            - img [ref=e815]
+            - generic [ref=e820]: auth.validator.test.ts
+          - button "todo.validator.test.ts" [ref=e821] [cursor=pointer]:
+            - img [ref=e822]
+            - generic [ref=e827]: todo.validator.test.ts
+          - button ".dockerignore" [ref=e828] [cursor=pointer]:
+            - img [ref=e829]
+            - generic [ref=e832]: .dockerignore
+          - button ".env.example" [ref=e833] [cursor=pointer]:
+            - img [ref=e834]
+            - generic [ref=e837]: .env.example
+          - button "Dockerfile" [ref=e838] [cursor=pointer]:
+            - img [ref=e839]
+            - generic [ref=e842]: Dockerfile
+          - button "docs" [ref=e843] [cursor=pointer]:
+            - img [ref=e844]
+            - img [ref=e846]
+            - generic [ref=e849]: docs
+          - button "architecture.md" [ref=e850] [cursor=pointer]:
+            - img [ref=e851]
+            - generic [ref=e854]: architecture.md
+          - button "openapi.yaml" [ref=e855] [cursor=pointer]:
+            - img [ref=e856]
+            - generic [ref=e859]: openapi.yaml
+          - button "frontend" [ref=e860] [cursor=pointer]:
+            - img [ref=e861]
+            - img [ref=e863]
+            - generic [ref=e866]: frontend
+          - button ".dockerignore" [ref=e867] [cursor=pointer]:
+            - img [ref=e868]
+            - generic [ref=e871]: .dockerignore
+          - button ".env.example" [ref=e872] [cursor=pointer]:
+            - img [ref=e873]
+            - generic [ref=e876]: .env.example
+          - button "Dockerfile" [ref=e877] [cursor=pointer]:
+            - img [ref=e878]
+            - generic [ref=e881]: Dockerfile
+          - button "k8s" [ref=e882] [cursor=pointer]:
+            - img [ref=e883]
+            - img [ref=e885]
+            - generic [ref=e888]: k8s
+          - button "backend-configmap.yaml" [ref=e889] [cursor=pointer]:
+            - img [ref=e890]
+            - generic [ref=e893]: backend-configmap.yaml
+          - button "backend-deployment.yaml" [ref=e894] [cursor=pointer]:
+            - img [ref=e895]
+            - generic [ref=e898]: backend-deployment.yaml
+          - button "backend-service.yaml" [ref=e899] [cursor=pointer]:
+            - img [ref=e900]
+            - generic [ref=e903]: backend-service.yaml
+          - button "frontend-configmap.yaml" [ref=e904] [cursor=pointer]:
+            - img [ref=e905]
+            - generic [ref=e908]: frontend-configmap.yaml
+          - button "frontend-deployment.yaml" [ref=e909] [cursor=pointer]:
+            - img [ref=e910]
+            - generic [ref=e913]: frontend-deployment.yaml
+          - button "frontend-service.yaml" [ref=e914] [cursor=pointer]:
+            - img [ref=e915]
+            - generic [ref=e918]: frontend-service.yaml
+          - button "ingress.yaml" [ref=e919] [cursor=pointer]:
+            - img [ref=e920]
+            - generic [ref=e923]: ingress.yaml
+          - button "prisma" [ref=e924] [cursor=pointer]:
+            - img [ref=e925]
+            - img [ref=e927]
+            - generic [ref=e930]: prisma
+          - button "schema.prisma" [ref=e931] [cursor=pointer]:
+            - img [ref=e932]
+            - generic [ref=e936]: schema.prisma
+          - button "seed.ts" [ref=e937] [cursor=pointer]:
+            - img [ref=e938]
+            - generic [ref=e943]: seed.ts
+          - button "src" [ref=e944] [cursor=pointer]:
+            - img [ref=e945]
+            - img [ref=e947]
+            - generic [ref=e950]: src
+          - button "config" [ref=e951] [cursor=pointer]:
+            - img [ref=e952]
+            - img [ref=e954]
+            - generic [ref=e957]: config
+          - button "index.ts" [ref=e958] [cursor=pointer]:
+            - img [ref=e959]
+            - generic [ref=e964]: index.ts
+          - button "controllers" [ref=e965] [cursor=pointer]:
+            - img [ref=e966]
+            - img [ref=e968]
+            - generic [ref=e971]: controllers
+          - button "auth.controller.ts" [ref=e972] [cursor=pointer]:
+            - img [ref=e973]
+            - generic [ref=e978]: auth.controller.ts
+          - button "todo.controller.ts" [ref=e979] [cursor=pointer]:
+            - img [ref=e980]
+            - generic [ref=e985]: todo.controller.ts
+          - button "database" [ref=e986] [cursor=pointer]:
+            - img [ref=e987]
+            - img [ref=e989]
+            - generic [ref=e992]: database
+          - button "index.ts" [ref=e993] [cursor=pointer]:
+            - img [ref=e994]
+            - generic [ref=e999]: index.ts
+          - button "middleware" [ref=e1000] [cursor=pointer]:
+            - img [ref=e1001]
+            - img [ref=e1003]
+            - generic [ref=e1006]: middleware
+          - button "auth.middleware.ts" [ref=e1007] [cursor=pointer]:
+            - img [ref=e1008]
+            - generic [ref=e1013]: auth.middleware.ts
+          - button "errorHandler.ts" [ref=e1014] [cursor=pointer]:
+            - img [ref=e1015]
+            - generic [ref=e1020]: errorHandler.ts
+          - button "notFound.ts" [ref=e1021] [cursor=pointer]:
+            - img [ref=e1022]
+            - generic [ref=e1027]: notFound.ts
+          - button "validation.middleware.ts" [ref=e1028] [cursor=pointer]:
+            - img [ref=e1029]
+            - generic [ref=e1034]: validation.middleware.ts
+          - button "routes" [ref=e1035] [cursor=pointer]:
+            - img [ref=e1036]
+            - img [ref=e1038]
+            - generic [ref=e1041]: routes
+          - button "auth.routes.ts" [ref=e1042] [cursor=pointer]:
+            - img [ref=e1043]
+            - generic [ref=e1048]: auth.routes.ts
+          - button "todo.routes.ts" [ref=e1049] [cursor=pointer]:
+            - img [ref=e1050]
+            - generic [ref=e1055]: todo.routes.ts
+          - button "services" [ref=e1056] [cursor=pointer]:
+            - img [ref=e1057]
+            - img [ref=e1059]
+            - generic [ref=e1062]: services
+          - button "auth.service.ts" [ref=e1063] [cursor=pointer]:
+            - img [ref=e1064]
+            - generic [ref=e1069]: auth.service.ts
+          - button "todo.service.ts" [ref=e1070] [cursor=pointer]:
+            - img [ref=e1071]
+            - generic [ref=e1076]: todo.service.ts
+          - button "types" [ref=e1077] [cursor=pointer]:
+            - img [ref=e1078]
+            - img [ref=e1080]
+            - generic [ref=e1083]: types
+          - button "index.ts" [ref=e1084] [cursor=pointer]:
+            - img [ref=e1085]
+            - generic [ref=e1090]: index.ts
+          - button "validators" [ref=e1091] [cursor=pointer]:
+            - img [ref=e1092]
+            - img [ref=e1094]
+            - generic [ref=e1097]: validators
+          - button "auth.validator.ts" [ref=e1098] [cursor=pointer]:
+            - img [ref=e1099]
+            - generic [ref=e1104]: auth.validator.ts
+          - button "todo.validator.ts" [ref=e1105] [cursor=pointer]:
+            - img [ref=e1106]
+            - generic [ref=e1111]: todo.validator.ts
+          - button "index.ts" [ref=e1112] [cursor=pointer]:
+            - img [ref=e1113]
+            - generic [ref=e1118]: index.ts
+          - button "store" [ref=e1119] [cursor=pointer]:
+            - img [ref=e1120]
+            - img [ref=e1122]
+            - generic [ref=e1125]: store
+          - button "index.ts" [ref=e1126] [cursor=pointer]:
+            - img [ref=e1127]
+            - generic [ref=e1132]: index.ts
+          - button "types" [ref=e1133] [cursor=pointer]:
+            - img [ref=e1134]
+            - img [ref=e1136]
+            - generic [ref=e1139]: types
+          - button "index.ts" [ref=e1140] [cursor=pointer]:
+            - img [ref=e1141]
+            - generic [ref=e1146]: index.ts
+          - button ".env.example" [ref=e1147] [cursor=pointer]:
+            - img [ref=e1148]
+            - generic [ref=e1151]: .env.example
+          - button ".gitignore" [ref=e1152] [cursor=pointer]:
+            - img [ref=e1154]
+            - generic [ref=e1157]: .gitignore
+          - button "CONTRIBUTING.md" [ref=e1158] [cursor=pointer]:
+            - img [ref=e1159]
+            - generic [ref=e1162]: CONTRIBUTING.md
+          - button "docker-compose.yml" [ref=e1163] [cursor=pointer]:
+            - img [ref=e1164]
+            - generic [ref=e1167]: docker-compose.yml
+          - button "package.json" [ref=e1168] [cursor=pointer]:
+            - img [ref=e1169]
+            - generic [ref=e1172]: package.json
+          - button "README.md" [ref=e1173] [cursor=pointer]:
+            - img [ref=e1174]
+            - generic [ref=e1177]: README.md
+          - button "test.txt" [ref=e1178] [cursor=pointer]:
+            - img [ref=e1179]
+            - generic [ref=e1182]: test.txt
+          - button "tsconfig.json" [ref=e1183] [cursor=pointer]:
+            - img [ref=e1184]
+            - generic [ref=e1187]: tsconfig.json
+      - separator [ref=e513]
+      - generic [ref=e516]:
+        - generic [ref=e519]:
+          - generic [ref=e520]:
+            - generic [ref=e1188]:
+              - button "Dockerfile" [ref=e1189] [cursor=pointer]:
+                - img [ref=e1190]
+                - generic [ref=e1193]: Dockerfile
+                - img [ref=e1195]
+              - button ".env.example" [ref=e1198] [cursor=pointer]:
+                - img [ref=e1199]
+                - generic [ref=e1202]: .env.example
+                - img [ref=e1204]
+              - button "todo.validator.ts" [ref=e1207] [cursor=pointer]:
+                - img [ref=e1208]
+                - generic [ref=e1213]: todo.validator.ts
+                - img [ref=e1215]
+              - button "auth.validator.ts" [ref=e1218] [cursor=pointer]:
+                - img [ref=e1219]
+                - generic [ref=e1224]: auth.validator.ts
+                - img [ref=e1226]
+              - button "index.ts" [ref=e1229] [cursor=pointer]:
+                - img [ref=e1230]
+                - generic [ref=e1235]: index.ts
+                - img [ref=e1237]
+              - button ".gitignore" [ref=e1240] [cursor=pointer]:
+                - img [ref=e1242]
+                - generic [ref=e1245]: .gitignore
+                - img [ref=e1247]
+              - button "page.tsx" [ref=e1347] [cursor=pointer]:
+                - img [ref=e1349]
+                - generic [ref=e1354]: page.tsx
+                - img [ref=e1356]
+            - generic [ref=e521]:
+              - button [ref=e522] [cursor=pointer]:
+                - img [ref=e523]
+              - button "Preview" [ref=e525] [cursor=pointer]:
+                - img [ref=e526]
+                - text: Preview
+          - code [ref=e1362]:
+            - generic [ref=e1363]:
+              - textbox "Editor content" [ref=e1364]
+              - textbox [ref=e1365]
+              - generic [ref=e1367]:
+                - generic [ref=e1369]: "1"
+                - generic [ref=e1371]: "2"
+                - generic [ref=e1373]: "3"
+                - generic [ref=e1375]: "4"
+                - generic [ref=e1377]: "5"
+                - generic [ref=e1378]:
+                  - generic [ref=e1379] [cursor=pointer]: 
+                  - generic [ref=e1380]: "6"
+                - generic [ref=e1382]: "7"
+                - generic [ref=e1384]: "8"
+                - generic [ref=e1386]: "9"
+                - generic [ref=e1388]: "10"
+                - generic [ref=e1390]: "11"
+              - generic [ref=e1408]:
+                - generic [ref=e1410]: "'use client';"
+                - generic [ref=e1413]: "import React, { useEffect, useState } from 'react';"
+                - generic [ref=e1415]: "import { motion, AnimatePresence } from 'framer-motion';"
+                - generic [ref=e1417]: "import { useTheme } from 'next-themes';"
+                - generic [ref=e1419]: "import {"
+                - generic [ref=e1421]: CheckCircle2,
+                - generic [ref=e1423]: Circle,
+                - generic [ref=e1425]: Plus,
+                - generic [ref=e1427]: Search,
+                - generic [ref=e1429]: Trash2,
+        - separator [ref=e531]
+        - generic [ref=e534]:
+          - generic [ref=e535]:
+            - generic [ref=e536]:
+              - button "Terminal" [ref=e537] [cursor=pointer]: Terminal
+              - button "Agent logs" [ref=e539] [cursor=pointer]
+            - generic [ref=e540]:
+              - button [ref=e541] [cursor=pointer]:
+                - img [ref=e542]
+              - button [ref=e545] [cursor=pointer]:
+                - img [ref=e546]
+          - generic [ref=e553]:
+            - generic [ref=e556]:
+              - textbox "Terminal input" [ref=e557]
+              - generic [ref=e558]:
+                - generic [ref=e560]: ⚡ SwarmDev Terminal
+                - generic [ref=e562]: "project: cmqdjo7cx004lpfd1lfsl66ty"
+                - generic [ref=e565]: ❯
+            - generic [ref=e570]:
+              - textbox "Terminal input" [ref=e571]
+              - generic [ref=e572]:
+                - generic [ref=e574]: ⚡ SwarmDev Terminal
+                - generic [ref=e576]: "project: cmqdjo7cx004lpfd1lfsl66ty"
+                - generic [ref=e579]: ❯
+      - separator [ref=e582]
+      - complementary [ref=e585]:
+        - generic [ref=e586]:
+          - generic [ref=e588]: Swarm chat
+          - button [ref=e594] [cursor=pointer]:
+            - img [ref=e595]
+        - generic [ref=e599]:
+          - generic [ref=e659]:
+            - generic [ref=e662]: supervisor
+            - generic [ref=e663]: Created plan with 9 tasks
+          - generic [ref=e1308]:
+            - generic [ref=e1311]: devops
+            - generic [ref=e1312]: DevOps configs generated (17 files)
+          - generic [ref=e1313]:
+            - generic [ref=e1316]: backend
+            - generic [ref=e1317]: Backend API generated (21 files)
+          - generic [ref=e1318]:
+            - generic [ref=e1321]: database
+            - generic [ref=e1322]: Database schema generated (2 files)
+          - generic [ref=e1323]:
+            - generic [ref=e1326]: frontend
+            - generic [ref=e1327]: Frontend code generated (5 files)
+          - generic [ref=e1328]:
+            - generic [ref=e1331]: qa
+            - generic [ref=e1332]: Tests generated (8 files)
+          - generic [ref=e1333]:
+            - generic [ref=e1336]: reviewer
+            - generic [ref=e1337]: "Review complete: 12 issues found"
+          - generic [ref=e1338]:
+            - generic [ref=e1341]: security
+            - generic [ref=e1342]: "Security audit: 22 findings (10 critical)"
+          - generic [ref=e1431]:
+            - generic [ref=e1434]: documentation
+            - generic [ref=e1435]: Documentation generated (4 files)
+          - generic [ref=e1436]:
+            - generic [ref=e1439]: system
+            - generic [ref=e1440]: "[WARNING] SUPERVISOR: Qdrant indexing failed: [Errno 61] Connection refused"
+        - generic [ref=e642]:
+          - generic [ref=e643]:
+            - generic [ref=e644] [cursor=pointer]: "@supervisor"
+            - generic [ref=e645] [cursor=pointer]: "@backend"
+            - generic [ref=e646] [cursor=pointer]: "@qa"
+          - generic [ref=e647]:
+            - button [ref=e648] [cursor=pointer]:
+              - img [ref=e649]
+            - textbox "Message the swarm — use @ to mention an agent" [ref=e650]
+            - button [disabled] [ref=e651]:
+              - img [ref=e652]
+  - generic [ref=e654]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll
+  - generic [ref=e655]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll
+  - generic [ref=e1343]:
+    - alert
+    - alert

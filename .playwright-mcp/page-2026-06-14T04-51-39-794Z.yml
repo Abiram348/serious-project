@@ -1,0 +1,190 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e10]: SwarmDev
+        - generic [ref=e12]:
+          - generic [ref=e13]: abiram
+          - generic [ref=e14]: /
+          - generic [ref=e15]: marketplace-mvp
+        - generic [ref=e16]:
+          - img [ref=e17]
+          - text: main
+      - generic [ref=e20]:
+        - generic [ref=e25]: Swarm building — 6/9 agents active
+        - button "Share" [ref=e26] [cursor=pointer]:
+          - img [ref=e27]
+          - text: Share
+        - button "Deploy" [ref=e32] [cursor=pointer]:
+          - text: Deploy
+          - img [ref=e33]
+    - generic [ref=e36]:
+      - generic [ref=e37]:
+        - generic [ref=e40]: supervisor
+        - generic [ref=e43]: database
+        - generic [ref=e46]: backend
+        - generic [ref=e49]: frontend
+        - generic [ref=e52]: devops
+        - generic [ref=e55]: qa
+        - generic [ref=e58]: reviewer
+        - generic [ref=e61]: security
+        - generic [ref=e64]: docs
+      - generic [ref=e65]:
+        - generic [ref=e68]: 0%
+        - generic [ref=e69]: ETA 14m
+    - generic [ref=e70]:
+      - complementary [ref=e73]:
+        - generic [ref=e74]:
+          - generic [ref=e75]: Files
+          - generic [ref=e76]:
+            - button [ref=e77] [cursor=pointer]:
+              - img [ref=e78]
+            - button [ref=e81] [cursor=pointer]:
+              - img [ref=e82]
+            - button [ref=e84] [cursor=pointer]:
+              - img [ref=e85]
+        - generic [ref=e88]:
+          - button "apps" [ref=e89] [cursor=pointer]:
+            - img
+            - img
+            - generic: apps
+          - button "web" [ref=e93] [cursor=pointer]:
+            - img
+            - img
+            - generic: web
+          - button "src" [ref=e97] [cursor=pointer]:
+            - img
+            - img
+            - generic: src
+          - button "app" [ref=e101] [cursor=pointer]:
+            - img
+            - img
+            - generic: app
+          - button "page.tsx" [ref=e105] [cursor=pointer]:
+            - img
+            - generic: page.tsx
+          - button "layout.tsx" [ref=e110] [cursor=pointer]:
+            - img
+            - generic: layout.tsx
+          - button "components" [ref=e115] [cursor=pointer]:
+            - img
+            - img
+            - generic: components
+          - button "Terminal.tsx" [ref=e119] [cursor=pointer]:
+            - img
+            - generic: Terminal.tsx
+          - button "Editor.tsx" [ref=e124] [cursor=pointer]:
+            - img
+            - generic: Editor.tsx
+          - button "api" [ref=e129] [cursor=pointer]:
+            - img
+            - img
+            - generic: api
+          - button "src/index.ts" [ref=e133] [cursor=pointer]:
+            - img
+            - generic: src/index.ts
+          - button "routes/listings.ts" [ref=e138] [cursor=pointer]:
+            - img
+            - generic: routes/listings.ts
+          - button "packages" [ref=e143] [cursor=pointer]:
+            - img
+            - img
+            - generic: packages
+          - button "db / prisma" [ref=e147] [cursor=pointer]:
+            - img
+            - img
+            - generic: db / prisma
+          - button "schema.prisma" [ref=e151] [cursor=pointer]:
+            - img
+            - generic: schema.prisma
+          - button "infra" [ref=e155] [cursor=pointer]:
+            - img
+            - img
+            - generic: infra
+          - button "k8s" [ref=e159] [cursor=pointer]:
+            - img
+            - img
+            - generic: k8s
+          - button "terraform" [ref=e163] [cursor=pointer]:
+            - img
+            - img
+            - generic: terraform
+          - button "turbo.json" [ref=e167] [cursor=pointer]:
+            - img [ref=e168]
+            - generic [ref=e171]: turbo.json
+          - button "package.json" [ref=e172] [cursor=pointer]:
+            - img [ref=e173]
+            - generic [ref=e176]: package.json
+      - separator [ref=e177]
+      - generic [ref=e180]:
+        - generic [ref=e183]:
+          - generic [ref=e185]:
+            - button [ref=e186] [cursor=pointer]:
+              - img [ref=e187]
+            - button "Preview" [ref=e189] [cursor=pointer]:
+              - img [ref=e190]
+              - text: Preview
+          - generic [ref=e194]: Select a file to start editing
+        - separator [ref=e195]
+        - generic [ref=e199]:
+          - generic [ref=e200]:
+            - button "Terminal" [ref=e201] [cursor=pointer]: Terminal
+            - button "Agent logs" [ref=e203] [cursor=pointer]
+          - generic [ref=e204]:
+            - button [ref=e205] [cursor=pointer]:
+              - img [ref=e206]
+            - button [ref=e209] [cursor=pointer]:
+              - img [ref=e210]
+      - separator [ref=e218]
+      - complementary [ref=e221]:
+        - generic [ref=e222]:
+          - generic [ref=e224]: Swarm chat
+          - button [ref=e230] [cursor=pointer]:
+            - img [ref=e231]
+        - generic [ref=e235]:
+          - generic [ref=e237]: Build a marketplace MVP with listings, checkout and seller dashboard
+          - generic [ref=e238]:
+            - generic [ref=e239]:
+              - generic [ref=e240]: supervisor
+              - generic [ref=e241]: 2m
+            - generic [ref=e242]:
+              - text: Plan ready — decomposed into 9 tasks. Database first, then parallel backend/frontend.
+              - generic:
+                - generic:
+                  - img [ref=e244]
+                  - generic [ref=e246]: Prisma schema + migrations
+                - generic:
+                  - img [ref=e248]
+                  - generic [ref=e250]: Auth + session middleware
+                - generic [ref=e252]: Listings grid + checkout flow
+          - generic [ref=e253]:
+            - generic [ref=e254]:
+              - generic [ref=e255]: backend-agent
+              - generic [ref=e256]: 40s
+            - generic [ref=e257]:
+              - text: Generated /api/listings, /api/checkout with Stripe stub.
+              - generic [ref=e258]: "@reviewer"
+              - text: please verify auth middleware.
+          - generic [ref=e259]:
+            - generic [ref=e260]:
+              - generic [ref=e261]: qa-agent
+              - generic [ref=e262]: 12s
+            - generic [ref=e263]:
+              - text: "Unit suite finished on apps/api:"
+              - generic [ref=e264]:
+                - img [ref=e266]
+                - generic [ref=e268]:
+                  - generic [ref=e269]: 48/48 unit tests passing
+                  - generic [ref=e270]: vitest · 3.4s
+        - generic [ref=e271]:
+          - generic [ref=e272]:
+            - generic [ref=e273] [cursor=pointer]: "@supervisor"
+            - generic [ref=e274] [cursor=pointer]: "@backend"
+            - generic [ref=e275] [cursor=pointer]: "@qa"
+          - generic [ref=e276]:
+            - button [ref=e277] [cursor=pointer]:
+              - img [ref=e278]
+            - textbox "Message the swarm — use @ to mention an agent" [ref=e279]
+            - button [disabled] [ref=e280]:
+              - img [ref=e281]
+  - alert [ref=e283]

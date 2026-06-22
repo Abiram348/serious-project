@@ -97,10 +97,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
         const data = await res.json();
         const userMsg = data.userMessage;
         const agentMsg = data.agentMessage;
-        set((state) => ({
-          messages: [...state.messages, userMsg, agentMsg],
-          isTyping: false,
-        }));
+        // Use the idempotent addMessages helper so that Socket.io and the
+        // POST response can't race and create duplicates.
+        get().addMessages([userMsg, agentMsg].filter(Boolean));
+        set({ isTyping: false });
       } else {
         throw new Error('Failed to send message');
       }

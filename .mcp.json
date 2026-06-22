@@ -1,12 +1,15 @@
 {
   "mcpServers": {
-    "supabase": {
-      "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=nexikloimrputhytvwzn"
-    },
-    "chrome-devtools": {
-      "type": "http",
-      "url": "http://localhost:3100/sse"
+    "firecrawl": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "firecrawl-mcp@latest"
+      ],
+      "env": {
+        "FIRECRAWL_API_KEY": "fc-aba131a41c264115a2da86e947eb59ef"
+      }
     }
   }
 }

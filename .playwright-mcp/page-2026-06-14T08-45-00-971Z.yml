@@ -1,0 +1,219 @@
+- generic [ref=e1]:
+  - alert [ref=e342]
+  - generic [ref=e914]:
+    - banner [ref=e915]:
+      - generic [ref=e916]:
+        - generic [ref=e922]: SwarmDev
+        - generic [ref=e924]:
+          - generic [ref=e925]: abiram
+          - generic [ref=e926]: /
+          - generic [ref=e927]: build-a-simple-todo
+        - generic [ref=e928]:
+          - img [ref=e929]
+          - text: main
+      - generic [ref=e932]:
+        - generic [ref=e937]: Swarm building — 6/9 agents active
+        - button "Share" [ref=e938] [cursor=pointer]:
+          - img [ref=e939]
+          - text: Share
+        - button "Deploy" [ref=e944] [cursor=pointer]:
+          - text: Deploy
+          - img [ref=e945]
+    - generic [ref=e948]:
+      - generic [ref=e949]:
+        - generic [ref=e952]: documentation
+        - generic [ref=e955]: security
+        - generic [ref=e958]: reviewer
+        - generic [ref=e961]: qa
+        - generic [ref=e962]:
+          - img [ref=e1150]
+          - generic [ref=e964]: devops
+        - generic [ref=e965]:
+          - img [ref=e1152]
+          - generic [ref=e967]: database
+        - generic [ref=e970]: backend
+        - generic [ref=e973]: frontend
+        - generic [ref=e974]:
+          - img [ref=e1154]
+          - generic [ref=e976]: supervisor
+      - generic [ref=e977]:
+        - generic [ref=e980]: 33%
+        - generic [ref=e981]: ETA 9m
+    - generic [ref=e982]:
+      - complementary [ref=e985]:
+        - generic [ref=e986]:
+          - generic [ref=e987]: Files
+          - generic [ref=e988]:
+            - button [ref=e989] [cursor=pointer]:
+              - img [ref=e990]
+            - button [ref=e993] [cursor=pointer]:
+              - img [ref=e994]
+            - button [ref=e996] [cursor=pointer]:
+              - img [ref=e997]
+        - generic [ref=e1000]:
+          - button ".github" [ref=e1157] [cursor=pointer]:
+            - img [ref=e1158]
+            - img [ref=e1160]
+            - generic [ref=e1163]: .github
+          - button "workflows" [ref=e1164] [cursor=pointer]:
+            - img [ref=e1165]
+            - img [ref=e1167]
+            - generic [ref=e1170]: workflows
+          - button "ci-cd.yml" [ref=e1171] [cursor=pointer]:
+            - img [ref=e1172]
+            - generic [ref=e1175]: ci-cd.yml
+          - button "backend" [ref=e1176] [cursor=pointer]:
+            - img [ref=e1177]
+            - img [ref=e1179]
+            - generic [ref=e1182]: backend
+          - button ".dockerignore" [ref=e1183] [cursor=pointer]:
+            - img [ref=e1184]
+            - generic [ref=e1187]: .dockerignore
+          - button "Dockerfile" [ref=e1188] [cursor=pointer]:
+            - img [ref=e1189]
+            - generic [ref=e1192]: Dockerfile
+          - button "frontend" [ref=e1193] [cursor=pointer]:
+            - img [ref=e1194]
+            - img [ref=e1196]
+            - generic [ref=e1199]: frontend
+          - button ".dockerignore" [ref=e1200] [cursor=pointer]:
+            - img [ref=e1201]
+            - generic [ref=e1204]: .dockerignore
+          - button "Dockerfile" [ref=e1205] [cursor=pointer]:
+            - img [ref=e1206]
+            - generic [ref=e1209]: Dockerfile
+          - button "k8s" [ref=e1210] [cursor=pointer]:
+            - img [ref=e1211]
+            - img [ref=e1213]
+            - generic [ref=e1216]: k8s
+          - button "backend-deployment.yaml" [ref=e1217] [cursor=pointer]:
+            - img [ref=e1218]
+            - generic [ref=e1221]: backend-deployment.yaml
+          - button "backend-service.yaml" [ref=e1222] [cursor=pointer]:
+            - img [ref=e1223]
+            - generic [ref=e1226]: backend-service.yaml
+          - button "frontend-deployment.yaml" [ref=e1227] [cursor=pointer]:
+            - img [ref=e1228]
+            - generic [ref=e1231]: frontend-deployment.yaml
+          - button "frontend-service.yaml" [ref=e1232] [cursor=pointer]:
+            - img [ref=e1233]
+            - generic [ref=e1236]: frontend-service.yaml
+          - button "ingress.yaml" [ref=e1237] [cursor=pointer]:
+            - img [ref=e1238]
+            - generic [ref=e1241]: ingress.yaml
+          - button "mongodb-secret.yaml" [ref=e1242] [cursor=pointer]:
+            - img [ref=e1243]
+            - generic [ref=e1246]: mongodb-secret.yaml
+          - button "prisma" [ref=e1247] [cursor=pointer]:
+            - img [ref=e1248]
+            - img [ref=e1250]
+            - generic [ref=e1253]: prisma
+          - button "migrations" [ref=e1254] [cursor=pointer]:
+            - img [ref=e1255]
+            - img [ref=e1257]
+            - generic [ref=e1260]: migrations
+          - button "20240101000000_init" [ref=e1261] [cursor=pointer]:
+            - img [ref=e1262]
+            - img [ref=e1264]
+            - generic [ref=e1267]: 20240101000000_init
+          - button "migration.sql" [ref=e1268] [cursor=pointer]:
+            - img [ref=e1269]
+            - generic [ref=e1272]: migration.sql
+          - button "schema.prisma" [ref=e1273] [cursor=pointer]:
+            - img [ref=e1274]
+            - generic [ref=e1278]: schema.prisma
+          - button "seed.ts" [ref=e1279] [cursor=pointer]:
+            - img [ref=e1280]
+            - generic [ref=e1285]: seed.ts
+          - button ".env.example" [ref=e1286] [cursor=pointer]:
+            - img [ref=e1287]
+            - generic [ref=e1290]: .env.example
+          - button "docker-compose.yml" [ref=e1291] [cursor=pointer]:
+            - img [ref=e1292]
+            - generic [ref=e1295]: docker-compose.yml
+          - button "package.json" [ref=e1296] [cursor=pointer]:
+            - img [ref=e1297]
+            - generic [ref=e1300]: package.json
+          - button "README.md" [active] [ref=e1301] [cursor=pointer]:
+            - img [ref=e1303]
+            - generic [ref=e1306]: README.md
+      - separator [ref=e1007]
+      - generic [ref=e1010]:
+        - generic [ref=e1013]:
+          - generic [ref=e1014]:
+            - generic [ref=e1307]:
+              - button "Dockerfile" [ref=e1308] [cursor=pointer]:
+                - img [ref=e1309]
+                - generic [ref=e1312]: Dockerfile
+                - img [ref=e1314]
+              - button "README.md" [ref=e1317] [cursor=pointer]:
+                - img [ref=e1319]
+                - generic [ref=e1322]: README.md
+                - img [ref=e1324]
+            - generic [ref=e1015]:
+              - button [ref=e1016] [cursor=pointer]:
+                - img [ref=e1017]
+              - button "Preview" [ref=e1019] [cursor=pointer]:
+                - img [ref=e1020]
+                - text: Preview
+          - code [ref=e1330]:
+            - generic [ref=e1331]:
+              - textbox "Editor content"
+              - textbox [ref=e1332]
+              - generic [ref=e1337]: "1"
+        - separator [ref=e1025]
+        - generic [ref=e1028]:
+          - generic [ref=e1029]:
+            - generic [ref=e1030]:
+              - button "Terminal" [ref=e1031] [cursor=pointer]: Terminal
+              - button "Agent logs" [ref=e1033] [cursor=pointer]
+            - generic [ref=e1034]:
+              - button [ref=e1035] [cursor=pointer]:
+                - img [ref=e1036]
+              - button [ref=e1039] [cursor=pointer]:
+                - img [ref=e1040]
+          - generic [ref=e1047]:
+            - generic [ref=e1050]:
+              - textbox "Terminal input" [ref=e1051]
+              - generic [ref=e1052]:
+                - generic [ref=e1054]: ⚡ SwarmDev Terminal
+                - generic [ref=e1056]: "project: cmqdjersd0041pfd13gcap3lv"
+                - generic [ref=e1059]: ❯
+            - generic [ref=e1064]:
+              - textbox "Terminal input" [ref=e1065]
+              - generic [ref=e1066]:
+                - generic [ref=e1068]: ⚡ SwarmDev Terminal
+                - generic [ref=e1070]: "project: cmqdjersd0041pfd13gcap3lv"
+                - generic [ref=e1073]: ❯
+      - separator [ref=e1076]
+      - complementary [ref=e1079]:
+        - generic [ref=e1080]:
+          - generic [ref=e1082]: Swarm chat
+          - button [ref=e1088] [cursor=pointer]:
+            - img [ref=e1089]
+        - generic [ref=e1093]:
+          - generic [ref=e1344]:
+            - generic [ref=e1347]: supervisor
+            - generic [ref=e1348]: Created plan with 7 tasks
+          - generic [ref=e1349]:
+            - generic [ref=e1352]: devops
+            - generic [ref=e1353]: DevOps configs generated (14 files)
+          - generic [ref=e1354]:
+            - generic [ref=e1357]: database
+            - generic [ref=e1358]: Database schema generated (5 files)
+        - generic [ref=e1136]:
+          - generic [ref=e1137]:
+            - generic [ref=e1138] [cursor=pointer]: "@supervisor"
+            - generic [ref=e1139] [cursor=pointer]: "@backend"
+            - generic [ref=e1140] [cursor=pointer]: "@qa"
+          - generic [ref=e1141]:
+            - button [ref=e1142] [cursor=pointer]:
+              - img [ref=e1143]
+            - textbox "Message the swarm — use @ to mention an agent" [ref=e1144]
+            - button [disabled] [ref=e1145]:
+              - img [ref=e1146]
+  - generic [ref=e1148]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll
+  - generic [ref=e1149]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll
+  - generic [ref=e1359]:
+    - alert
+    - alert

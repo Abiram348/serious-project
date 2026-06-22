@@ -12,12 +12,14 @@ class SearchTools:
     """Tools for searching code and documentation."""
 
     def __init__(self, url: Optional[str] = None, api_key: Optional[str] = None):
-        self.url = url or os.getenv("QDRANT_URL", "http://localhost:6333")
+        self.url = url or os.getenv("QDRANT_URL")
         self.api_key = api_key or os.getenv("QDRANT_API_KEY")
         self.client: Optional[QdrantClient] = None
 
     def connect(self) -> QdrantClient:
         """Connect to Qdrant vector database."""
+        if not self.url:
+            raise RuntimeError("QDRANT_URL is not configured")
         self.client = QdrantClient(url=self.url, api_key=self.api_key)
         return self.client
 

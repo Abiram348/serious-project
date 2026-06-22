@@ -2,6 +2,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { Server } from 'http';
 import Redis from 'ioredis';
 import db from '../prisma/client';
+import { sandboxService } from '../services/sandboxService';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 let redis: any = null;
@@ -95,19 +96,38 @@ export function initializeSocket(httpServer: Server): SocketIOServer {
 
     // Execute shell command (Issue #10)
     socket.on('exec_command', async ({ projectId, command }: { projectId: string; command: string }) => {
-      try {
-        socket.emit('terminal_output', {
-          data: `Executing: ${command}\n`,
-        });
+      if (!projectId || typeof command !== 'string' || !command.trim()) {
+        socket.emit('terminal_output', { data: 'Invalid command request\n' });
+        return;
+      }
 
-        // TODO: Integrate with E2B sandbox for actual execution
-        socket.emit('terminal_output', {
-          data: '⚠️ Command execution requires E2B sandbox integration\n',
+      try {
+        emitToProject(projectId, 'terminal_output', { data: `Executing: ${command}\n` });
+
+        const sandbox = await sandboxService.getOrCreateSandbox(projectId);
+        const result = await sandboxService.executeCommand(sandbox, command, projectId);
+
+        if (result.stdout) {
+          emitToProject(projectId, 'terminal_output', { data: result.stdout });
+        }
+        if (result.stderr) {
+          emitToProject(projectId, 'terminal_output', { data: result.stderr });
+        }
+
+        emitToProject(projectId, 'terminal_output', {
+          data: `\nExit code: ${result.exitCode}\n`,
         });
-      } catch (error) {
-        socket.emit('terminal_output', {
-          data: `Error: ${error}\n`,
+      } catch (error: any) {
+        const message = error?.message || String(error);
+        console.error(`[exec_command] project=${projectId} error:`, message);
+        emitToProject(projectId, 'terminal_output', {
+          data: `\x1b[31mTerminal sandbox error: ${message}\x1b[0m\n`,
         });
+        if (message.includes('E2B_API_KEY')) {
+          emitToProject(projectId, 'terminal_output', {
+            data: '\x1b[33mSet E2B_API_KEY in apps/api/.env to enable the terminal sandbox.\x1b[0m\n',
+          });
+        }
       }
     });
 

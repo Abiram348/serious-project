@@ -1,0 +1,294 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e10]: SwarmDev
+        - generic [ref=e12]:
+          - generic [ref=e13]: abiram
+          - generic [ref=e14]: /
+          - generic [ref=e15]: ai-support-chatbot
+        - generic [ref=e16]:
+          - img [ref=e17]
+          - text: main
+      - generic [ref=e20]:
+        - generic [ref=e191]: Swarm building — 9/9 agents active
+        - button "Share" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+          - text: Share
+        - button "Deploy" [ref=e27] [cursor=pointer]:
+          - text: Deploy
+          - img [ref=e28]
+    - generic [ref=e31]:
+      - generic [ref=e192]:
+        - generic [ref=e195]: documentation
+        - generic [ref=e198]: security
+        - generic [ref=e201]: reviewer
+        - generic [ref=e204]: qa
+        - generic [ref=e207]: devops
+        - generic [ref=e210]: database
+        - generic [ref=e213]: backend
+        - generic [ref=e216]: frontend
+        - generic [ref=e219]: supervisor
+      - generic [ref=e32]:
+        - generic [ref=e35]: 0%
+        - generic [ref=e36]: ETA 14m
+    - generic [ref=e37]:
+      - complementary [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: Files
+          - generic [ref=e43]:
+            - button [ref=e44] [cursor=pointer]:
+              - img [ref=e45]
+            - button [ref=e48] [cursor=pointer]:
+              - img [ref=e49]
+            - button [ref=e51] [cursor=pointer]:
+              - img [ref=e52]
+        - generic [ref=e55]:
+          - button ".github" [ref=e220] [cursor=pointer]:
+            - img [ref=e221]
+            - img [ref=e223]
+            - generic [ref=e226]: .github
+          - button "workflows" [ref=e227] [cursor=pointer]:
+            - img [ref=e228]
+            - img [ref=e230]
+            - generic [ref=e233]: workflows
+          - button "ci-cd.yml" [ref=e234] [cursor=pointer]:
+            - img [ref=e236]
+            - generic [ref=e239]: ci-cd.yml
+          - button "api" [ref=e240] [cursor=pointer]:
+            - img [ref=e241]
+            - img [ref=e243]
+            - generic [ref=e246]: api
+          - button "tests" [ref=e247] [cursor=pointer]:
+            - img [ref=e248]
+            - img [ref=e250]
+            - generic [ref=e253]: tests
+          - button "conftest.py" [ref=e254] [cursor=pointer]:
+            - img [ref=e255]
+            - generic [ref=e258]: conftest.py
+          - button "test_ai_models.py" [ref=e259] [cursor=pointer]:
+            - img [ref=e260]
+            - generic [ref=e263]: test_ai_models.py
+          - button "test_conversations.py" [ref=e264] [cursor=pointer]:
+            - img [ref=e265]
+            - generic [ref=e268]: test_conversations.py
+          - button "test_feedback.py" [ref=e269] [cursor=pointer]:
+            - img [ref=e270]
+            - generic [ref=e273]: test_feedback.py
+          - button "test_knowledge_base.py" [ref=e274] [cursor=pointer]:
+            - img [ref=e275]
+            - generic [ref=e278]: test_knowledge_base.py
+          - button "test_main.py" [ref=e279] [cursor=pointer]:
+            - img [ref=e280]
+            - generic [ref=e283]: test_main.py
+          - button "test_users.py" [ref=e284] [cursor=pointer]:
+            - img [ref=e285]
+            - generic [ref=e288]: test_users.py
+          - button "Dockerfile" [ref=e289] [cursor=pointer]:
+            - img [ref=e290]
+            - generic [ref=e293]: Dockerfile
+          - button "app" [ref=e294] [cursor=pointer]:
+            - img [ref=e295]
+            - img [ref=e297]
+            - generic [ref=e300]: app
+          - button "globals.css" [ref=e301] [cursor=pointer]:
+            - img [ref=e302]
+            - generic [ref=e305]: globals.css
+          - button "layout.tsx" [ref=e306] [cursor=pointer]:
+            - img [ref=e307]
+            - generic [ref=e312]: layout.tsx
+          - button "page.tsx" [ref=e313] [cursor=pointer]:
+            - img [ref=e314]
+            - generic [ref=e319]: page.tsx
+          - button "docs" [ref=e320] [cursor=pointer]:
+            - img [ref=e321]
+            - img [ref=e323]
+            - generic [ref=e326]: docs
+          - button "api.yaml" [ref=e327] [cursor=pointer]:
+            - img [ref=e328]
+            - generic [ref=e331]: api.yaml
+          - button "architecture.md" [ref=e332] [cursor=pointer]:
+            - img [ref=e333]
+            - generic [ref=e336]: architecture.md
+          - button "k8s" [ref=e337] [cursor=pointer]:
+            - img [ref=e338]
+            - img [ref=e340]
+            - generic [ref=e343]: k8s
+          - button "api-deployment.yml" [ref=e344] [cursor=pointer]:
+            - img [ref=e345]
+            - generic [ref=e348]: api-deployment.yml
+          - button "api-service.yml" [ref=e349] [cursor=pointer]:
+            - img [ref=e350]
+            - generic [ref=e353]: api-service.yml
+          - button "configmap.yml" [ref=e354] [cursor=pointer]:
+            - img [ref=e355]
+            - generic [ref=e358]: configmap.yml
+          - button "ingress.yml" [ref=e359] [cursor=pointer]:
+            - img [ref=e360]
+            - generic [ref=e363]: ingress.yml
+          - button "kustomization.yml" [ref=e364] [cursor=pointer]:
+            - img [ref=e365]
+            - generic [ref=e368]: kustomization.yml
+          - button "namespace.yml" [ref=e369] [cursor=pointer]:
+            - img [ref=e370]
+            - generic [ref=e373]: namespace.yml
+          - button "README.md" [ref=e374] [cursor=pointer]:
+            - img [ref=e375]
+            - generic [ref=e378]: README.md
+          - button "redis-deployment.yml" [ref=e379] [cursor=pointer]:
+            - img [ref=e380]
+            - generic [ref=e383]: redis-deployment.yml
+          - button "redis-secret.yml" [ref=e384] [cursor=pointer]:
+            - img [ref=e385]
+            - generic [ref=e388]: redis-secret.yml
+          - button "web-deployment.yml" [ref=e389] [cursor=pointer]:
+            - img [ref=e390]
+            - generic [ref=e393]: web-deployment.yml
+          - button "web-service.yml" [ref=e394] [cursor=pointer]:
+            - img [ref=e395]
+            - generic [ref=e398]: web-service.yml
+          - button "path" [ref=e399] [cursor=pointer]:
+            - img [ref=e400]
+            - img [ref=e402]
+            - generic [ref=e405]: path
+          - button "to" [ref=e406] [cursor=pointer]:
+            - img [ref=e407]
+            - img [ref=e409]
+            - generic [ref=e412]: to
+          - button "file.ts" [ref=e413] [cursor=pointer]:
+            - img [ref=e414]
+            - generic [ref=e419]: file.ts
+          - button "prisma" [ref=e420] [cursor=pointer]:
+            - img [ref=e421]
+            - img [ref=e423]
+            - generic [ref=e426]: prisma
+          - button "migrations" [ref=e427] [cursor=pointer]:
+            - img [ref=e428]
+            - img [ref=e430]
+            - generic [ref=e433]: migrations
+          - button "20240101000000_init" [ref=e434] [cursor=pointer]:
+            - img [ref=e435]
+            - img [ref=e437]
+            - generic [ref=e440]: 20240101000000_init
+          - button "migration.sql" [ref=e441] [cursor=pointer]:
+            - img [ref=e442]
+            - generic [ref=e445]: migration.sql
+          - button "queries.sql" [ref=e446] [cursor=pointer]:
+            - img [ref=e447]
+            - generic [ref=e450]: queries.sql
+          - button "schema.prisma" [ref=e451] [cursor=pointer]:
+            - img [ref=e452]
+            - generic [ref=e456]: schema.prisma
+          - button "seed.ts" [ref=e457] [cursor=pointer]:
+            - img [ref=e458]
+            - generic [ref=e463]: seed.ts
+          - button "src" [ref=e464] [cursor=pointer]:
+            - img [ref=e465]
+            - img [ref=e467]
+            - generic [ref=e470]: src
+          - button "index.ts" [ref=e471] [cursor=pointer]:
+            - img [ref=e472]
+            - generic [ref=e477]: index.ts
+          - button "store" [ref=e478] [cursor=pointer]:
+            - img [ref=e479]
+            - img [ref=e481]
+            - generic [ref=e484]: store
+          - button "index.ts" [ref=e485] [cursor=pointer]:
+            - img [ref=e486]
+            - generic [ref=e491]: index.ts
+          - button "types" [ref=e492] [cursor=pointer]:
+            - img [ref=e493]
+            - img [ref=e495]
+            - generic [ref=e498]: types
+          - button "index.ts" [ref=e499] [cursor=pointer]:
+            - img [ref=e500]
+            - generic [ref=e505]: index.ts
+          - button "web" [ref=e506] [cursor=pointer]:
+            - img [ref=e507]
+            - img [ref=e509]
+            - generic [ref=e512]: web
+          - button "Dockerfile" [ref=e513] [cursor=pointer]:
+            - img [ref=e514]
+            - generic [ref=e517]: Dockerfile
+          - button ".env.example" [ref=e518] [cursor=pointer]:
+            - img [ref=e519]
+            - generic [ref=e522]: .env.example
+          - button "CONTRIBUTING.md" [ref=e523] [cursor=pointer]:
+            - img [ref=e524]
+            - generic [ref=e527]: CONTRIBUTING.md
+          - button "docker-compose.yml" [ref=e528] [cursor=pointer]:
+            - img [ref=e529]
+            - generic [ref=e532]: docker-compose.yml
+          - button "package.json" [ref=e533] [cursor=pointer]:
+            - img [ref=e534]
+            - generic [ref=e537]: package.json
+          - button "README.md" [ref=e538] [cursor=pointer]:
+            - img [ref=e539]
+            - generic [ref=e542]: README.md
+      - separator [ref=e62]
+      - generic [ref=e65]:
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - button "ci-cd.yml" [ref=e71] [cursor=pointer]:
+              - img [ref=e73]
+              - generic [ref=e76]: ci-cd.yml
+              - img [ref=e78]
+            - generic [ref=e81]:
+              - button [ref=e82] [cursor=pointer]:
+                - img [ref=e83]
+              - button "Preview" [ref=e85] [cursor=pointer]:
+                - img [ref=e86]
+                - text: Preview
+          - code [ref=e545]:
+            - generic [ref=e546]:
+              - textbox "Editor content"
+              - textbox [ref=e547]
+              - generic [ref=e552]: "1"
+        - separator [ref=e91]
+        - generic [ref=e94]:
+          - generic [ref=e95]:
+            - generic [ref=e96]:
+              - button "Terminal" [ref=e97] [cursor=pointer]: Terminal
+              - button "Agent logs" [ref=e99] [cursor=pointer]
+            - generic [ref=e100]:
+              - button [ref=e101] [cursor=pointer]:
+                - img [ref=e102]
+              - button [ref=e105] [cursor=pointer]:
+                - img [ref=e106]
+          - generic [ref=e561]:
+            - textbox "Terminal input" [ref=e562]
+            - generic [ref=e563]:
+              - generic [ref=e565]: ⚡ SwarmDev Terminal
+              - generic [ref=e567]: "project: cmqeulu660001mq0ragovkcrv"
+              - generic [ref=e570]: ❯
+      - separator [ref=e114]
+      - complementary [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e120]: Swarm chat
+          - button [ref=e126] [cursor=pointer]:
+            - img [ref=e127]
+        - generic [ref=e131]:
+          - generic [ref=e574]: Hello, can you help me review the auth middleware?
+          - generic [ref=e575]:
+            - generic [ref=e578]: supervisor
+            - generic [ref=e579]: "Of course! I'd be happy to help review the auth middleware. To give you the most useful feedback, I'll need a bit more context: - Which project or repository is this in? - Where is the middleware located (file path or code snippet)? - Are there any specific concerns you have (e.g., security, performance, edge cases)? If you can share the code or point me to the relevant file, I can either review it directly or hand it off to the **REVIEWER** agent for a more detailed analysis. Just let me know how you'd like to proceed."
+          - generic [ref=e583]: "@security Can you scan for SQL injection in the auth endpoints?"
+          - generic [ref=e584]:
+            - generic [ref=e587]: security
+            - generic [ref=e588]: "I can definitely help with that. To scan the auth endpoints for SQL injection, I’d review the code handling login, registration, password reset, and any token refresh flows. The key areas to check: - **Parameterized queries / prepared statements** – Are all SQL queries using placeholders instead of string concatenation? - **ORM usage** – If an ORM is used, are there any raw SQL queries or dynamic query builders that might be vulnerable? - **Input validation & sanitization** – Are user inputs (username, email, password) validated before reaching the database layer? - **Stored procedures** – If used, are they called safely with parameters? - **Error handling** – Do error messages leak database structure or query details? I’d also look for any dynamic SQL generation in triggers or custom middleware. If you’d like, I can perform a detailed code review of the auth endpoints and provide a report with specific findings and remediation steps. Just let me know if you want me to proceed, or if you have a particular codebase in mind."
+        - generic [ref=e174]:
+          - generic [ref=e175]:
+            - generic [ref=e176] [cursor=pointer]: "@supervisor"
+            - generic [ref=e177] [cursor=pointer]: "@backend"
+            - generic [ref=e178] [cursor=pointer]: "@qa"
+          - generic [ref=e179]:
+            - button [ref=e180] [cursor=pointer]:
+              - img [ref=e181]
+            - textbox "Message the swarm — use @ to mention an agent" [ref=e182]
+            - button [disabled] [ref=e183]:
+              - img [ref=e184]
+  - alert [ref=e186]
+  - generic [ref=e580]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll
+  - generic [ref=e581]:
+    - alert
+    - alert

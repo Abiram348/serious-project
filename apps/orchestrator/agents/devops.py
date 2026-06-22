@@ -15,7 +15,11 @@ Your role is to:
 5. Write Kubernetes manifests (if needed)
 6. Setup health checks and readiness probes
 
-Output generated files as JSON with path and content.
+Output generated files as:
+FILE: path/to/file.yml
+[file content]
+
+NEVER wrap file content in markdown code blocks.
 """
 
 class DevOpsAgent(BaseAgent):

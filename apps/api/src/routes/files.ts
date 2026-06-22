@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import db from '../prisma/client';
 import { z } from 'zod';
-import { emitFileCreated, emitFileUpdated } from '../socket';
+import { emitFileCreated, emitFileUpdated, emitProjectStatus } from '../socket';
 
 const router = Router();
 
@@ -238,6 +238,31 @@ router.post('/internal/projects/:projectId/files/:path(*)', internalAuth, async 
   } catch (error) {
     console.error('Error saving file from orchestrator:', error);
     res.status(500).json({ error: 'Failed to save file' });
+  }
+});
+
+// Update project status from orchestrator
+router.patch('/internal/projects/:id/status', internalAuth, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+
+    const project = await db.project.update({
+      where: { id },
+      data: { status },
+    });
+
+    // Emit real-time status update
+    emitProjectStatus(id, status);
+
+    res.json(project);
+  } catch (error) {
+    console.error('Error updating project status internally:', error);
+    res.status(500).json({ error: 'Failed to update project status' });
   }
 });
 

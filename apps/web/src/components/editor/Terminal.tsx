@@ -1,11 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from 'react';
+
+export interface TerminalHandle {
+  write: (data: string) => void;
+  clear: () => void;
+}
 
 interface TerminalProps {
   projectId: string;
   onCommandExec?: (command: string) => void;
   clearSignal?: number;
+  showHeader?: boolean;
 }
 
 const TERM_THEME = {
@@ -32,7 +38,7 @@ const TERM_THEME = {
   brightWhite: '#f0f6fc',
 };
 
-export function Terminal({ projectId, onCommandExec, clearSignal }: TerminalProps) {
+function TerminalComponent({ projectId, onCommandExec, clearSignal, showHeader = true }: TerminalProps, ref: React.Ref<TerminalHandle>) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef<{
     term: any;
@@ -41,13 +47,79 @@ export function Terminal({ projectId, onCommandExec, clearSignal }: TerminalProp
     observer: ResizeObserver | null;
     inputBuffer: string;
   }>({ term: null, fitAddon: null, disposed: false, observer: null, inputBuffer: '' });
+  const onCommandExecRef = useRef(onCommandExec);
+  onCommandExecRef.current = onCommandExec;
+
+  // Expose imperative write/clear methods to parent so server output can be
+  // pushed into the terminal without re-rendering the component.
+  useImperativeHandle(ref, () => ({
+    write: (data: string) => {
+      const state = stateRef.current;
+      if (state.term && !state.disposed) {
+        state.term.write(data);
+      }
+    },
+    clear: () => {
+      const state = stateRef.current;
+      if (state.term && !state.disposed) {
+        state.term.clear();
+        state.term.write('\x1b[36m❯ \x1b[0m');
+        state.inputBuffer = '';
+      }
+    },
+  }), []);
+
+  // xterm leaves an off-screen measurement DIV on document.body. Remove any
+  // existing ones before creating a new terminal to avoid DOM leaks, and hide
+  // the new one from accessibility trees.
+  const cleanupXtermMeasureElements = useCallback(() => {
+    if (typeof document === 'undefined') return;
+    const bodyChildren = Array.from(document.body.children);
+    for (const child of bodyChildren) {
+      if (child.tagName !== 'DIV') continue;
+      if (child.className || child.id) continue;
+      const style = (child as HTMLElement).style;
+      if (style.position === 'absolute' && style.top === '-50000px') {
+        child.setAttribute('aria-hidden', 'true');
+        document.body.removeChild(child);
+      }
+    }
+  }, []);
+
+  const hideXtermMeasureElement = useCallback(() => {
+    if (typeof document === 'undefined') return;
+    const bodyChildren = Array.from(document.body.children);
+    for (const child of bodyChildren) {
+      if (child.tagName !== 'DIV') continue;
+      if (child.className || child.id) continue;
+      const style = (child as HTMLElement).style;
+      if (style.position === 'absolute' && style.top === '-50000px') {
+        child.setAttribute('aria-hidden', 'true');
+        child.setAttribute('role', 'none');
+        (child as HTMLElement).inert = true;
+      }
+    }
+  }, []);
 
   useEffect(() => {
+    cleanupXtermMeasureElements();
+
     const container = terminalRef.current;
     if (!container) return;
     if (container.offsetWidth === 0 || container.offsetHeight === 0) return;
 
     const state = stateRef.current;
+
+    // Guard against duplicate xterm instances (Strict Mode remounts, fast re-renders).
+    if (state.term) {
+      try { state.term.dispose(); } catch { /* ignore */ }
+      state.term = null;
+      state.fitAddon = null;
+    }
+    if (container.hasAttribute('data-terminal-initialized')) {
+      container.removeAttribute('data-terminal-initialized');
+    }
+
     state.disposed = false;
 
     (async () => {
@@ -58,6 +130,8 @@ export function Terminal({ projectId, onCommandExec, clearSignal }: TerminalProp
       await import('xterm/css/xterm.css');
 
       if (state.disposed || !terminalRef.current) return;
+      // Another instance may have been created while we awaited imports.
+      if (terminalRef.current.hasAttribute('data-terminal-initialized')) return;
 
       const term = new XTerm({
         cursorBlink: true,
@@ -80,15 +154,22 @@ export function Terminal({ projectId, onCommandExec, clearSignal }: TerminalProp
         return;
       }
 
+      // Clear any leftover DOM from a previous instance before opening.
+      while (terminalRef.current.firstChild) {
+        terminalRef.current.removeChild(terminalRef.current.firstChild);
+      }
+      terminalRef.current.setAttribute('data-terminal-initialized', 'true');
       term.open(terminalRef.current);
+      hideXtermMeasureElement();
       try { fitAddon.fit(); } catch { /* ignore */ }
 
       term.onData((data: string) => {
         if (state.disposed) return;
         if (data === '\r') {
           term.writeln('');
-          if (state.inputBuffer.trim() && onCommandExec) {
-            onCommandExec(state.inputBuffer.trim());
+          const exec = onCommandExecRef.current;
+          if (state.inputBuffer.trim() && exec) {
+            exec(state.inputBuffer.trim());
           }
           state.inputBuffer = '';
           term.write('\x1b[36m❯ \x1b[0m');
@@ -138,8 +219,13 @@ export function Terminal({ projectId, onCommandExec, clearSignal }: TerminalProp
       }
       state.fitAddon = null;
       state.observer = null;
+      if (container) {
+        container.removeAttribute('data-terminal-initialized');
+      }
+      // xterm may leave a measurement DIV on body; clean it up after disposal.
+      cleanupXtermMeasureElements();
     };
-  }, [projectId, onCommandExec]);
+  }, [projectId, cleanupXtermMeasureElements, hideXtermMeasureElement]);
 
   // External clear signal
   useEffect(() => {
@@ -161,23 +247,28 @@ export function Terminal({ projectId, onCommandExec, clearSignal }: TerminalProp
 
   return (
     <div className="flex h-full flex-col bg-[#0a0a14]">
-      <div className="flex items-center justify-between border-b border-border/20 bg-[#0d0d1a] px-4 py-1.5">
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
-            <div className="h-2.5 w-2.5 rounded-full bg-warning/60" />
-            <div className="h-2.5 w-2.5 rounded-full bg-accent/60" />
+      {showHeader && (
+        <div className="flex items-center justify-between border-b border-border/20 bg-[#0d0d1a] px-4 py-1.5">
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
+              <div className="h-2.5 w-2.5 rounded-full bg-warning/60" />
+              <div className="h-2.5 w-2.5 rounded-full bg-accent/60" />
+            </div>
+            <span className="ml-2 text-[11px] text-muted-foreground">Terminal</span>
           </div>
-          <span className="ml-2 text-[11px] text-muted-foreground">Terminal</span>
+          <button
+            onClick={clear}
+            className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            clear
+          </button>
         </div>
-        <button
-          onClick={clear}
-          className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-        >
-          clear
-        </button>
-      </div>
-      <div ref={terminalRef} className="flex-1 overflow-hidden" />
+      )}
+      {/* The terminal is a visual/emulator surface; hide its noisy xterm DOM from assistive trees. */}
+      <div ref={terminalRef} className="flex-1 overflow-hidden" aria-hidden="true" />
     </div>
   );
 }
+
+export const Terminal = forwardRef(TerminalComponent);

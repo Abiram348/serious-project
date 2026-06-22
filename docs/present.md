@@ -550,3 +550,4 @@ Every claim in this document can be traced to a specific file in the repository:
 ---
 
 *End of present.md — reflects repository state as of 2026-06-09.*
+

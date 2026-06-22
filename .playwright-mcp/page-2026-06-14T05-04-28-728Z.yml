@@ -1,0 +1,369 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "SwarmDev" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - text: SwarmDev
+      - navigation [ref=e6]:
+        - link "Products" [ref=e7] [cursor=pointer]:
+          - /url: "#features"
+          - text: Products
+          - img [ref=e8]
+        - link "Solutions" [ref=e10] [cursor=pointer]:
+          - /url: "#features"
+        - link "Resources" [ref=e11] [cursor=pointer]:
+          - /url: "#pricing"
+        - link "Security" [ref=e12] [cursor=pointer]:
+          - /url: "#features"
+        - link "Pricing" [ref=e13] [cursor=pointer]:
+          - /url: "#pricing"
+        - link "Swarm9" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+    - link "Contact sales" [ref=e16] [cursor=pointer]:
+      - /url: mailto:sales@swarmdev.dev
+  - generic [ref=e17]:
+    - heading "What will your swarm build?" [level=1] [ref=e18]
+    - paragraph [ref=e19]: Describe your idea — 9 AI agents design, code, and ship it in minutes. No coordination needed.
+    - generic [ref=e21]:
+      - generic [ref=e22]: Describe your app, the swarm brings it to life…
+      - generic [ref=e23]:
+        - button "Attach" [ref=e24]:
+          - img [ref=e25]
+        - button "Choose File" [ref=e27]
+        - link "Submit" [ref=e28] [cursor=pointer]:
+          - /url: /dashboard
+          - button "Submit" [ref=e29]:
+            - img [ref=e30]
+    - generic [ref=e32]:
+      - button "Previous" [ref=e33]:
+        - img [ref=e34]
+      - generic [ref=e36]:
+        - link "Web App" [ref=e37] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e38]:
+            - img [ref=e40]
+            - text: Web App
+        - link "API" [ref=e43] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e44]:
+            - img [ref=e46]
+            - text: API
+        - link "Database" [ref=e48] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e49]:
+            - img [ref=e51]
+            - text: Database
+        - link "Infra" [ref=e55] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e56]:
+            - img [ref=e58]
+            - text: Infra
+        - link "Docs" [ref=e60] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e61]:
+            - img [ref=e63]
+            - text: Docs
+      - button "Next" [ref=e66]:
+        - img [ref=e67]
+    - generic [ref=e69]:
+      - generic [ref=e70]:
+        - text: Try an example prompt
+        - img [ref=e71]
+      - generic [ref=e73]:
+        - link "SaaS KPI dashboard" [ref=e74] [cursor=pointer]:
+          - /url: /dashboard
+          - button "SaaS KPI dashboard" [ref=e75]
+        - link "AI support chatbot" [ref=e76] [cursor=pointer]:
+          - /url: /dashboard
+          - button "AI support chatbot" [ref=e77]
+        - link "Marketplace MVP" [ref=e78] [cursor=pointer]:
+          - /url: /dashboard
+          - button "Marketplace MVP" [ref=e79]
+      - generic [ref=e80]:
+        - img [ref=e81]
+        - generic [ref=e84]:
+          - generic [ref=e85]: 120k+ apps shipped
+          - generic [ref=e86]: by swarms worldwide
+        - img [ref=e87]
+  - generic [ref=e91]: ▲ VercelstripeNotionLinear⚡ supabaseDATADOGFigmaslack▲ VercelstripeNotionLinear⚡ supabaseDATADOGFigmaslack
+  - generic [ref=e93]:
+    - generic [ref=e94]:
+      - heading "Meet the Swarm" [level=2] [ref=e95]
+      - paragraph [ref=e96]: Nine agents. One conversation.
+    - generic [ref=e97]:
+      - generic [ref=e99]:
+        - generic [ref=e100]: Supervisor Agent
+        - heading "Orchestrate Freely" [level=3] [ref=e101]:
+          - text: Orchestrate
+          - text: Freely
+        - paragraph [ref=e102]: One brief becomes a coordinated plan. The Supervisor decomposes, assigns, and sequences work across the swarm.
+      - generic [ref=e103]:
+        - generic [ref=e104]: Parallel Agents
+        - heading "Move faster" [level=3] [ref=e105]
+        - paragraph [ref=e106]: Backend, frontend, database and infra are built simultaneously — progress streams live to your editor.
+      - generic [ref=e107]:
+        - generic [ref=e108]:
+          - img [ref=e110]
+          - img [ref=e115]
+        - generic [ref=e118]: Full-Stack Output
+        - heading "Ship Anything" [level=3] [ref=e119]
+        - paragraph [ref=e120]: Next.js frontends, Express APIs, Prisma schemas, Docker & Terraform — one project, production-ready.
+      - generic [ref=e121]:
+        - generic [ref=e122]: Built for Teams
+        - heading "Build together" [level=3] [ref=e123]
+        - paragraph [ref=e124]: Submit requests in any order. The swarm sequences them intelligently while your team stays focused on the product.
+    - generic [ref=e125]:
+      - link "Deep dive into the Swarm" [ref=e126] [cursor=pointer]:
+        - /url: /dashboard
+        - text: Deep dive into the Swarm
+        - img [ref=e127]
+      - link "Read the documentation" [ref=e129] [cursor=pointer]:
+        - /url: "#features"
+  - generic [ref=e131]:
+    - heading "Powered by the SwarmDev platform" [level=2] [ref=e132]
+    - generic [ref=e133]:
+      - generic [ref=e134]:
+        - generic [ref=e135]: Agent Chat
+        - heading "Describe It. Ship It." [level=3] [ref=e136]:
+          - text: Describe It.
+          - text: Ship It.
+        - generic [ref=e137]:
+          - img [ref=e138]
+          - generic [ref=e141]: Make my idea real
+          - generic [ref=e142]:
+            - img [ref=e143]
+            - text: Publish
+          - generic [ref=e146]:
+            - img [ref=e147]
+            - text: Agent
+        - paragraph [ref=e150]: Describe and publish your project. The swarm writes production-ready code, evolves it, and stays out of your way.
+      - generic [ref=e151]:
+        - generic [ref=e152]: Full Stack Infrastructure
+        - heading "Build & Scale Your Apps Easily." [level=3] [ref=e153]
+        - generic [ref=e155]:
+          - generic [ref=e156]: Authentication
+          - generic [ref=e157]: Database
+          - generic [ref=e158]: Hosting
+          - generic [ref=e159]: Monitoring
+        - paragraph [ref=e160]: Built-in services with zero setup — auth, database, hosting and monitoring, secure and scalable from day one.
+      - generic [ref=e161]:
+        - generic [ref=e162]: Integrations
+        - heading "Connect To AI & Services." [level=3] [ref=e163]
+        - generic [ref=e164]:
+          - img [ref=e165]
+          - generic [ref=e169]: S
+          - img [ref=e171]
+          - generic [ref=e173]: "N"
+        - paragraph [ref=e174]: Enhance your apps with AI and 100+ integrations — OpenAI, Stripe, Notion, Slack and more in minutes.
+      - generic [ref=e175]:
+        - generic [ref=e176]: Enterprise Control
+        - heading "Secure Your Apps As They Scale." [level=3] [ref=e177]
+        - img [ref=e179]
+        - paragraph [ref=e184]: "Security controls: SSO/SAML, SOC 2, isolated sandboxes and admin policies keep every build safe."
+  - generic [ref=e187]:
+    - generic [ref=e188]:
+      - generic [ref=e189]: Trusted by builders
+      - generic [ref=e190]: Endorsed by shippers
+    - generic [ref=e191]:
+      - generic [ref=e192]: “
+      - paragraph [ref=e193]: SwarmDev compressed our two-week MVP cycle into an afternoon. The agents coordinate better than most teams I have managed.
+      - generic [ref=e194]:
+        - generic [ref=e195]: Maya Chen
+        - generic [ref=e196]: CTO
+        - generic [ref=e197]: Northwind Labs
+    - generic [ref=e198]:
+      - button "Next Testimonial" [ref=e199]:
+        - generic [ref=e200]:
+          - text: Next
+          - text: Testimonial
+        - img [ref=e201]
+      - button "Previous Testimonial" [ref=e203]:
+        - img [ref=e204]
+        - generic [ref=e206]:
+          - text: Previous
+          - text: Testimonial
+    - generic [ref=e207]:
+      - generic [ref=e208]: “
+      - paragraph [ref=e209]: Nine agents, zero standups, one shipped product. I…
+      - generic [ref=e210]:
+        - generic [ref=e211]: Diego Ferraro
+        - generic [ref=e212]: Founder
+  - generic [ref=e215]:
+    - generic [ref=e216]:
+      - generic [ref=e217]:
+        - heading "Start Small. Scale Fast." [level=2] [ref=e218]
+        - paragraph [ref=e219]: Designed for every stage
+      - generic [ref=e220]:
+        - button "Monthly" [ref=e221]
+        - button "YearlySave $24" [ref=e222]:
+          - text: Yearly
+          - generic [ref=e223]:
+            - img [ref=e224]
+            - text: Save $24
+    - generic [ref=e226]:
+      - generic [ref=e227]:
+        - generic [ref=e229]: Free
+        - generic [ref=e230]: $0
+        - generic [ref=e231]: Try the swarm
+        - list [ref=e232]:
+          - listitem [ref=e233]:
+            - img [ref=e234]
+            - text: 3 builds per month
+          - listitem [ref=e236]:
+            - img [ref=e237]
+            - text: Core agents (3 of 9)
+          - listitem [ref=e239]:
+            - img [ref=e240]
+            - text: Public projects
+          - listitem [ref=e242]:
+            - img [ref=e243]
+            - text: Community support
+        - link "Start free" [ref=e246] [cursor=pointer]:
+          - /url: /dashboard
+      - generic [ref=e247]:
+        - generic [ref=e248]:
+          - generic [ref=e249]: Pro
+          - text: Popular
+        - generic [ref=e250]: $20/mo
+        - generic [ref=e251]: For serious builders
+        - list [ref=e252]:
+          - listitem [ref=e253]:
+            - img [ref=e254]
+            - text: Unlimited builds
+          - listitem [ref=e256]:
+            - img [ref=e257]
+            - text: All 9 agents
+          - listitem [ref=e259]:
+            - img [ref=e260]
+            - text: Priority queue
+          - listitem [ref=e262]:
+            - img [ref=e263]
+            - text: Private projects
+          - listitem [ref=e265]:
+            - img [ref=e266]
+            - text: Custom domains
+        - link "Go Pro" [ref=e269] [cursor=pointer]:
+          - /url: /dashboard
+      - generic [ref=e270]:
+        - generic [ref=e272]: Team
+        - generic [ref=e273]: $40/user/mo
+        - generic [ref=e274]: Ship as a squad
+        - list [ref=e275]:
+          - listitem [ref=e276]:
+            - img [ref=e277]
+            - text: Everything in Pro
+          - listitem [ref=e279]:
+            - img [ref=e280]
+            - text: Shared workspaces
+          - listitem [ref=e282]:
+            - img [ref=e283]
+            - text: Role-based access
+          - listitem [ref=e285]:
+            - img [ref=e286]
+            - text: Usage analytics
+        - link "Start a team" [ref=e289] [cursor=pointer]:
+          - /url: /dashboard
+      - generic [ref=e290]:
+        - generic [ref=e292]: Enterprise
+        - generic [ref=e293]: Custom
+        - generic [ref=e294]: Swarms at scale
+        - list [ref=e295]:
+          - listitem [ref=e296]:
+            - img [ref=e297]
+            - text: SSO / SAML
+          - listitem [ref=e299]:
+            - img [ref=e300]
+            - text: SOC 2 Type II
+          - listitem [ref=e302]:
+            - img [ref=e303]
+            - text: Dedicated VPC
+          - listitem [ref=e305]:
+            - img [ref=e306]
+            - text: Audit logs
+        - link "Contact sales" [ref=e309] [cursor=pointer]:
+          - /url: /dashboard
+  - generic [ref=e311]:
+    - heading "What are you waiting for?" [level=2] [ref=e312]
+    - link "Get started free" [ref=e313] [cursor=pointer]:
+      - /url: /dashboard
+  - contentinfo [ref=e314]:
+    - generic [ref=e315]:
+      - generic [ref=e316]:
+        - link "SwarmDev" [ref=e317] [cursor=pointer]:
+          - /url: /
+          - text: SwarmDev
+        - generic [ref=e318]:
+          - img [ref=e319]
+          - generic [ref=e322]:
+            - generic [ref=e323]: UTC
+            - generic [ref=e324]: 05:23
+            - generic [ref=e325]: 73°F
+          - generic [ref=e326]: Made for builders everywhere.
+        - generic [ref=e327]: All rights reserved. © 2026 SwarmDev, Inc.
+      - generic [ref=e328]:
+        - generic [ref=e329]:
+          - generic [ref=e330]: HANDY LINKS
+          - list [ref=e331]:
+            - listitem [ref=e332]:
+              - link "Swarm 101" [ref=e333] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e334]:
+              - link "How-to guides" [ref=e335] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e336]:
+              - link "Import from GitHub" [ref=e337] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e338]:
+              - link "Help" [ref=e339] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e340]:
+              - link "Status" [ref=e341] [cursor=pointer]:
+                - /url: /dashboard
+        - generic [ref=e342]:
+          - generic [ref=e343]: COMPANY
+          - list [ref=e344]:
+            - listitem [ref=e345]:
+              - link "About" [ref=e346] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e347]:
+              - link "Brand" [ref=e348] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e349]:
+              - link "Careers" [ref=e350] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e351]:
+              - link "Partnerships" [ref=e352] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e353]:
+              - link "Startups" [ref=e354] [cursor=pointer]:
+                - /url: /dashboard
+        - generic [ref=e355]:
+          - generic [ref=e356]: LEGAL
+          - list [ref=e357]:
+            - listitem [ref=e358]:
+              - link "Terms" [ref=e359] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e360]:
+              - link "Privacy" [ref=e361] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e362]:
+              - link "DPA" [ref=e363] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e364]:
+              - link "Subprocessors" [ref=e365] [cursor=pointer]:
+                - /url: /dashboard
+        - generic [ref=e366]:
+          - generic [ref=e367]: CONNECT
+          - list [ref=e368]:
+            - listitem [ref=e369]:
+              - link "X / Twitter" [ref=e370] [cursor=pointer]:
+                - /url: https://twitter.com
+            - listitem [ref=e371]:
+              - link "GitHub" [ref=e372] [cursor=pointer]:
+                - /url: https://github.com
+            - listitem [ref=e373]:
+              - link "Discord" [ref=e374] [cursor=pointer]:
+                - /url: https://discord.com
+            - listitem [ref=e375]:
+              - link "LinkedIn" [ref=e376] [cursor=pointer]:
+                - /url: https://linkedin.com

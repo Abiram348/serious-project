@@ -20,6 +20,7 @@ import terminalRoutes from './routes/terminal';
 import gitRoutes from './routes/git';
 import billingRoutes from './routes/billing';
 import previewRoutes from './routes/preview';
+import userRoutes from './routes/user';
 
 // Middleware imports
 import { apiLimiter } from './middleware/rateLimit';
@@ -91,6 +92,7 @@ app.use('/api/projects', modelRoutes);
 app.use('/api/projects', terminalRoutes);
 app.use('/api/projects', gitRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/user', userRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

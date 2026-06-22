@@ -1,7 +1,7 @@
 aws_region = "us-east-1"
 
-# Strong password for the NEW RDS database Terraform will create
-db_password = "YOUR_STRONG_PASSWORD_HERE"
+# Strong password for the RDS database
+db_password = "De0SrRwT3FdhCaGxEAML984gbWcfeU4PxpFVdrTrWI"
 
 # Clerk (from apps/api/.env and apps/web/.env)
 clerk_secret_key       = "sk_test_YOUR_CLERK_SECRET"

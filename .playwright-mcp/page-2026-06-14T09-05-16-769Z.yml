@@ -1,0 +1,12 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - heading "Preview" [level=1] [ref=e4]
+      - paragraph [ref=e5]: View your project in action
+    - main [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e10]:
+          - heading "Preview" [level=3] [ref=e11]
+          - generic [ref=e12]: STOPPED
+        - generic [ref=e20]: Loading...
+  - alert [ref=e22]
