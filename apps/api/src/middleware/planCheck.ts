@@ -52,12 +52,17 @@ export const planCheckMiddleware = async (
 
     const limits = planLimits[plan];
 
-    // Project limit check — only enforce on project creation (POST /api/projects)
-    if (limits.maxProjects > 0 && userProjects.length >= limits.maxProjects && req.method === 'POST' && req.path === '/') {
+    // Project limit check — only enforce on project creation. Mounted at
+    // /api/projects, so `req.path` is `/api/projects` here, not `/`.
+    const isCreateProject =
+      req.method === 'POST' &&
+      (req.originalUrl === '/api/projects' || req.originalUrl === '/api/projects/');
+    if (limits.maxProjects > 0 && userProjects.length >= limits.maxProjects && isCreateProject) {
       return res.status(403).json({
         error: 'Project limit reached',
         limit: limits.maxProjects,
-        upgrade: '/billing/plans',
+        plan,
+        upgrade: '/settings/billing',
       });
     }
 

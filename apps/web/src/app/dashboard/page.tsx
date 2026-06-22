@@ -207,7 +207,21 @@ export default function Dashboard() {
           techStack: { frontend: 'nextjs', backend: 'nodejs' },
         }),
       });
-      if (!res.ok) throw new Error(`Create failed: ${res.status}`);
+      if (!res.ok) {
+        // Surface plan limit (403) with a specific message; everything else as a generic failure.
+        if (res.status === 403) {
+          const body = await res.json().catch(() => ({} as any));
+          const message =
+            body?.error === 'Project limit reached'
+              ? `Project limit reached (${body.limit ?? 'plan'}). Upgrade your plan to create more.`
+              : body?.error === 'Token limit reached'
+              ? 'Token limit reached. Upgrade your plan to continue.'
+              : body?.error || 'Plan limit reached';
+          alert(message);
+          return;
+        }
+        throw new Error(`Create failed: ${res.status}`);
+      }
       const project = await res.json();
       try {
         await fetch(`/api/projects/${project.id}/start`, { method: 'POST' });
