@@ -1,0 +1,204 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e10]: SwarmDev
+        - generic [ref=e12]:
+          - generic [ref=e13]: abiram
+          - generic [ref=e14]: /
+          - generic [ref=e15]: Todo App
+        - generic [ref=e16]:
+          - img [ref=e17]
+          - text: main
+      - generic [ref=e20]:
+        - generic [ref=e180]: Swarm building — 9/9 agents active
+        - button "Share" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+          - text: Share
+        - button "Deploy" [ref=e27] [cursor=pointer]:
+          - text: Deploy
+          - img [ref=e28]
+    - generic [ref=e31]:
+      - generic [ref=e181]:
+        - generic [ref=e184]: documentation
+        - generic [ref=e187]: security
+        - generic [ref=e190]: reviewer
+        - generic [ref=e193]: qa
+        - generic [ref=e196]: devops
+        - generic [ref=e199]: database
+        - generic [ref=e202]: backend
+        - generic [ref=e205]: frontend
+        - generic [ref=e208]: supervisor
+      - generic [ref=e32]:
+        - generic [ref=e35]: 0%
+        - generic [ref=e36]: ETA 14m
+    - generic [ref=e37]:
+      - complementary [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: Files
+          - generic [ref=e43]:
+            - button [ref=e44] [cursor=pointer]:
+              - img [ref=e45]
+            - button [ref=e48] [cursor=pointer]:
+              - img [ref=e49]
+            - button [ref=e51] [cursor=pointer]:
+              - img [ref=e52]
+        - generic [ref=e55]:
+          - button "src" [ref=e209] [cursor=pointer]:
+            - img [ref=e210]
+            - img [ref=e212]
+            - generic [ref=e215]: src
+          - button "app" [ref=e216] [cursor=pointer]:
+            - img [ref=e217]
+            - img [ref=e219]
+            - generic [ref=e222]: app
+          - button "dashboard" [ref=e223] [cursor=pointer]:
+            - img [ref=e224]
+            - img [ref=e226]
+            - generic [ref=e229]: dashboard
+          - button "page.tsx" [ref=e230] [cursor=pointer]:
+            - img [ref=e232]
+            - generic [ref=e237]: page.tsx
+          - button "login" [ref=e238] [cursor=pointer]:
+            - img [ref=e239]
+            - img [ref=e241]
+            - generic [ref=e244]: login
+          - button "page.tsx" [ref=e245] [cursor=pointer]:
+            - img [ref=e246]
+            - generic [ref=e251]: page.tsx
+          - button "signup" [ref=e252] [cursor=pointer]:
+            - img [ref=e253]
+            - img [ref=e255]
+            - generic [ref=e258]: signup
+          - button "page.tsx" [ref=e259] [cursor=pointer]:
+            - img [ref=e260]
+            - generic [ref=e265]: page.tsx
+          - button "globals.css" [ref=e266] [cursor=pointer]:
+            - img [ref=e267]
+            - generic [ref=e270]: globals.css
+          - button "layout.tsx" [ref=e271] [cursor=pointer]:
+            - img [ref=e272]
+            - generic [ref=e277]: layout.tsx
+          - button "page.tsx" [ref=e278] [cursor=pointer]:
+            - img [ref=e279]
+            - generic [ref=e284]: page.tsx
+          - button "components" [ref=e285] [cursor=pointer]:
+            - img [ref=e286]
+            - img [ref=e288]
+            - generic [ref=e291]: components
+          - button "layout" [ref=e292] [cursor=pointer]:
+            - img [ref=e293]
+            - img [ref=e295]
+            - generic [ref=e298]: layout
+          - button "header.tsx" [ref=e299] [cursor=pointer]:
+            - img [ref=e300]
+            - generic [ref=e305]: header.tsx
+          - button "sidebar.tsx" [ref=e306] [cursor=pointer]:
+            - img [ref=e307]
+            - generic [ref=e312]: sidebar.tsx
+          - button "ui" [ref=e313] [cursor=pointer]:
+            - img [ref=e314]
+            - img [ref=e316]
+            - generic [ref=e319]: ui
+          - button "button.tsx" [ref=e320] [cursor=pointer]:
+            - img [ref=e321]
+            - generic [ref=e326]: button.tsx
+          - button "card.tsx" [ref=e327] [cursor=pointer]:
+            - img [ref=e328]
+            - generic [ref=e333]: card.tsx
+          - button "input.tsx" [ref=e334] [cursor=pointer]:
+            - img [ref=e335]
+            - generic [ref=e340]: input.tsx
+          - button "label.tsx" [ref=e341] [cursor=pointer]:
+            - img [ref=e342]
+            - generic [ref=e347]: label.tsx
+          - button "lib" [ref=e348] [cursor=pointer]:
+            - img [ref=e349]
+            - img [ref=e351]
+            - generic [ref=e354]: lib
+          - button "api.ts" [ref=e355] [cursor=pointer]:
+            - img [ref=e356]
+            - generic [ref=e361]: api.ts
+          - button "utils.ts" [ref=e362] [cursor=pointer]:
+            - img [ref=e363]
+            - generic [ref=e368]: utils.ts
+          - button "store" [ref=e369] [cursor=pointer]:
+            - img [ref=e370]
+            - img [ref=e372]
+            - generic [ref=e375]: store
+          - button "auth-store.ts" [ref=e376] [cursor=pointer]:
+            - img [ref=e377]
+            - generic [ref=e382]: auth-store.ts
+          - button "types" [ref=e383] [cursor=pointer]:
+            - img [ref=e384]
+            - img [ref=e386]
+            - generic [ref=e389]: types
+          - button "api.ts" [ref=e390] [cursor=pointer]:
+            - img [ref=e391]
+            - generic [ref=e396]: api.ts
+      - separator [ref=e62]
+      - generic [ref=e65]:
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - button "page.tsx" [ref=e398] [cursor=pointer]:
+              - img [ref=e400]
+              - generic [ref=e405]: page.tsx
+              - img [ref=e407]
+            - generic [ref=e70]:
+              - button [ref=e71] [cursor=pointer]:
+                - img [ref=e72]
+              - button "Preview" [ref=e74] [cursor=pointer]:
+                - img [ref=e75]
+                - text: Preview
+          - code [ref=e413]:
+            - generic [ref=e414]:
+              - textbox "Editor content"
+              - textbox [ref=e415]
+              - generic [ref=e420]: "1"
+        - separator [ref=e80]
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - button "Terminal" [ref=e86] [cursor=pointer]: Terminal
+              - button "Agent logs" [ref=e88] [cursor=pointer]
+            - generic [ref=e89]:
+              - button [ref=e90] [cursor=pointer]:
+                - img [ref=e91]
+              - button [ref=e94] [cursor=pointer]:
+                - img [ref=e95]
+          - generic [ref=e429]:
+            - textbox [active] [ref=e430]
+            - generic [ref=e431]:
+              - generic [ref=e433]: ⚡ SwarmDev Terminal
+              - generic [ref=e435]: "project: cmpwk83ae0002ecpvx9dlsjxa"
+              - generic [ref=e437]:
+                - generic [ref=e452]: ❯
+                - generic [ref=e453]: echo hello swarm terminal
+              - generic [ref=e454]: ❯
+      - separator [ref=e103]
+      - complementary [ref=e106]:
+        - generic [ref=e107]:
+          - generic [ref=e109]: Swarm chat
+          - button [ref=e115] [cursor=pointer]:
+            - img [ref=e116]
+        - generic [ref=e120]:
+          - generic [ref=e442]: hello swarm, can you hear me?
+          - generic [ref=e443]:
+            - generic [ref=e446]: supervisor
+            - generic [ref=e447]: Hello! Yes, I can hear you loud and clear. I'm the SUPERVISOR agent for SwarmDev, ready to assist with any questions, code changes, or advice you need. How can I help you today?
+        - generic [ref=e163]:
+          - generic [ref=e164]:
+            - generic [ref=e165] [cursor=pointer]: "@supervisor"
+            - generic [ref=e166] [cursor=pointer]: "@backend"
+            - generic [ref=e167] [cursor=pointer]: "@qa"
+          - generic [ref=e168]:
+            - button [ref=e169] [cursor=pointer]:
+              - img [ref=e170]
+            - textbox "Message the swarm — use @ to mention an agent" [ref=e171]
+            - button [disabled] [ref=e172]:
+              - img [ref=e173]
+  - alert [ref=e175]
+  - generic [ref=e448]: nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnllllllllllllllllllllllllllllllll
+  - generic [ref=e449]:
+    - alert
+    - alert

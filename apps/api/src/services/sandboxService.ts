@@ -72,6 +72,27 @@ export const sandboxService = {
     return null;
   },
 
+  async getOrCreateSandbox(projectId: string): Promise<Sandbox> {
+    const existing = await this.getSandbox(projectId);
+    if (existing) {
+      try {
+        // Verify the cached sandbox is still alive (E2B sandboxes hibernate after inactivity).
+        await existing.commands.run('echo ok');
+        return existing;
+      } catch (error) {
+        console.warn(`Sandbox for project ${projectId} is stale, recreating...`, error);
+        sandboxInstances.delete(projectId);
+        sandboxRegistry.delete(projectId);
+      }
+    }
+    await this.createSandbox(projectId);
+    const sandbox = sandboxInstances.get(projectId);
+    if (!sandbox) {
+      throw new Error('Failed to create sandbox');
+    }
+    return sandbox;
+  },
+
   async deleteSandbox(projectId: string): Promise<void> {
     const sandbox = sandboxInstances.get(projectId);
 
@@ -89,14 +110,32 @@ export const sandboxService = {
     }
   },
 
-  async executeCommand(sandbox: Sandbox, command: string): Promise<ExecutionResult> {
-    const result = await sandbox.commands.run(command);
-
-    return {
-      stdout: result.stdout,
-      stderr: result.stderr,
-      exitCode: result.exitCode || 0,
-    };
+  async executeCommand(sandbox: Sandbox, command: string, projectId?: string): Promise<ExecutionResult> {
+    try {
+      const result = await sandbox.commands.run(command);
+      return {
+        stdout: result.stdout,
+        stderr: result.stderr,
+        exitCode: result.exitCode || 0,
+      };
+    } catch (error: any) {
+      const message = error?.message || String(error);
+      // E2B sandboxes may hibernate between calls. If we know the project id,
+      // recreate the sandbox and retry the command once.
+      if (projectId && (message.includes('not running') || message.includes('hibernated') || message.includes('Sandbox'))) {
+        console.warn(`Command failed in stale sandbox for ${projectId}, recreating and retrying...`);
+        sandboxInstances.delete(projectId);
+        sandboxRegistry.delete(projectId);
+        const fresh = await this.getOrCreateSandbox(projectId);
+        const result = await fresh.commands.run(command);
+        return {
+          stdout: result.stdout,
+          stderr: result.stderr,
+          exitCode: result.exitCode || 0,
+        };
+      }
+      throw error;
+    }
   },
 
   async writeFile(sandbox: Sandbox, path: string, content: string): Promise<void> {

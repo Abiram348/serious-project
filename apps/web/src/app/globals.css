@@ -4,27 +4,27 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 210 40% 90%;
-    --card: 240 10% 6%;
-    --card-foreground: 210 40% 90%;
-    --popover: 240 10% 7%;
-    --popover-foreground: 210 40% 90%;
-    --primary: 190 100% 50%;
-    --primary-foreground: 240 10% 3.9%;
-    --secondary: 260 80% 60%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 240 5% 15%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 155 100% 45%;
-    --accent-foreground: 240 10% 3.9%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 240 10% 3.9%;
-    --border: 240 5% 18%;
-    --input: 240 5% 18%;
-    --ring: 190 100% 50%;
+    --background: #FAF6F0;
+    --foreground: #1A1817;
+    --card: #FFFFFF;
+    --card-foreground: #1A1817;
+    --popover: #FFFFFF;
+    --popover-foreground: #1A1817;
+    --primary: #F5500B;
+    --primary-foreground: #FFFFFF;
+    --secondary: #FFA180;
+    --secondary-foreground: #1A1817;
+    --muted: #F1EAE2;
+    --muted-foreground: #6B6661;
+    --accent: #FFC9B5;
+    --accent-foreground: #1A1817;
+    --destructive: #C2410C;
+    --destructive-foreground: #FFFFFF;
+    --warning: #F59E0B;
+    --warning-foreground: #1A1817;
+    --border: #EAE2DA;
+    --input: #EAE2DA;
+    --ring: #F5500B;
     --radius: 0.5rem;
   }
 
@@ -39,123 +39,14 @@
 }
 
 @layer components {
-  /* Grid pattern background */
-  .bg-grid {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 32px 32px;
-  }
-
-  /* Dot pattern background */
-  .bg-dots {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
   /* Glass panel */
   .glass {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50;
-  }
-
-  /* Glow ring for active states */
-  .glow-ring {
-    box-shadow:
-      0 0 0 1px hsl(190 100% 50% / 0.3),
-      0 0 15px hsl(190 100% 50% / 0.1),
-      inset 0 0 15px hsl(190 100% 50% / 0.05);
-  }
-
-  .glow-ring-accent {
-    box-shadow:
-      0 0 0 1px hsl(155 100% 45% / 0.3),
-      0 0 15px hsl(155 100% 45% / 0.1),
-      inset 0 0 15px hsl(155 100% 45% / 0.05);
-  }
-
-  /* Terminal scanline overlay */
-  .scanline-overlay {
-    position: relative;
-  }
-  .scanline-overlay::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.03) 2px,
-      rgba(0, 0, 0, 0.03) 4px
-    );
-    pointer-events: none;
-  }
-
-  /* Gradient text */
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
-  }
-
-  .text-gradient-accent {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary;
-  }
-
-  /* Shimmer loading */
-  .shimmer {
-    background: linear-gradient(
-      90deg,
-      hsl(240 10% 10%) 0%,
-      hsl(240 10% 18%) 50%,
-      hsl(240 10% 10%) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 2s linear infinite;
-  }
-
-  /* Agent status indicator */
-  .status-dot {
-    @apply inline-block h-2 w-2 rounded-full;
-  }
-  .status-dot-active {
-    @apply bg-accent;
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-  .status-dot-running {
-    @apply bg-primary;
-    animation: pulse-dot 1.5s ease-in-out infinite;
-  }
-  .status-dot-waiting {
-    @apply bg-warning;
-  }
-  .status-dot-completed {
-    @apply bg-accent opacity-60;
-  }
-  .status-dot-failed {
-    @apply bg-destructive;
-  }
-  .status-dot-idle {
-    @apply bg-muted-foreground/40;
+    @apply bg-white/80 backdrop-blur-xl border border-border/50;
   }
 
   /* Code block styling */
   .code-block {
-    @apply bg-surface font-mono text-sm rounded-md border border-border/50;
-  }
-
-  /* 8-bit / Retro styles */
-  .retro {
-    font-family: 'Courier New', 'Courier', monospace;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
-
-  .retro * {
-    font-family: 'Courier New', 'Courier', monospace;
-  }
-
-  .pixelated {
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
+    @apply bg-dark-surface font-mono text-sm rounded-md border border-white/10;
   }
 }
 
@@ -174,57 +65,29 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(240 5% 25%);
+  background: #DDD3C9;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(240 5% 35%);
-}
-
-/* xterm overrides */
-.xterm {
-  padding: 8px;
-}
-.xterm-viewport::-webkit-scrollbar {
-  width: 6px;
-}
-.xterm-viewport::-webkit-scrollbar-thumb {
-  background: hsl(240 5% 25%);
-}
-
-/* Monaco editor overrides */
-.monaco-editor .margin {
-  background: hsl(240 10% 6%) !important;
-}
-
-/* react-resizable-panels separator overrides */
-[data-separator] {
-  position: relative;
-  z-index: 10;
-}
-
-/* Widen the horizontal separator hit area */
-[data-separator][aria-orientation="horizontal"]::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -4px;
-  right: -4px;
-}
-
-/* Widen the vertical separator hit area */
-[data-separator][aria-orientation="vertical"]::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -4px;
-  bottom: -4px;
+  background: #C9C2BB;
 }
 
 /* Selection color */
 ::selection {
-  background: hsl(190 100% 50% / 0.2);
-  color: hsl(210 40% 98%);
+  background: rgba(245, 80, 11, 0.2);
+  color: #1A1817;
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
 }

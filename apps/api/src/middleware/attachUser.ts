@@ -12,18 +12,13 @@ export async function attachUser(
 ) {
   try {
     const auth = (req as any).auth || null;
-    const clerkId = auth?.userId;
+    let clerkId = auth?.userId;
+
+    if (!clerkId && process.env.NODE_ENV === 'test') {
+      clerkId = (req.headers['x-test-user-id'] as string) || 'test-clerk-id';
+    }
 
     if (!clerkId) {
-      // In test mode, create a mock user so downstream handlers don't crash
-      if (process.env.NODE_ENV === 'test') {
-        const mockUser = await db.user.findFirst({ where: { clerkId: 'test-clerk-id' } });
-        if (mockUser) {
-          (req as any).user = mockUser;
-        } else {
-          // Return without user — tests that need auth should mock req.user themselves
-        }
-      }
       return next();
     }
 

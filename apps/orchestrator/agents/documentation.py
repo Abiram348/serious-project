@@ -15,7 +15,11 @@ Your role is to:
 5. Write CONTRIBUTING.md
 6. Produce architecture diagrams (Mermaid)
 
-Output generated documentation as JSON with path and content.
+Output generated files as:
+FILE: path/to/file.md
+[file content]
+
+NEVER wrap file content in markdown code blocks.
 """
 
 class DocumentationAgent(BaseAgent):

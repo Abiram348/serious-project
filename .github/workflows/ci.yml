@@ -72,20 +72,20 @@ jobs:
       # Lint & test web
       - name: Lint web
         working-directory: ./apps/web
-        run: pnpm lint || true
+        run: pnpm lint
 
       - name: Test web
         working-directory: ./apps/web
-        run: pnpm test || true
+        run: pnpm test
 
       # Lint & test api
       - name: Lint API
         working-directory: ./apps/api
-        run: pnpm lint || true
+        run: pnpm lint
 
       - name: Test API
         working-directory: ./apps/api
-        run: pnpm test || true
+        run: pnpm test
 
       # Python setup for orchestrator
       - name: Set up Python
@@ -100,7 +100,7 @@ jobs:
 
       - name: Run orchestrator tests
         working-directory: ./apps/orchestrator
-        run: pytest -q || true
+        run: pytest -q
 
       # Security scans
       - name: Security scans

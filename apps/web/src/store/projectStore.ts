@@ -42,6 +42,9 @@ interface ProjectState {
   fetchAgents: (projectId: string) => Promise<Agent[] | null>;
   updateProject: (data: Partial<Project>) => void;
 
+  // Reset store when navigating between projects
+  resetProject: () => void;
+
   // Real-time socket-driven updates
   setProjectStatus: (status: string) => void;
   addFile: (path: string, fileData: any) => void;
@@ -103,6 +106,16 @@ export const useProjectStore = create<ProjectState>((set) => ({
     set((state) => ({
       project: state.project ? { ...state.project, ...data } : null,
     }));
+  },
+
+  resetProject: () => {
+    set({
+      project: null,
+      files: {},
+      agents: [],
+      loading: false,
+      error: null,
+    });
   },
 
   // Socket-driven updates

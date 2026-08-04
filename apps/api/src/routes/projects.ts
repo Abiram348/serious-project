@@ -187,8 +187,8 @@ router.post('/:id/restart', authMiddleware, async (req: Request, res: Response) 
   }
 });
 
-// Export project as ZIP (placeholder)
-router.post('/:id/export', authMiddleware, async (req: Request, res: Response) => {
+// Export project as ZIP
+router.get('/:id/export', authMiddleware, async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
     const userId = user.id;
@@ -201,15 +201,28 @@ router.post('/:id/export', authMiddleware, async (req: Request, res: Response) =
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    // TODO: Generate ZIP file
-    res.json({
-      success: true,
-      message: 'ZIP export not yet implemented',
-    });
+    const { buildProjectZip } = await import('../services/zipService');
+    const zipBuffer = await buildProjectZip(projectId);
+    const filename = `${proj.name.replace(/[^a-z0-9-_]/gi, '-').toLowerCase() || 'project'}.zip`;
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(zipBuffer);
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes('No files to export')) {
+      return res.status(404).json({ error: message });
+    }
     console.error('Error exporting project:', error);
     res.status(500).json({ error: 'Failed to export project' });
   }
+});
+
+// Legacy POST export — redirects clients to GET download
+router.post('/:id/export', authMiddleware, async (req: Request, res: Response) => {
+  res.status(410).json({
+    error: 'Use GET /api/projects/:id/export to download the ZIP file',
+  });
 });
 
 export default router;

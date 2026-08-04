@@ -9,11 +9,17 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   if (process.env.NODE_ENV === 'test') {
     // In test mode, bypass Clerk auth but set a mock auth object so
     // attachUser and downstream handlers receive a user identity.
-    (req as any).auth = { userId: 'test-clerk-id' };
+    const testUserId = (req.headers['x-test-user-id'] as string) || 'test-clerk-id';
+    (req as any).auth = { userId: testUserId };
     return next();
   }
-  // Otherwise, use Clerk's requireAuth middleware
-  return requireAuth()(req, res, next);
+  // Otherwise, check if clerkMiddleware (running in lax mode before this) already
+  // validated the session. If not, return 401 JSON instead of redirecting.
+  const auth = (req as any).auth;
+  if (!auth?.userId) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+  next();
 };
 
 export default authMiddleware;

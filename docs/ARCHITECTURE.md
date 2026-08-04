@@ -142,7 +142,7 @@ User Request
                     ┌─────────┐
                     │ Security│ ──→ Security scan
                     └─────────┘
-                          │
+                          │           
                           ▼
                     ┌─────────────┐
                     │ Supervisor  │ ──→ Final merge

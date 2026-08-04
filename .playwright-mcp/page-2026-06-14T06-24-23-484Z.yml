@@ -1,0 +1,115 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e10]: SwarmDev
+        - generic [ref=e12]:
+          - generic [ref=e13]: abiram
+          - generic [ref=e14]: /
+          - generic [ref=e15]: build-a-simple-todo
+        - generic [ref=e16]:
+          - img [ref=e17]
+          - text: main
+      - generic [ref=e20]:
+        - generic [ref=e25]: Swarm building — 7/9 agents active
+        - button "Share" [ref=e26] [cursor=pointer]:
+          - img [ref=e27]
+          - text: Share
+        - button "Deploy" [ref=e32] [cursor=pointer]:
+          - text: Deploy
+          - img [ref=e33]
+    - generic [ref=e36]:
+      - generic [ref=e37]:
+        - generic [ref=e40]: documentation
+        - generic [ref=e43]: security
+        - generic [ref=e46]: reviewer
+        - generic [ref=e49]: qa
+        - generic [ref=e50]:
+          - img [ref=e242]
+          - generic [ref=e52]: devops
+        - generic [ref=e53]:
+          - img [ref=e55]
+          - generic [ref=e57]: database
+        - generic [ref=e60]: backend
+        - generic [ref=e63]: frontend
+        - generic [ref=e66]: supervisor
+      - generic [ref=e67]:
+        - generic [ref=e71]: 22%
+        - generic [ref=e72]: ETA 11m
+    - generic [ref=e73]:
+      - complementary [ref=e76]:
+        - generic [ref=e77]:
+          - generic [ref=e78]: Files
+          - generic [ref=e79]:
+            - button [ref=e80] [cursor=pointer]:
+              - img [ref=e81]
+            - button [ref=e84] [cursor=pointer]:
+              - img [ref=e85]
+            - button [ref=e87] [cursor=pointer]:
+              - img [ref=e88]
+        - generic [ref=e92]:
+          - img [ref=e94]
+          - paragraph [ref=e96]: No files yet
+          - paragraph [ref=e97]: Agents will generate files as they build.
+      - separator [ref=e98]
+      - generic [ref=e101]:
+        - generic [ref=e104]:
+          - generic [ref=e106]:
+            - button [ref=e107] [cursor=pointer]:
+              - img [ref=e108]
+            - button "Preview" [active] [ref=e110] [cursor=pointer]:
+              - img [ref=e111]
+              - text: Preview
+          - generic [ref=e115]: Select a file to start editing
+        - separator [ref=e116]
+        - generic [ref=e119]:
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - button "Terminal" [ref=e122] [cursor=pointer]: Terminal
+              - button "Agent logs" [ref=e124] [cursor=pointer]
+            - generic [ref=e125]:
+              - button [ref=e126] [cursor=pointer]:
+                - img [ref=e127]
+              - button [ref=e130] [cursor=pointer]:
+                - img [ref=e131]
+          - generic [ref=e138]:
+            - generic [ref=e141]:
+              - textbox "Terminal input" [ref=e142]
+              - generic [ref=e143]:
+                - generic [ref=e145]: ⚡ SwarmDev Terminal
+                - generic [ref=e147]: "project: cmqdeec6y001ppfd12je6anc8"
+                - generic [ref=e150]: ❯
+            - generic [ref=e155]:
+              - textbox "Terminal input" [ref=e156]
+              - generic [ref=e157]:
+                - generic [ref=e159]: ⚡ SwarmDev Terminal
+                - generic [ref=e161]: "project: cmqdeec6y001ppfd12je6anc8"
+                - generic [ref=e164]: ❯
+      - separator [ref=e167]
+      - complementary [ref=e170]:
+        - generic [ref=e171]:
+          - generic [ref=e173]: Swarm chat
+          - button [ref=e179] [cursor=pointer]:
+            - img [ref=e180]
+        - generic [ref=e244]:
+          - generic [ref=e247]: devops
+          - generic [ref=e248]: DevOps configs generated (12 files)
+        - generic [ref=e227]:
+          - generic [ref=e228]:
+            - generic [ref=e229] [cursor=pointer]: "@supervisor"
+            - generic [ref=e230] [cursor=pointer]: "@backend"
+            - generic [ref=e231] [cursor=pointer]: "@qa"
+          - generic [ref=e232]:
+            - button [ref=e233] [cursor=pointer]:
+              - img [ref=e234]
+            - textbox "Message the swarm — use @ to mention an agent" [ref=e235]
+            - button [disabled] [ref=e236]:
+              - img [ref=e237]
+  - alert [ref=e239]
+  - generic [ref=e240]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll
+  - generic [ref=e241]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll
+  - generic [ref=e251] [cursor=pointer]:
+    - img [ref=e252]
+    - generic [ref=e254]: 1 error
+    - button "Hide Errors" [ref=e255]:
+      - img [ref=e256]

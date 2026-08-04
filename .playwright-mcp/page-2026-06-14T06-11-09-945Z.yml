@@ -1,0 +1,119 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e342]
+  - generic [ref=e412]:
+    - banner [ref=e413]:
+      - generic [ref=e414]:
+        - generic [ref=e420]: SwarmDev
+        - generic [ref=e422]:
+          - generic [ref=e423]: abiram
+          - generic [ref=e424]: /
+          - generic [ref=e425]: build-a-simple-todo
+        - generic [ref=e426]:
+          - img [ref=e427]
+          - text: main
+      - generic [ref=e430]:
+        - generic [ref=e435]: Swarm building — 6/9 agents active
+        - button "Share" [ref=e436] [cursor=pointer]:
+          - img [ref=e437]
+          - text: Share
+        - button "Deploy" [ref=e442] [cursor=pointer]:
+          - text: Deploy
+          - img [ref=e443]
+    - generic [ref=e446]:
+      - generic [ref=e447]:
+        - generic [ref=e450]: documentation
+        - generic [ref=e453]: security
+        - generic [ref=e456]: reviewer
+        - generic [ref=e459]: qa
+        - generic [ref=e460]:
+          - img [ref=e614]
+          - generic [ref=e462]: devops
+        - generic [ref=e465]: database
+        - generic [ref=e466]:
+          - img [ref=e621]
+          - generic [ref=e468]: backend
+        - generic [ref=e471]: frontend
+        - generic [ref=e472]:
+          - img [ref=e474]
+          - generic [ref=e476]: supervisor
+      - generic [ref=e477]:
+        - generic [ref=e481]: 33%
+        - generic [ref=e482]: ETA 9m
+    - generic [ref=e483]:
+      - complementary [ref=e486]:
+        - generic [ref=e487]:
+          - generic [ref=e488]: Files
+          - generic [ref=e489]:
+            - button [ref=e490] [cursor=pointer]:
+              - img [ref=e491]
+            - button [ref=e494] [cursor=pointer]:
+              - img [ref=e495]
+            - button [ref=e497] [cursor=pointer]:
+              - img [ref=e498]
+        - generic [ref=e502]:
+          - img [ref=e504]
+          - paragraph [ref=e506]: No files yet
+          - paragraph [ref=e507]: Agents will generate files as they build.
+      - separator [ref=e508]
+      - generic [ref=e511]:
+        - generic [ref=e514]:
+          - generic [ref=e516]:
+            - button [ref=e517] [cursor=pointer]:
+              - img [ref=e518]
+            - button "Preview" [ref=e520] [cursor=pointer]:
+              - img [ref=e521]
+              - text: Preview
+          - generic [ref=e525]: Select a file to start editing
+        - separator [ref=e526]
+        - generic [ref=e529]:
+          - generic [ref=e530]:
+            - generic [ref=e531]:
+              - button "Terminal" [ref=e532] [cursor=pointer]: Terminal
+              - button "Agent logs" [ref=e534] [cursor=pointer]
+            - generic [ref=e535]:
+              - button [ref=e536] [cursor=pointer]:
+                - img [ref=e537]
+              - button [ref=e540] [cursor=pointer]:
+                - img [ref=e541]
+          - generic [ref=e548]:
+            - generic [ref=e551]:
+              - textbox "Terminal input" [ref=e552]
+              - generic [ref=e553]:
+                - generic [ref=e555]: ⚡ SwarmDev Terminal
+                - generic [ref=e557]: "project: cmqddx4zo0001pfd18su055l7"
+                - generic [ref=e560]: ❯
+            - generic [ref=e565]:
+              - textbox "Terminal input" [ref=e566]
+              - generic [ref=e567]:
+                - generic [ref=e569]: ⚡ SwarmDev Terminal
+                - generic [ref=e571]: "project: cmqddx4zo0001pfd18su055l7"
+                - generic [ref=e574]: ❯
+      - separator [ref=e577]
+      - complementary [ref=e580]:
+        - generic [ref=e581]:
+          - generic [ref=e583]: Swarm chat
+          - button [ref=e589] [cursor=pointer]:
+            - img [ref=e590]
+        - generic [ref=e594]:
+          - generic [ref=e595]:
+            - generic [ref=e598]: supervisor
+            - generic [ref=e599]: Created plan with 8 tasks
+          - generic [ref=e616]:
+            - generic [ref=e619]: devops
+            - generic [ref=e620]: DevOps configs generated (0 files)
+          - generic [ref=e623]:
+            - generic [ref=e626]: backend
+            - generic [ref=e627]: Backend API generated (0 files)
+        - generic [ref=e600]:
+          - generic [ref=e601]:
+            - generic [ref=e602] [cursor=pointer]: "@supervisor"
+            - generic [ref=e603] [cursor=pointer]: "@backend"
+            - generic [ref=e604] [cursor=pointer]: "@qa"
+          - generic [ref=e605]:
+            - button [ref=e606] [cursor=pointer]:
+              - img [ref=e607]
+            - textbox "Message the swarm — use @ to mention an agent" [ref=e608]
+            - button [disabled] [ref=e609]:
+              - img [ref=e610]
+  - generic [ref=e612]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll
+  - generic [ref=e613]: ❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯❯llllllllllllllllllllllllllllllll

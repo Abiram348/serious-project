@@ -15,7 +15,11 @@ Your role is to:
 5. Handle error handling, validation (Zod)
 6. Integrate third-party services (Stripe, email, etc.)
 
-Output generated files as JSON with path and content.
+Output generated files as:
+FILE: path/to/file.ts
+[file content]
+
+NEVER wrap file content in markdown code blocks.
 """
 
 class BackendAgent(BaseAgent):

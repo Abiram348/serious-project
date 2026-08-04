@@ -1,0 +1,234 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - generic [ref=e11]: SwarmDev
+      - navigation [ref=e12]:
+        - link "Home" [ref=e13] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e14]
+          - text: Home
+        - link "Projects" [ref=e17] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e18]
+          - text: Projects
+        - link "Agents" [ref=e20] [cursor=pointer]:
+          - /url: /agents
+          - img [ref=e21]
+          - text: Agents
+        - link "Deployments" [ref=e24] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e25]
+          - text: Deployments
+        - link "Usage" [ref=e30] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e31]
+          - text: Usage
+        - link "Settings" [ref=e32] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e33]
+          - text: Settings
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]: Swarm capacity
+          - img [ref=e40]
+        - paragraph [ref=e43]: "Builds: 3/3"
+      - generic [ref=e45] [cursor=pointer]:
+        - button "Open user menu" [ref=e344]:
+          - img "Abiram Reddy Martala's logo" [ref=e347]
+        - generic [ref=e46]:
+          - paragraph [ref=e47]: Abiram Reddy
+          - generic [ref=e48]: Free plan
+        - img [ref=e49]
+    - main [ref=e53]:
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - heading "Good afternoon, Abiram Reddy" [level=1] [ref=e349]
+          - paragraph [ref=e57]: Sun, Jun 14 · 2 builds in progress
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - img [ref=e60]
+            - generic [ref=e63]: Search projects, agents, docs…
+            - generic [ref=e64]: ⌘K
+          - button [ref=e65] [cursor=pointer]:
+            - img [ref=e66]
+          - button "New Project" [ref=e70] [cursor=pointer]:
+            - img [ref=e71]
+            - text: New Project
+      - generic [ref=e73]:
+        - paragraph [ref=e74]: 9 agents · 1 prompt
+        - heading "What will your swarm build today?" [level=2] [ref=e75]
+        - generic [ref=e76]:
+          - button "Attach" [ref=e77] [cursor=pointer]:
+            - img [ref=e78]
+          - textbox "Describe your app, the swarm brings it to life…" [ref=e79]
+          - button "Build" [disabled] [ref=e80]:
+            - img [ref=e81]
+        - generic [ref=e83]:
+          - generic [ref=e84]: "Try:"
+          - button "SaaS KPI dashboard" [ref=e85] [cursor=pointer]
+          - button "AI support chatbot" [ref=e86] [cursor=pointer]
+          - button "Marketplace MVP" [ref=e87] [cursor=pointer]
+          - button "Internal admin panel" [ref=e88] [cursor=pointer]
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - generic [ref=e91]:
+            - generic [ref=e92]: Builds this month
+            - img [ref=e93]
+          - generic [ref=e97]: "3"
+          - paragraph [ref=e105]: 3 total builds
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - generic [ref=e108]: Agent runs
+            - img [ref=e109]
+          - generic [ref=e113]: "27"
+          - paragraph [ref=e114]: 0 tokens used
+        - generic [ref=e115]:
+          - generic [ref=e116]:
+            - generic [ref=e117]: Deployments
+            - img [ref=e118]
+          - generic [ref=e121]:
+            - generic [ref=e122]: "0"
+            - generic [ref=e350]: live
+          - paragraph [ref=e123]: No completed builds yet
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: Active agents
+            - img [ref=e127]
+          - generic [ref=e130]: "2"
+          - paragraph [ref=e131]: Currently building
+      - generic [ref=e132]:
+        - generic [ref=e133]:
+          - heading "Your projects" [level=2] [ref=e134]
+          - generic [ref=e135]:
+            - generic [ref=e136]:
+              - button "All" [ref=e137] [cursor=pointer]
+              - button "Building" [ref=e138] [cursor=pointer]
+              - button "Deployed" [ref=e139] [cursor=pointer]
+              - button "Drafts" [ref=e140] [cursor=pointer]
+            - button "Recent" [ref=e141] [cursor=pointer]:
+              - text: Recent
+              - img [ref=e142]
+        - generic [ref=e144]:
+          - article [ref=e674] [cursor=pointer]:
+            - generic [ref=e675]:
+              - generic [ref=e676]:
+                - heading "build-a-simple-todo" [level=3] [ref=e677]
+                - paragraph [ref=e678]: cmqde3sca000lpfd1mj0t3dob
+              - generic [ref=e679]: Building
+            - paragraph [ref=e683]: build a simple todo app with nextjs
+            - generic [ref=e695]: 9/9 agents active
+            - generic [ref=e698]: 0%
+            - generic [ref=e699]:
+              - generic [ref=e700]: nextjs
+              - generic [ref=e701]: nodejs
+            - generic [ref=e703]:
+              - generic [ref=e704]: Updated 2h ago
+              - generic [ref=e705]:
+                - generic [ref=e788]: Delete?
+                - button "Yes" [ref=e789]
+                - button "No" [ref=e790]
+          - article [ref=e714] [cursor=pointer]:
+            - generic [ref=e715]:
+              - generic [ref=e716]:
+                - heading "build-a-simple-todo" [level=3] [ref=e717]
+                - paragraph [ref=e718]: cmqddx4zo0001pfd18su055l7
+              - generic [ref=e719]: Building
+            - paragraph [ref=e723]: build a simple todo app with nextjs
+            - generic [ref=e735]: 9/9 agents active
+            - generic [ref=e738]: 0%
+            - generic [ref=e739]:
+              - generic [ref=e740]: nextjs
+              - generic [ref=e741]: nodejs
+            - generic [ref=e743]:
+              - generic [ref=e744]: Updated 2h ago
+              - generic [ref=e745]:
+                - button "Delete project" [ref=e746]:
+                  - img [ref=e747]
+                - button [ref=e750]:
+                  - img [ref=e751]
+          - article [ref=e754] [cursor=pointer]:
+            - generic [ref=e755]:
+              - generic [ref=e756]:
+                - heading "build-a-simple-task" [level=3] [ref=e757]
+                - paragraph [ref=e758]: cmqdcwiz70001vfs4vkx1ksp7
+              - generic [ref=e759]: Draft
+            - paragraph [ref=e760]: Build a simple task tracker app with React, Node.js, and PostgreSQL. Users can create tasks, mark them complete, and filter by status. Include a clean minimal UI with dark mode support.
+            - generic [ref=e772]: 9/9 agents active
+            - generic [ref=e773]:
+              - generic [ref=e774]: nextjs
+              - generic [ref=e775]: nodejs
+            - generic [ref=e777]:
+              - generic [ref=e778]: Updated 3h ago
+              - generic [ref=e779]:
+                - button "Delete project" [ref=e780]:
+                  - img [ref=e781]
+                - button [ref=e784]:
+                  - img [ref=e785]
+      - generic [ref=e283]:
+        - generic [ref=e284]:
+          - generic [ref=e285]:
+            - heading "Recent swarm activity" [level=2] [ref=e286]
+            - button "View all" [ref=e287] [cursor=pointer]:
+              - text: View all
+              - img [ref=e288]
+          - list [ref=e506]:
+            - listitem [ref=e507]:
+              - generic [ref=e509]: documentation-agent
+              - generic [ref=e510]: writing documentation for build-a-simple-todo
+              - generic [ref=e511]: 2h ago
+            - listitem [ref=e512]:
+              - generic [ref=e514]: security-agent
+              - generic [ref=e515]: scanning for vulnerabilities for build-a-simple-todo
+              - generic [ref=e516]: 2h ago
+            - listitem [ref=e517]:
+              - generic [ref=e519]: reviewer-agent
+              - generic [ref=e520]: reviewing code output for build-a-simple-todo
+              - generic [ref=e521]: 2h ago
+            - listitem [ref=e522]:
+              - generic [ref=e524]: qa-agent
+              - generic [ref=e525]: running test suite for build-a-simple-todo
+              - generic [ref=e526]: 2h ago
+            - listitem [ref=e527]:
+              - generic [ref=e529]: devops-agent
+              - generic [ref=e530]: provisioning infrastructure for build-a-simple-todo
+              - generic [ref=e531]: 2h ago
+          - generic [ref=e292]:
+            - generic [ref=e294]: streaming live from build cluster · us-east-1
+            - generic [ref=e295]: tail -f
+        - generic [ref=e296]:
+          - generic [ref=e297]:
+            - heading "Swarm roster" [level=2] [ref=e298]
+            - generic [ref=e299]: 9 agents
+          - list [ref=e300]:
+            - listitem [ref=e301]:
+              - generic [ref=e303]: supervisor
+              - generic [ref=e304]: busy
+            - listitem [ref=e305]:
+              - generic [ref=e307]: backend
+              - generic [ref=e308]: busy
+            - listitem [ref=e309]:
+              - generic [ref=e311]: database
+              - generic [ref=e312]: busy
+            - listitem [ref=e313]:
+              - generic [ref=e315]: frontend
+              - generic [ref=e316]: busy
+            - listitem [ref=e317]:
+              - generic [ref=e319]: devops
+              - generic [ref=e320]: busy
+            - listitem [ref=e321]:
+              - generic [ref=e323]: qa
+              - generic [ref=e324]: busy
+            - listitem [ref=e325]:
+              - generic [ref=e327]: reviewer
+              - generic [ref=e328]: busy
+            - listitem [ref=e329]:
+              - generic [ref=e331]: security
+              - generic [ref=e332]: busy
+            - listitem [ref=e333]:
+              - generic [ref=e335]: documentation
+              - generic [ref=e336]: busy
+          - button "Open agent console" [ref=e337] [cursor=pointer]:
+            - generic [ref=e338]:
+              - text: Open agent console
+              - img [ref=e339]
+  - alert [ref=e342]

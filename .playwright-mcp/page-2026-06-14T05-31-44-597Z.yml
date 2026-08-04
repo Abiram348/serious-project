@@ -1,0 +1,131 @@
+- generic [ref=e2]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]: SwarmDev
+    - navigation [ref=e6]:
+      - link "Home" [ref=e7] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e8]
+        - text: Home
+      - link "Projects" [ref=e11] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e12]
+        - text: Projects
+      - link "Agents" [ref=e14] [cursor=pointer]:
+        - /url: /agents
+        - img [ref=e15]
+        - text: Agents
+      - link "Deployments" [ref=e18] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e19]
+        - text: Deployments
+      - link "Usage" [ref=e24] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e25]
+        - text: Usage
+      - link "Settings" [ref=e26] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e27]
+        - text: Settings
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - text: Swarm capacity
+        - img [ref=e32]
+      - paragraph [ref=e34]: "Builds: 0/3"
+    - generic [ref=e36]:
+      - generic [ref=e37]:
+        - paragraph [ref=e38]: Builder
+        - generic [ref=e39]: Free plan
+      - img [ref=e40]
+  - main [ref=e44]:
+    - generic [ref=e45]:
+      - generic [ref=e46]:
+        - heading "Good morning, Builder" [level=1] [ref=e47]
+        - paragraph [ref=e48]: Sun, Jun 14 · 0 builds in progress
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - img [ref=e51]
+          - text: Search projects, agents, docs…⌘K
+        - button [ref=e54]:
+          - img
+        - button "New Project" [ref=e57]:
+          - img [ref=e58]
+          - text: New Project
+    - generic [ref=e60]:
+      - paragraph [ref=e61]: 9 agents · 1 prompt
+      - heading "What will your swarm build today?" [level=2] [ref=e62]
+      - generic [ref=e63]:
+        - button "Attach" [ref=e64]:
+          - img
+        - button "Choose File" [ref=e65]
+        - textbox "Describe your app, the swarm brings it to life…" [ref=e66]
+        - button "Build" [disabled] [ref=e67]:
+          - img
+      - generic [ref=e69]:
+        - text: "Try:"
+        - button "SaaS KPI dashboard" [ref=e70]
+        - button "AI support chatbot" [ref=e71]
+        - button "Marketplace MVP" [ref=e72]
+        - button "Internal admin panel" [ref=e73]
+    - generic [ref=e74]:
+      - generic [ref=e75]:
+        - generic [ref=e76]:
+          - text: Builds this month
+          - img [ref=e77]
+        - generic [ref=e80]: "0"
+        - paragraph [ref=e81]: 0 total builds
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - text: Agent runs
+          - img [ref=e84]
+        - generic [ref=e87]: "0"
+        - paragraph [ref=e88]: 0 tokens used
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - text: Deployments
+          - img [ref=e91]
+        - generic [ref=e94]: "0"
+        - paragraph [ref=e95]: No completed builds yet
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - text: Active agents
+          - img [ref=e98]
+        - generic [ref=e100]: "0"
+        - paragraph [ref=e101]: No active builds
+    - generic [ref=e103]:
+      - heading "Your projects" [level=2] [ref=e104]
+      - generic [ref=e105]:
+        - generic [ref=e106]:
+          - button "All" [ref=e107]
+          - button "Building" [ref=e108]
+          - button "Deployed" [ref=e109]
+          - button "Drafts" [ref=e110]
+        - button "Recent" [ref=e111]:
+          - text: Recent
+          - img [ref=e112]
+    - generic [ref=e114]:
+      - generic [ref=e115]:
+        - generic [ref=e116]:
+          - heading "Recent swarm activity" [level=2] [ref=e117]
+          - button "View all" [ref=e118]:
+            - text: View all
+            - img [ref=e119]
+        - paragraph [ref=e122]: No swarm activity yet. Start a build to see live updates.
+        - generic [ref=e123]: streaming live from build cluster · us-east-1tail -f
+      - generic [ref=e124]:
+        - generic [ref=e125]:
+          - heading "Swarm roster" [level=2] [ref=e126]
+          - text: 9 agents
+        - list [ref=e127]:
+          - listitem [ref=e128]: supervisoridle
+          - listitem [ref=e129]: backendidle
+          - listitem [ref=e130]: databaseidle
+          - listitem [ref=e131]: frontendidle
+          - listitem [ref=e132]: devopsidle
+          - listitem [ref=e133]: qaidle
+          - listitem [ref=e134]: revieweridle
+          - listitem [ref=e135]: securityidle
+          - listitem [ref=e136]: documentationidle
+        - button "Open agent console" [ref=e137]:
+          - generic [ref=e138]:
+            - text: Open agent console
+            - img [ref=e139]

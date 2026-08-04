@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -38,7 +39,31 @@ const plans = [
 ];
 
 export default function BillingPage() {
-  const currentPlan = 'FREE'; // TODO: Get from user context
+  const [currentPlan, setCurrentPlan] = useState('FREE');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch('/api/billing/subscription');
+        if (res.ok) {
+          const data = await res.json();
+          setCurrentPlan(data.plan || 'FREE');
+        } else {
+          const profile = await fetch('/api/user/profile');
+          if (profile.ok) {
+            const p = await profile.json();
+            setCurrentPlan(p.plan || 'FREE');
+          }
+        }
+      } catch {
+        // keep default
+      } finally {
+        setLoading(false);
+      }
+    };
+    void load();
+  }, []);
 
   return (
     <div className="container max-w-4xl mx-auto p-6 space-y-8">
@@ -57,7 +82,7 @@ export default function BillingPage() {
               <CardTitle>Current Plan</CardTitle>
               <CardDescription>Your current subscription</CardDescription>
             </div>
-            <Badge>{currentPlan}</Badge>
+            <Badge>{loading ? '…' : currentPlan}</Badge>
           </div>
         </CardHeader>
         <CardContent>
@@ -78,19 +103,19 @@ export default function BillingPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>{plan.name}</CardTitle>
-                {plan.popular && <Badge>Most Popular</Badge>}
+                {plan.popular && <Badge variant="default">Popular</Badge>}
               </div>
               <CardDescription>{plan.description}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-3xl font-bold">
+            <CardContent>
+              <p className="text-3xl font-bold mb-4">
                 {plan.price}
-                {plan.price !== 'Custom' && <span className="text-base font-normal text-muted-foreground">/month</span>}
+                {plan.price !== 'Custom' && <span className="text-base font-normal text-muted-foreground">/mo</span>}
               </p>
               <ul className="space-y-2">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="text-sm flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                  <li key={feature} className="flex items-center gap-2 text-sm">
+                    <span className="text-green-600">✓</span>
                     {feature}
                   </li>
                 ))}
@@ -108,20 +133,6 @@ export default function BillingPage() {
           </Card>
         ))}
       </div>
-
-      {/* Payment Method */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Method</CardTitle>
-          <CardDescription>Update your payment details</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">No payment method on file. Add one when you upgrade to a paid plan.</p>
-        </CardContent>
-        <CardFooter>
-          <Button variant="outline">Add Payment Method</Button>
-        </CardFooter>
-      </Card>
     </div>
   );
 }

@@ -14,7 +14,11 @@ Your role is to:
 4. Report coverage metrics
 5. Flag failing tests
 
-Output generated test files as JSON with path and content.
+Output generated files as:
+FILE: path/to/file.test.ts
+[file content]
+
+NEVER wrap file content in markdown code blocks.
 """
 
 class QAAgent(BaseAgent):

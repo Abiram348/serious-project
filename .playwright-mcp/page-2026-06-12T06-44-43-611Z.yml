@@ -1,0 +1,10 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - link "SwarmDev" [ref=e4] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e9]: SwarmDev
+  - link "SwarmDev" [ref=e11] [cursor=pointer]:
+    - /url: /
+    - img [ref=e13]
+    - generic [ref=e16]: SwarmDev
+  - alert [ref=e17]

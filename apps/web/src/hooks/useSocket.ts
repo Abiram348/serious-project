@@ -9,7 +9,7 @@ let socket: Socket | null = null;
 export function useSocket() {
   const { setProjectStatus, addFile, updateAgentStatus, setPreviewUrl, fetchFiles, fetchAgents } =
     useProjectStore();
-  const { addMessage } = useChatStore();
+  const { addMessage, addMessages } = useChatStore();
 
   const connect = () => {
     if (!socket) {
@@ -114,8 +114,8 @@ export function useSocket() {
 
     socket.on('chat_message', (data: { messages: any[] }) => {
       if (data.messages?.length) {
-        for (const msg of data.messages) {
-          addMessage({
+        addMessages(
+          data.messages.map((msg) => ({
             id: msg.id || `${Date.now()}-${Math.random()}`,
             projectId,
             role: msg.role || 'AGENT',
@@ -124,8 +124,8 @@ export function useSocket() {
             model: msg.model,
             content: msg.content,
             createdAt: msg.createdAt || new Date().toISOString(),
-          });
-        }
+          }))
+        );
       }
     });
 

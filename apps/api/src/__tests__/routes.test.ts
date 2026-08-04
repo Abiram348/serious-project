@@ -29,10 +29,8 @@ describe('API Routes', () => {
   });
 });
 
-// NOTE: Auth-protected route tests require a running Clerk + DB environment.
-// They are skipped in CI without external services. Run locally with:
-//   docker-compose up -d && pnpm test
-describe.skip('Auth-protected routes (requires DB)', () => {
+// Auth-protected routes return 401 without a Clerk session token.
+describe('Auth-protected routes', () => {
   it('should require authentication for project access', async () => {
     const res = await request(app).get('/api/projects');
     expect(res.status).toBe(401);

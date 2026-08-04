@@ -39,6 +39,7 @@ const FALLBACK_PACKAGE_JSON = {
     autoprefixer: '^10.0.0',
     postcss: '^8.0.0',
     tailwindcss: '^3.0.0',
+    'tailwindcss-animate': '^1.0.0',
     typescript: '^5.0.0',
   },
 };
@@ -61,7 +62,7 @@ export const previewService = {
       throw new Error('Project not found');
     }
 
-    // If marked RUNNING, verify sandbox is actually alive
+    // If marked RUNNING, verify sandbox is actually alive AND port is accessible
     if (project.previewStatus === 'RUNNING' && project.sandboxId) {
       try {
         const sandbox = await Sandbox.connect(project.sandboxId, { apiKey: E2B_API_KEY });
@@ -72,6 +73,18 @@ export const previewService = {
             data: { previewStatus: 'STOPPED', previewUrl: null, sandboxId: null },
           });
           return { status: 'STOPPED', previewUrl: null, sandboxId: null, message: 'Sandbox timed out' };
+        }
+        // Also verify the dev server port is actually listening
+        try {
+          const host = await sandbox.getHost(PREVIEW_PORT);
+          if (!host) throw new Error('Port not exposed');
+        } catch {
+          // Port not accessible — dev server likely crashed
+          await db.project.update({
+            where: { id: projectId },
+            data: { previewStatus: 'STOPPED', previewUrl: null, sandboxId: null },
+          });
+          return { status: 'STOPPED', previewUrl: null, sandboxId: null, message: 'Dev server stopped. Restart preview.' };
         }
       } catch {
         await db.project.update({
@@ -138,13 +151,33 @@ export const previewService = {
         await sandbox.files.write(filePath, content);
       }
 
-      // Ensure package.json exists
-      const hasPackageJson = files.some((f) => f.path === 'package.json');
-      if (!hasPackageJson) {
+      // Ensure package.json exists and has Next.js dependencies for preview
+      const existingPkg = files.find((f) => f.path === 'package.json');
+      if (!existingPkg) {
         await sandbox.files.write(
           `${projectPath}/package.json`,
           JSON.stringify(FALLBACK_PACKAGE_JSON, null, 2)
         );
+      } else {
+        try {
+          const parsed = JSON.parse(existingPkg.content || '{}');
+          const hasNext = parsed.dependencies?.next;
+          if (!hasNext) {
+            // Agent generated a backend-only package.json (e.g. Prisma DB schema).
+            // Write a proper Next.js package.json for the preview so npm install
+            // brings in the frontend dependencies the generated pages need.
+            await sandbox.files.write(
+              `${projectPath}/package.json`,
+              JSON.stringify(FALLBACK_PACKAGE_JSON, null, 2)
+            );
+          }
+        } catch {
+          // Invalid JSON — write fallback
+          await sandbox.files.write(
+            `${projectPath}/package.json`,
+            JSON.stringify(FALLBACK_PACKAGE_JSON, null, 2)
+          );
+        }
       }
 
       // Write next.config.js for standalone mode (better for previews)
@@ -175,6 +208,73 @@ export default config;
         );
       }
 
+      // Write tailwind.config.ts if missing so Tailwind content paths resolve
+      const hasTailwindConfig = files.some((f) =>
+        f.path === 'tailwind.config.ts' || f.path === 'tailwind.config.js'
+      );
+      if (!hasTailwindConfig) {
+        await sandbox.files.write(
+          `${projectPath}/tailwind.config.ts`,
+          `import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  darkMode: ['class'],
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+    },
+  },
+  plugins: [require('tailwindcss-animate')],
+}
+export default config
+`
+        );
+      }
+
       // Write tsconfig.json with path aliases so @/ imports resolve
       const hasTsConfig = files.some((f) => f.path === 'tsconfig.json');
       if (!hasTsConfig) {
@@ -196,7 +296,7 @@ export default config;
               incremental: true,
               plugins: [{ name: 'next' }],
               paths: {
-                '@/*': ['./*']
+                '@/*': ['./src/*']
               }
             },
             include: ['next-env.d.ts', '**/*.ts', '**/*.tsx', '.next/types/**/*.ts'],

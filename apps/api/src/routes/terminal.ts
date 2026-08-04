@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import db from '../prisma/client';
-import { emitTerminalOutput } from '../socket';
+import { sandboxService } from '../services/sandboxService';
 
 const router = Router();
 
@@ -20,11 +20,14 @@ router.post('/:projectId/terminal/exec', authMiddleware, async (req: Request, re
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    // TODO: Execute command in E2B sandbox
+    const sandbox = await sandboxService.getOrCreateSandbox(projectId);
+    const result = await sandboxService.executeCommand(sandbox, command, projectId);
+
     res.json({
       success: true,
-      output: `Command executed: ${command}`,
-      exitCode: 0,
+      stdout: result.stdout,
+      stderr: result.stderr,
+      exitCode: result.exitCode,
     });
   } catch (error) {
     console.error('Error executing command:', error);

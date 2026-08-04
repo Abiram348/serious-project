@@ -1,0 +1,27 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - heading "Preview" [level=1] [ref=e4]
+      - paragraph [ref=e5]: View your project in action
+    - main [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - heading "Preview" [level=3] [ref=e11]
+            - generic [ref=e12]: RUNNING
+          - generic [ref=e13]:
+            - button "Stop" [ref=e14] [cursor=pointer]
+            - button "🔄" [ref=e15] [cursor=pointer]
+        - iframe [ref=e18]:
+          - main [ref=f1e2]:
+            - img "Logo" [ref=f1e3]
+            - generic [ref=f1e4]:
+              - heading "Closed Port Error" [level=1] [ref=f1e5]
+              - paragraph [ref=f1e6]: The sandbox imtgl1vpupmwbpxqynifo is running but there's no service running on port 3457.
+            - generic [ref=f1e7]:
+              - generic [ref=f1e8]: 3457-imtgl1vpupmwbpxqynifo.e2b.app
+              - generic [ref=f1e9]: Connection refused on port 3457
+            - paragraph [ref=f1e10]: Please ensure that your service is properly configured and running on the specified port.
+            - link "Check the sandbox logs for more information →" [ref=f1e11] [cursor=pointer]:
+              - /url: https://e2b.dev/docs/sdk-reference/cli/v1.0.9/sandbox#e2b-sandbox-logs
+  - alert [ref=e19]

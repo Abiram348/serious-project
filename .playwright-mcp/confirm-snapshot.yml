@@ -1,0 +1,265 @@
+- generic [active] [ref=e1] [box=0,-500,1274,1666]:
+  - generic [ref=e2] [box=0,-500,1274,1666]:
+    - complementary [ref=e4] [box=0,0,240,577]:
+      - generic [ref=e11] [box=56,24,89,29]: SwarmDev
+      - navigation [ref=e12] [box=0,81,239,266]:
+        - link "Home" [ref=e13] [cursor=pointer] [box=12,81,215,41]:
+          - /url: /dashboard
+          - img [ref=e14] [box=24,92,18,18]
+          - text: Home
+        - link "Projects" [ref=e17] [cursor=pointer] [box=12,126,215,41]:
+          - /url: /dashboard
+          - img [ref=e18] [box=24,137,18,18]
+          - text: Projects
+        - link "Agents" [ref=e20] [cursor=pointer] [box=12,171,215,41]:
+          - /url: /agents
+          - img [ref=e21] [box=24,182,18,18]
+          - text: Agents
+        - link "Deployments" [ref=e24] [cursor=pointer] [box=12,216,215,41]:
+          - /url: /dashboard
+          - img [ref=e25] [box=24,227,18,18]
+          - text: Deployments
+        - link "Usage" [ref=e30] [cursor=pointer] [box=12,261,215,41]:
+          - /url: /dashboard
+          - img [ref=e31] [box=24,272,18,18]
+          - text: Usage
+        - link "Settings" [ref=e32] [cursor=pointer] [box=12,306,215,41]:
+          - /url: /settings
+          - img [ref=e33] [box=24,317,18,18]
+          - text: Settings
+      - generic [ref=e37] [box=16,388,207,95]:
+        - generic [ref=e38] [box=33,405,173,18]:
+          - generic [ref=e39] [box=33,405,86,18]: Swarm capacity
+          - img [ref=e40] [box=192,407,14,14]
+        - paragraph [ref=e43] [box=33,449,173,17]: "Builds: 5/3"
+      - generic [ref=e45] [cursor=pointer] [box=16,501,207,56]:
+        - button "Open user menu" [ref=e343] [box=24,511,36,36]:
+          - img "Abiram Reddy Martala's logo" [ref=e346] [box=24,511,36,36]
+        - generic [ref=e46] [box=72,509,82,40]:
+          - paragraph [ref=e47] [box=72,509,82,16]: Abiram Reddy
+          - generic [ref=e48] [box=72,531,54,17]: Free plan
+        - img [ref=e49] [box=199,521,16,16]
+    - main [ref=e53] [box=240,-500,1034,1666]:
+      - generic [ref=e54] [box=272,-472,970,55]:
+        - generic [ref=e55] [box=272,-472,353,55]:
+          - heading "Good morning, Abiram Reddy" [level=1] [ref=e348] [box=272,-472,353,35]
+          - paragraph [ref=e57] [box=272,-435,353,18]: Sun, Jun 14 · 1 build in progress
+        - generic [ref=e58] [box=733,-467,509,45]:
+          - generic [ref=e59] [box=733,-467,320,45]:
+            - img [ref=e60] [box=750,-452,16,16]
+            - generic [ref=e63] [box=776,-454,179,20]: Search projects, agents, docs…
+            - generic [ref=e64] [box=1013,-456,27,23]: ⌘K
+          - button [ref=e65] [cursor=pointer] [box=1065,-464,40,40]:
+            - img [ref=e66] [box=1076,-453,18,18]
+          - button "New Project" [ref=e70] [cursor=pointer] [box=1117,-465,125,40]:
+            - img [ref=e71] [box=1131,-452,16,16]
+            - text: New Project
+      - generic [ref=e73] [box=377,-356,760,203]:
+        - paragraph [ref=e74] [box=377,-356,760,18]: 9 agents · 1 prompt
+        - heading "What will your swarm build today?" [level=2] [ref=e75] [box=377,-330,760,40]
+        - generic [ref=e76] [box=377,-266,760,60]:
+          - button "Attach" [ref=e77] [cursor=pointer] [box=390,-254,36,36]:
+            - img [ref=e78] [box=400,-244,16,16]
+          - textbox "Describe your app, the swarm brings it to life…" [ref=e79] [box=438,-257,638,42]
+          - button "Build" [disabled] [ref=e80] [box=1088,-256,40,40]:
+            - img [ref=e81] [box=1099,-245,18,18]
+        - generic [ref=e83] [box=377,-186,760,33]:
+          - generic [ref=e84] [box=453,-179,20,18]: "Try:"
+          - button "SaaS KPI dashboard" [ref=e85] [cursor=pointer] [box=485,-186,143,33]
+          - button "AI support chatbot" [ref=e86] [cursor=pointer] [box=635,-186,135,33]
+          - button "Marketplace MVP" [ref=e87] [cursor=pointer] [box=778,-186,130,33]
+          - button "Internal admin panel" [ref=e88] [cursor=pointer] [box=916,-186,145,33]
+      - generic [ref=e89] [box=272,-92,970,122]:
+        - generic [ref=e90] [box=272,-92,231,122]:
+          - generic [ref=e91] [box=293,-71,189,19]:
+            - generic [ref=e92] [box=293,-71,96,19]: Builds this month
+            - img [ref=e93] [box=466,-70,16,16]
+          - generic [ref=e97] [box=293,-44,15,28]: "5"
+          - paragraph [ref=e105] [box=293,-8,189,17]: 5 total builds
+        - generic [ref=e106] [box=519,-92,231,122]:
+          - generic [ref=e107] [box=540,-71,189,19]:
+            - generic [ref=e108] [box=540,-71,61,19]: Agent runs
+            - img [ref=e109] [box=712,-70,16,16]
+          - generic [ref=e113] [box=540,-44,30,28]: "54"
+          - paragraph [ref=e114] [box=540,-8,189,17]: 0 tokens used
+        - generic [ref=e115] [box=765,-92,231,122]:
+          - generic [ref=e116] [box=786,-71,189,19]:
+            - generic [ref=e117] [box=786,-71,74,19]: Deployments
+            - img [ref=e118] [box=959,-70,16,16]
+          - generic [ref=e121] [box=786,-44,189,28]:
+            - generic [ref=e122] [box=786,-44,15,28]: "0"
+            - generic [ref=e351] [box=929,-38,45,21]: live
+          - paragraph [ref=e123] [box=786,-8,189,17]: No completed builds yet
+        - generic [ref=e124] [box=1012,-92,231,122]:
+          - generic [ref=e125] [box=1033,-71,189,19]:
+            - generic [ref=e126] [box=1033,-71,75,19]: Active agents
+            - img [ref=e127] [box=1205,-70,16,16]
+          - generic [ref=e130] [box=1033,-44,15,28]: "1"
+          - paragraph [ref=e131] [box=1033,-8,189,17]: Currently building
+      - generic [ref=e132] [box=272,70,970,598]:
+        - generic [ref=e133] [box=272,70,970,41]:
+          - heading "Your projects" [level=2] [ref=e134] [box=272,74,125,33]
+          - generic [ref=e135] [box=872,70,370,41]:
+            - generic [ref=e136] [box=872,70,269,41]:
+              - button "All" [ref=e137] [cursor=pointer] [box=877,75,43,31]
+              - button "Building" [ref=e138] [cursor=pointer] [box=920,75,72,31]
+              - button "Deployed" [ref=e139] [cursor=pointer] [box=992,75,81,31]
+              - button "Drafts" [ref=e140] [cursor=pointer] [box=1074,75,63,31]
+            - button "Recent" [ref=e141] [cursor=pointer] [box=1153,72,89,37]:
+              - text: Recent
+              - img [ref=e142] [box=1213,83,14,14]
+        - generic [ref=e144] [box=272,131,970,538]:
+          - article [ref=e353] [cursor=pointer] [box=272,131,313,247]:
+            - generic [ref=e354] [box=297,156,263,42]:
+              - generic [ref=e355] [box=297,156,165,42]:
+                - heading "Test Fixed Pipeline" [level=3] [ref=e356] [box=297,156,165,23]
+                - paragraph [ref=e357] [box=297,181,165,17]: cmq92nb1d000111wqx7a59p4n
+              - generic [ref=e358] [box=514,156,46,25]: Draft
+            - paragraph [ref=e359] [box=297,209,263,18]: Test the LLM fix
+            - generic [ref=e371] [box=409,243,112,17]: 0/9 agents active
+            - generic [ref=e373] [box=297,276,67,20]: SwarmDev
+            - generic [ref=e375] [box=297,315,263,38]:
+              - generic [ref=e376] [box=297,332,82,17]: Updated 2d ago
+              - generic [ref=e377] [box=448,328,112,25]:
+                - generic [ref=e553] [box=448,332,37,17]: Delete?
+                - button "Yes" [ref=e554] [box=491,328,33,25]
+                - button "No" [ref=e555] [box=530,328,30,25]
+          - article [ref=e386] [cursor=pointer] [box=601,131,313,247]:
+            - generic [ref=e387] [box=626,156,263,42]:
+              - generic [ref=e388] [box=626,156,165,42]:
+                - heading "Test Agent Pipeline" [level=3] [ref=e389] [box=626,156,165,23]
+                - paragraph [ref=e390] [box=626,181,165,17]: cmq91ypvu0001phrkpmhdjt6r
+              - generic [ref=e391] [box=843,156,46,25]: Draft
+            - paragraph [ref=e392] [box=626,209,263,18]: A simple HTML page with a button
+            - generic [ref=e404] [box=738,243,112,17]: 0/9 agents active
+            - generic [ref=e406] [box=626,276,67,20]: SwarmDev
+            - generic [ref=e408] [box=626,311,263,41]:
+              - generic [ref=e409] [box=626,330,82,17]: Updated 3d ago
+              - generic [ref=e410] [box=826,324,62,28]:
+                - button "Delete project" [ref=e411] [box=826,324,28,28]:
+                  - img [ref=e412] [box=833,331,14,14]
+                - button [ref=e415] [box=860,324,28,28]:
+                  - img [ref=e416] [box=867,331,14,14]
+          - article [ref=e419] [cursor=pointer] [box=929,131,313,247]:
+            - generic [ref=e420] [box=954,156,263,42]:
+              - generic [ref=e421] [box=954,156,165,42]:
+                - heading "login page" [level=3] [ref=e422] [box=954,156,165,23]
+                - paragraph [ref=e423] [box=954,181,165,17]: cmq0vk3pn000pwz3c4vjmqxru
+              - generic [ref=e424] [box=1171,156,46,25]: Draft
+            - paragraph [ref=e425] [box=954,209,263,18]: design a creative login page for my banking app
+            - generic [ref=e437] [box=1066,243,112,17]: 0/9 agents active
+            - generic [ref=e438] [box=954,276,263,20]:
+              - generic [ref=e439] [box=954,276,44,20]: nextjs
+              - generic [ref=e440] [box=1004,276,47,20]: nodejs
+            - generic [ref=e442] [box=954,311,263,41]:
+              - generic [ref=e443] [box=954,330,82,17]: Updated 8d ago
+              - generic [ref=e444] [box=1155,324,62,28]:
+                - button "Delete project" [ref=e445] [box=1155,324,28,28]:
+                  - img [ref=e446] [box=1162,331,14,14]
+                - button [ref=e449] [box=1189,324,28,28]:
+                  - img [ref=e450] [box=1196,331,14,14]
+          - article [ref=e453] [cursor=pointer] [box=272,393,313,275]:
+            - generic [ref=e454] [box=297,418,263,42]:
+              - generic [ref=e455] [box=297,418,165,42]:
+                - heading "My Preview App" [level=3] [ref=e456] [box=297,418,165,23]
+                - paragraph [ref=e457] [box=297,444,165,17]: cmq0ps9et0001ko7i5mkt48vu
+              - generic [ref=e458] [box=514,418,46,25]: Draft
+            - paragraph [ref=e459] [box=297,472,263,18]: Build a simple landing page with a hero section, features grid, and a pricing section using Next.js, TailwindCSS, and shadcn/ui components.
+            - generic [ref=e471] [box=409,506,112,17]: 0/9 agents active
+            - generic [ref=e472] [box=297,539,263,20]:
+              - generic [ref=e473] [box=297,539,48,20]: Next.js
+              - generic [ref=e474] [box=351,539,53,20]: Express
+            - generic [ref=e476] [box=297,602,263,41]:
+              - generic [ref=e477] [box=297,620,82,17]: Updated 8d ago
+              - generic [ref=e478] [box=498,615,62,28]:
+                - button "Delete project" [ref=e479] [box=498,615,28,28]:
+                  - img [ref=e480] [box=505,622,14,14]
+                - button [ref=e483] [box=532,615,28,28]:
+                  - img [ref=e484] [box=539,622,14,14]
+          - article [ref=e487] [cursor=pointer] [box=601,393,313,275]:
+            - generic [ref=e488] [box=626,418,263,42]:
+              - generic [ref=e489] [box=626,418,165,42]:
+                - heading "test-todo-app" [level=3] [ref=e490] [box=626,418,165,23]
+                - paragraph [ref=e491] [box=626,444,165,17]: cmpwbftb90002zrbphx5yddmf
+              - generic [ref=e492] [box=817,418,71,25]: Building
+            - paragraph [ref=e496] [box=626,472,263,18]: "A beautiful TaskMaster Pro todo app with glassmorphism UI design. Features: translucent frosted-glass cards with backdrop-blur, animated progress bar with smooth transitions, floating add-task button, gradient backgrounds, modern minimal typography. Users can sign up, log in, create todos, mark them as complete, and delete them. Use Next.js 14 for the frontend with App Router, Node.js/Express for the backend, and PostgreSQL for the database. Use Tailwind CSS with custom glassmorphism utilities."
+            - generic [ref=e508] [box=738,506,112,17]: 9/9 agents active
+            - generic [ref=e511] [box=876,535,13,16]: 0%
+            - generic [ref=e512] [box=626,566,263,20]:
+              - generic [ref=e513] [box=626,566,44,20]: nextjs
+              - generic [ref=e514] [box=676,566,47,20]: nodejs
+            - generic [ref=e516] [box=626,602,263,41]:
+              - generic [ref=e517] [box=626,620,88,17]: Updated 11d ago
+              - generic [ref=e518] [box=826,615,62,28]:
+                - button "Delete project" [ref=e519] [box=826,615,28,28]:
+                  - img [ref=e520] [box=833,622,14,14]
+                - button [ref=e523] [box=860,615,28,28]:
+                  - img [ref=e524] [box=867,622,14,14]
+      - generic [ref=e283] [box=272,708,970,410]:
+        - generic [ref=e284] [box=272,708,641,410]:
+          - generic [ref=e285] [box=297,733,591,26]:
+            - heading "Recent swarm activity" [level=2] [ref=e286] [box=297,733,161,26]
+            - button "View all" [ref=e287] [cursor=pointer] [box=826,736,62,19]:
+              - text: View all
+              - img [ref=e288] [box=874,739,14,14]
+          - list [ref=e527] [box=297,771,591,258]:
+            - listitem [ref=e528] [box=297,771,591,64]:
+              - generic [ref=e530] [box=317,785,130,36]: documentation-agent
+              - generic [ref=e531] [box=459,793,233,20]: writing documentation for test-todo-app
+              - generic [ref=e532] [box=847,794,41,17]: 7d ago
+            - listitem [ref=e533] [box=297,835,591,49]:
+              - generic [ref=e535] [box=317,850,130,18]: security-agent
+              - generic [ref=e536] [box=459,850,259,20]: scanning for vulnerabilities for test-todo-app
+              - generic [ref=e537] [box=847,851,41,17]: 7d ago
+            - listitem [ref=e538] [box=297,883,591,49]:
+              - generic [ref=e540] [box=317,899,130,18]: reviewer-agent
+              - generic [ref=e541] [box=459,898,232,20]: reviewing code output for test-todo-app
+              - generic [ref=e542] [box=847,899,41,17]: 7d ago
+            - listitem [ref=e543] [box=297,932,591,49]:
+              - generic [ref=e545] [box=317,947,130,18]: qa-agent
+              - generic [ref=e546] [box=459,947,203,20]: running test suite for test-todo-app
+              - generic [ref=e547] [box=847,948,41,17]: 7d ago
+            - listitem [ref=e548] [box=297,980,591,49]:
+              - generic [ref=e550] [box=317,996,130,18]: devops-agent
+              - generic [ref=e551] [box=459,995,257,20]: provisioning infrastructure for test-todo-app
+              - generic [ref=e552] [box=847,996,41,17]: 7d ago
+          - generic [ref=e292] [box=297,1045,591,49]:
+            - generic [ref=e294] [box=330,1060,311,17]: streaming live from build cluster · us-east-1
+            - generic [ref=e295] [box=811,1058,60,23]: tail -f
+        - generic [ref=e296] [box=929,708,313,410]:
+          - generic [ref=e297] [box=953,732,265,26]:
+            - heading "Swarm roster" [level=2] [ref=e298] [box=953,732,99,26]
+            - generic [ref=e299] [box=1152,735,66,20]: 9 agents
+          - list [ref=e300] [box=953,774,265,249]:
+            - listitem [ref=e301] [box=953,774,265,19]:
+              - generic [ref=e303] [box=969,774,75,19]: supervisor
+              - generic [ref=e304] [box=1193,775,25,16]: busy
+            - listitem [ref=e305] [box=953,802,265,19]:
+              - generic [ref=e307] [box=969,802,53,19]: backend
+              - generic [ref=e308] [box=1193,804,25,16]: busy
+            - listitem [ref=e309] [box=953,831,265,19]:
+              - generic [ref=e311] [box=969,831,60,19]: database
+              - generic [ref=e312] [box=1193,833,25,16]: busy
+            - listitem [ref=e313] [box=953,860,265,19]:
+              - generic [ref=e315] [box=969,860,60,19]: frontend
+              - generic [ref=e316] [box=1193,861,25,16]: busy
+            - listitem [ref=e317] [box=953,889,265,19]:
+              - generic [ref=e319] [box=969,889,45,19]: devops
+              - generic [ref=e320] [box=1193,890,25,16]: busy
+            - listitem [ref=e321] [box=953,917,265,19]:
+              - generic [ref=e323] [box=969,917,15,19]: qa
+              - generic [ref=e324] [box=1193,919,25,16]: busy
+            - listitem [ref=e325] [box=953,946,265,19]:
+              - generic [ref=e327] [box=969,946,60,19]: reviewer
+              - generic [ref=e328] [box=1193,948,25,16]: busy
+            - listitem [ref=e329] [box=953,975,265,19]:
+              - generic [ref=e331] [box=969,975,60,19]: security
+              - generic [ref=e332] [box=1193,976,25,16]: busy
+            - listitem [ref=e333] [box=953,1004,265,19]:
+              - generic [ref=e335] [box=969,1004,98,19]: documentation
+              - generic [ref=e336] [box=1193,1005,25,16]: busy
+          - button "Open agent console" [ref=e337] [cursor=pointer] [box=953,1035,265,59]:
+            - generic [ref=e338] [box=953,1055,265,39]:
+              - text: Open agent console
+              - img [ref=e339] [box=1138,1068,14,14]
+  - alert [ref=e349] [box=-1,1165,1,1]

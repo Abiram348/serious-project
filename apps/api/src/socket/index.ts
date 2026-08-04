@@ -2,6 +2,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { Server } from 'http';
 import Redis from 'ioredis';
 import db from '../prisma/client';
+import { sandboxService } from '../services/sandboxService';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 let redis: any = null;
@@ -44,29 +45,77 @@ export function initializeSocket(httpServer: Server): SocketIOServer {
       console.log(`Client ${socket.id} left project:${projectId}`);
     });
 
-    // Send message to agents (Issue #10)
+    // Send message to agents — mirrors apps/api/src/routes/chat.ts:
+    // call orchestrator /chat (not the non-existent /messages), persist the
+    // agent reply, and emit `chat_message` so subscribed clients receive it.
     socket.on('send_message', async ({ projectId, content }: { projectId: string; content: string }) => {
+      if (!projectId || typeof content !== 'string' || !content.trim()) {
+        socket.emit('chat_error', { error: 'projectId and non-empty content are required' });
+        return;
+      }
+
       try {
-        // Save message to database
-        const message = await db.chatMessage.create({
+        // 1. Save the user message.
+        const userMessage = await db.chatMessage.create({
           data: { projectId, role: 'USER', content },
         });
 
-        // Broadcast to room
-        io?.to(`project:${projectId}`).emit('agent_message', {
-          role: 'USER',
-          content,
-          timestamp: new Date().toISOString(),
-        });
+        // 2. Call orchestrator /chat and wait for the agent reply.
+        const orchestratorUrl = process.env.ORCHESTRATOR_URL || 'http://localhost:8000';
+        const orchestratorSecret = process.env.ORCHESTRATOR_SECRET || '';
+        let agentMessage: { id: string; role: string; content: string; agentType: string | null; model: string | null } | null = null;
 
-        // Forward to orchestrator
-        await fetch(`${process.env.ORCHESTRATOR_URL}/messages`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ project_id: projectId, content }),
-        }).catch(() => {}); // Fire and forget
+        try {
+          const orchestratorRes = await fetch(`${orchestratorUrl}/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(orchestratorSecret ? { 'X-API-SECRET': orchestratorSecret } : {}),
+            },
+            body: JSON.stringify({ project_id: projectId, content }),
+          });
+
+          if (orchestratorRes.ok) {
+            const data = (await orchestratorRes.json()) as { agent: string; model: string; agent_response: string };
+            agentMessage = await db.chatMessage.create({
+              data: {
+                projectId,
+                role: 'AGENT',
+                agentType: data.agent,
+                targetAgent: data.agent,
+                model: data.model,
+                content: data.agent_response,
+              },
+            });
+          } else {
+            const errorText = await orchestratorRes.text().catch(() => '');
+            console.warn(`[send_message] orchestrator ${orchestratorRes.status}: ${errorText}`);
+            agentMessage = await db.chatMessage.create({
+              data: {
+                projectId,
+                role: 'SYSTEM',
+                content: `Orchestrator error (${orchestratorRes.status})`,
+              },
+            });
+          }
+        } catch (fetchError) {
+          console.warn('[send_message] orchestrator fetch failed:', fetchError);
+          agentMessage = await db.chatMessage.create({
+            data: {
+              projectId,
+              role: 'SYSTEM',
+              content: 'Could not reach orchestrator',
+            },
+          });
+        }
+
+        // 3. Emit both messages so the chat sidebar updates in real time.
+        io?.to(`project:${projectId}`).emit('chat_message', {
+          messages: [userMessage, agentMessage],
+        });
       } catch (error) {
-        console.error('Error sending message:', error);
+        console.error('[send_message] error:', error);
+        socket.emit('chat_error', { error: 'Failed to send message' });
       }
     });
 
@@ -95,19 +144,38 @@ export function initializeSocket(httpServer: Server): SocketIOServer {
 
     // Execute shell command (Issue #10)
     socket.on('exec_command', async ({ projectId, command }: { projectId: string; command: string }) => {
-      try {
-        socket.emit('terminal_output', {
-          data: `Executing: ${command}\n`,
-        });
+      if (!projectId || typeof command !== 'string' || !command.trim()) {
+        socket.emit('terminal_output', { data: 'Invalid command request\n' });
+        return;
+      }
 
-        // TODO: Integrate with E2B sandbox for actual execution
-        socket.emit('terminal_output', {
-          data: '⚠️ Command execution requires E2B sandbox integration\n',
+      try {
+        emitToProject(projectId, 'terminal_output', { data: `Executing: ${command}\n` });
+
+        const sandbox = await sandboxService.getOrCreateSandbox(projectId);
+        const result = await sandboxService.executeCommand(sandbox, command, projectId);
+
+        if (result.stdout) {
+          emitToProject(projectId, 'terminal_output', { data: result.stdout });
+        }
+        if (result.stderr) {
+          emitToProject(projectId, 'terminal_output', { data: result.stderr });
+        }
+
+        emitToProject(projectId, 'terminal_output', {
+          data: `\nExit code: ${result.exitCode}\n`,
         });
-      } catch (error) {
-        socket.emit('terminal_output', {
-          data: `Error: ${error}\n`,
+      } catch (error: any) {
+        const message = error?.message || String(error);
+        console.error(`[exec_command] project=${projectId} error:`, message);
+        emitToProject(projectId, 'terminal_output', {
+          data: `\x1b[31mTerminal sandbox error: ${message}\x1b[0m\n`,
         });
+        if (message.includes('E2B_API_KEY')) {
+          emitToProject(projectId, 'terminal_output', {
+            data: '\x1b[33mSet E2B_API_KEY in apps/api/.env to enable the terminal sandbox.\x1b[0m\n',
+          });
+        }
       }
     });
 

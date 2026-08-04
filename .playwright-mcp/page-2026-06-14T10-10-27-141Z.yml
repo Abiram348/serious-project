@@ -1,0 +1,15 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - heading "Preview" [level=1] [ref=e4]
+      - paragraph [ref=e5]: View your project in action
+    - main [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e10]:
+          - heading "Preview" [level=3] [ref=e11]
+          - generic [ref=e12]: STOPPED
+        - generic [ref=e20]:
+          - img [ref=e22]
+          - generic [ref=e25]: Preview is not running. Start a preview to see your app in action.
+          - button "Start Preview" [ref=e26] [cursor=pointer]
+  - alert [ref=e19]

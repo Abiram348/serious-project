@@ -139,7 +139,7 @@ router.post('/portal', authMiddleware, async (req: Request, res: Response) => {
   }
 });
 
-// Get usage stats
+// Get usage stats with plan limits
 router.get('/usage', authMiddleware, async (req: Request, res: Response) => {
   try {
     const authUser = (req as any).user;
@@ -150,20 +150,34 @@ router.get('/usage', authMiddleware, async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Get current month usage
+    const planLimits: Record<string, { projects: number; tokens: number; agents: number }> = {
+      FREE: { projects: 3, tokens: 100000, agents: 2 },
+      PRO: { projects: -1, tokens: 2000000, agents: 5 },
+      TEAM: { projects: -1, tokens: 10000000, agents: 9 },
+      ENTERPRISE: { projects: -1, tokens: -1, agents: 9 },
+    };
+    const limits = planLimits[userRecord.plan] || planLimits.FREE;
+
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const usageRows = await db.usageLog.findMany({
-      where: {
-        userId: userRecord.id,
-        createdAt: { gte: startOfMonth },
-      },
-    });
+    const [usageRows, projectCount, runningAgents] = await Promise.all([
+      db.usageLog.findMany({
+        where: { userId: userRecord.id, createdAt: { gte: startOfMonth } },
+      }),
+      db.project.count({ where: { userId: userRecord.id } }),
+      db.agentRun.count({
+        where: {
+          project: { userId: userRecord.id },
+          status: 'RUNNING',
+        },
+      }),
+    ]);
 
     const totalTokensIn = usageRows.reduce((sum, log) => sum + (log.tokensIn ?? 0), 0);
     const totalTokensOut = usageRows.reduce((sum, log) => sum + (log.tokensOut ?? 0), 0);
     const totalCost = usageRows.reduce((sum, log) => sum + (log.cost ?? 0), 0);
+    const tokensUsed = totalTokensIn + totalTokensOut;
 
     res.json({
       plan: userRecord.plan,
@@ -173,6 +187,18 @@ router.get('/usage', authMiddleware, async (req: Request, res: Response) => {
       totalCost,
       periodStart: startOfMonth.toISOString(),
       periodEnd: new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString(),
+      projects: {
+        used: projectCount,
+        limit: limits.projects === -1 ? null : limits.projects,
+      },
+      tokens: {
+        used: tokensUsed,
+        limit: limits.tokens === -1 ? null : limits.tokens,
+      },
+      agents: {
+        used: runningAgents,
+        limit: limits.agents === -1 ? null : limits.agents,
+      },
     });
   } catch (error) {
     console.error('Error fetching usage:', error);
