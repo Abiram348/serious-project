@@ -4,13 +4,13 @@ overview: Bootstrap the full SwarmDev stack (Docker, web, API, orchestrator), ru
 todos:
   - id: bootstrap
     content: "Phase 0: Start Docker, Prisma migrate, all 3 dev servers, run pnpm dev:check:strict, reconcile audit task status"
-    status: pending
+    status: completed
   - id: browser-qa
     content: "Phase 1: Browser QA all routes via gstack /browse — capture console errors, network failures, broken flows"
-    status: pending
+    status: completed
   - id: critical-fixes
     content: "Phase 2: Fix socket /messages, file save wiring, DB pool issues, verify Tasks 1-5 end-to-end"
-    status: pending
+    status: in_progress
   - id: high-audit
     content: "Phase 3: Complete audit Tasks 6-13 (Redis bridge, plan enforcement, R2 sync, graph workflow, webhooks)"
     status: pending

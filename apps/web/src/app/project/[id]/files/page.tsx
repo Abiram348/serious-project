@@ -172,7 +172,14 @@ export default function ProjectFilesPage({ params }: { params: { id: string } })
           >
             Save
           </Button>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              window.location.href = `/api/projects/${params.id}/export`;
+            }}
+            disabled={files.length === 0}
+          >
             Download All
           </Button>
         </div>

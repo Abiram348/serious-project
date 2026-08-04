@@ -10,7 +10,7 @@ const r2Client = new S3Client({
   },
 });
 
-const BUCKET = process.env.CLOUDFLARE_R2_BUCKET || 'swarmdev';
+const BUCKET = process.env.CLOUDFLARE_R2_BUCKET || 'swarmdev-files';
 
 const isR2Configured = () =>
   Boolean(

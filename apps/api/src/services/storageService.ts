@@ -89,9 +89,8 @@ export const storageService = {
   },
 
   async downloadProjectZip(projectId: string): Promise<Buffer> {
-    // TODO: Generate ZIP archive of all project files
-    // For now, this is a placeholder
-    throw new Error('ZIP download not yet implemented');
+    const { buildProjectZip } = await import('./zipService');
+    return buildProjectZip(projectId);
   },
 };
 
